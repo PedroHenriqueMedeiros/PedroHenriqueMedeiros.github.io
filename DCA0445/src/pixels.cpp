@@ -8,7 +8,7 @@ int main(int, char**){
   Mat image;
   Vec3b val;
 
-  image= imread("bolhas.png",CV_LOAD_IMAGE_GRAYSCALE);
+  image= imread("bolhas.png", CV_LOAD_IMAGE_GRAYSCALE);
   if(!image.data)
     cout << "nao abriu bolhas.png" << endl;
 

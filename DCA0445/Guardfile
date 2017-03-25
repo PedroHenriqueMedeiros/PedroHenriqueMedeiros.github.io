@@ -1,0 +1,17 @@
+require 'asciidoctor'
+require 'date'
+
+input = "index.adoc"
+output = "index.html"
+backend = "html5"
+
+guard 'shell' do
+  watch(input) {|m|
+    #system("asciidoctor" + " -b " + backend +  " -o " + output + " " + input)
+    current_time = DateTime.now()
+    current_time_str = current_time.strftime("%d/%m/%Y %H:%M")
+    Asciidoctor.convert_file m[0]
+    print("New update at %s", current_time_str)
+    
+  }
+end

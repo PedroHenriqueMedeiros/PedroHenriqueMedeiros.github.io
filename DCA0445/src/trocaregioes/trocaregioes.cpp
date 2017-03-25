@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     }
     
     /* Checa se a imagem pode ser aberta. */
-    imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
     if (!imagem.data) 
     {
         cout << "A imagem não pode ser aberta." << endl;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     vconcat(temp1, temp2, resultado);
     
     imwrite("saida.png", resultado);
-    imshow("result", resultado);  
+    imshow("resultado", resultado);  
     waitKey(10000);
 
     return 0;

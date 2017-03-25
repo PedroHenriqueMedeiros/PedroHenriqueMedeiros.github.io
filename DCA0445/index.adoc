@@ -35,14 +35,14 @@ O efeito é ilustrado na figura regiões (abaixo).
 
 [[img-regioes]] 
 .Figura regioes.png
-image::regioes.png[Regiões, 200, 200] 
+image::regioes.png[Regiões, 400, 400] 
 ****
 
 Para resolver o exercício acima, o seguinte programa foi desenvolvido:
 
 [source,cpp,linenums]
 ----
-include::{sourcedir}/regions.cpp[]
+include::{sourcedir}/regioes/regioes.cpp[]
 ----
 
 A estratégia adotada neste programa consiste em receber do usuário dois pontos, criar um retângulo a partir deles e calcular o negativo deste retângulo. 
@@ -52,18 +52,18 @@ As primeiras linhas do programa (linha 21 à linha 61) consiste em validar os  d
 
 ====
 .Exemplo de execução
-* Comando: ./regions onca.png 20 20 200 200
+* Comando: ./regioes onca.png 20 20 200 200
 * Foto de entrada: 
 
-[[img-cachorro]] 
+[[img-onca]] 
 .Figura onca.png original
-image::onca.png[Regiões, 300, 300] 
+image::onca.png[Regiões, 400, 400] 
 
 * Foto de saída: 
 
 [[img-onca-regions]] 
 .Figura onca.png após processamento
-image::onca-regions.png[Regiões, 300, 300] 
+image::onca-regioes.png[Regiões, 400, 400] 
 
 ====
 
@@ -73,14 +73,14 @@ Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemp
 
 [[img-regioes]] 
 .Figura trocaregioes.png
-image::trocaregioes.png[Troca Regiões, 200, 200] 
+image::trocaregioes.png[Troca Regiões, 400, 400] 
 ****
 
 A versão modificada do programa pixels.cpp pode ser vista abaixo:
 
 [source,cpp,linenums]
 ----
-include::{sourcedir}/trocaregioes.cpp[]
+include::{sourcedir}/trocaregioes/trocaregioes.cpp[]
 ----
 
 O objetivo do programa acima foi criar 4 sub-matrizes representando cada quadrante (representação dos quadrantes da linha 12 à linha 14), para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.
@@ -91,18 +91,18 @@ Com as submatrizes criadas, primeiro são montadas as partes superior e inferior
 
 ====
 .Exemplo de execução
-* Comando: ./trocaregioes onca.png
+* Comando: ./trocaregioes gato.png
 * Foto de entrada: 
 
-[[img-onca-1]] 
-.Figura onca.png original
-image::onca.png[Troca Regioes, 300, 300] 
+[[img-gato]] 
+.Figura gato.png original
+image::gato.png[Troca Regioes, 400, 400] 
 
 * Foto de saída: 
 
-[[img-onca-trocaregioes]] 
-.Figura onca.png após processamento
-image::onca-trocaregioes.png[Regiões, 300, 300] 
+[[img-gato-trocaregioes]] 
+.Figura gato.png após processamento
+image::gato-trocaregioes.png[Regiões, 400, 400] 
 
 ====
 
