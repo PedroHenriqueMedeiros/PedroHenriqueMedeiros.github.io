@@ -40,6 +40,8 @@ image::regioes.png[Regiões, 400, 400]
 
 Para resolver o exercício acima, o seguinte programa foi desenvolvido:
 
+.regioes.cpp
+[[regioes]]
 [source,cpp,linenums]
 ----
 include::{sourcedir}/regioes/regioes.cpp[]
@@ -78,6 +80,8 @@ image::trocaregioes.png[Troca Regiões, 400, 400]
 
 A versão modificada do programa pixels.cpp pode ser vista abaixo:
 
+.trocaregioes.cpp
+[[trocaregioes]]
 [source,cpp,linenums]
 ----
 include::{sourcedir}/trocaregioes/trocaregioes.cpp[]
@@ -123,6 +127,8 @@ Aprimore o algoritmo de contagem apresentado para identificar regiões com ou se
 
 O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/labeling.cpp[labeling.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo: 
 
+.rotulacao.cpp
+[[rotulacao]]
 [source,cpp,linenums]
 ----
 include::{sourcedir}/rotulacao/rotulacao.cpp[]
