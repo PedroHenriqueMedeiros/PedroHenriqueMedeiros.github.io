@@ -7,11 +7,11 @@ backend = "html5"
 
 guard 'shell' do
   watch(input) {|m|
-    #system("asciidoctor" + " -b " + backend +  " -o " + output + " " + input)
+    system("asciidoctor" + " -b " + backend +  " -o " + output + " " + input)
     current_time = DateTime.now()
     current_time_str = current_time.strftime("%d/%m/%Y %H:%M")
-    Asciidoctor.convert_file m[0]
-    print("New update at %s", current_time_str)
+    puts("New update at " + current_time_str + ".")
+    #Asciidoctor.convert_file(m[0], options={backend: "html5"})
     
   }
 end

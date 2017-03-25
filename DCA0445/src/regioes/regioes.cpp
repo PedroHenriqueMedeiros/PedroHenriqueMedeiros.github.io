@@ -5,7 +5,7 @@ using namespace cv;
 using namespace std;
 
 /* 
- * argv[1] = image 
+ * argv[1] = imagem 
  * argv[2] = p1.x
  * argv[3] = p1.y
  * argv[4] = p2.x
@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     Point p1, p2;
     Rect ret;
     
-    // Verifica a quantidade de argumentos. 
+    /* Verifica a quantidade de argumentos.  */
     if (argc != 6) 
     {
         cout << "A lista de argumentos deve ser: ./regioes <imagem> <ponto1_x> "
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
         return -1;
     }
     
-    // Verifica se a imagem pode ser aberta.
+    /* Verifica se a imagem pode ser aberta. */
     imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
     if (!imagem.data) 
     {
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         return -2;
     }
     
-    // Verifica se todas as coordenadas fornecidas são números.
+    /* Verifica se todas as coordenadas fornecidas são números. */
     try 
     {
         p1.x = stoi(argv[2]);
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
         return -3;
     }
     
-    // Vericfica os pontos estão dentro da imagem.
+    /* Vericfica os pontos estão dentro da imagem. */
     if (p1.x > imagem.rows || p1.y > imagem.cols)
     {
         cout << "Ponto 1 está fora da imagem.";
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     
     ret = Rect(p1, p2);
     
-    // Calcula o negativo da região retangular formada pelos dois pontos.
+    /* Calcula o negativo da região retangular formada pelos dois pontos. */
     for (int i = ret.x; i < ret.height; i++)
     {
         for (int j = ret.y; j < ret.width; j++)

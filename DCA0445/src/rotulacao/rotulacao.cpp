@@ -9,15 +9,9 @@
 using namespace cv;
 using namespace std;
 
-/* O algoritmo padrão de labeling fornecido pelo professor contem um problema, 
-* pois utiliza a própria cor do pixel rotulado para armazenar a contagem de elementos. 
-* No caso de uma imagem em escala de cinza, em que cada pixel é representado por
-* 1 byte, logo poder-se-ia contar apenas 255 elementos. 
-* Uma abordagem diferente seria utilizar a cor do pixel como um tipo de classificação
-* para os objetos contados, de modo que os pixels de uma mesma categoria assumam apenas
-* um label específico, sendo reservado um contador à parte para contar quantos elementos
-* dessa categoria foram encontrados.
-*/
+/* 
+ * argv[1] = imagem 
+ */
 
 int main(int argc, char **argv)
 {
@@ -25,11 +19,19 @@ int main(int argc, char **argv)
     Point p;
     uint bolhasEncontradas = 0;
 
-    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
-    if (!imagem.data)
+    /* Verifica a quantidade de argumentos. */
+    if (argc != 2) 
     {
-        cout << "Imagem nao carregou corretamente.\n";
+        cout << "A lista de argumentos deve ser: ./rotulacao <imagem>" << endl;
         return -1;
+    }
+
+    /* Verifica se a imagem pode ser aberta. */
+    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    if (!imagem.data) 
+    {
+        cout << "A imagem não pode ser aberta." << endl;
+        return -2;
     }
 
     /* Primeiramente remove as bolhas das bordas */
@@ -45,9 +47,9 @@ int main(int argc, char **argv)
             }
         }
     }
-    for (int i = 0; i < imagem.rows; i++)
+    for (int j = 0; j < imagem.cols; j += imagem.cols - 1)
     {
-        for (int j = 0; j < imagem.cols; j += imagem.cols - 1)
+        for (int i = 0; i < imagem.rows; i++)
         {
             if (imagem.at<uchar>(i, j) == 255)
             {
@@ -63,9 +65,7 @@ int main(int argc, char **argv)
     p.y = 0;
     floodFill(imagem, p, COR_FUNDO_ALTERADA);
 
-     /* Finalmente, conta os elementos apenas que contém buraco na cor de fundo
-      * original. 
-      */
+    /* Conta os elementos apenas que contém buraco na cor de fundo original */
     for (int i = 0; i < imagem.rows; i++)
     {
         for (int j = 0; j < imagem.cols; j++)
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
         }
     }
 
-    /* Informa ao usuário a contagem final */
+    /* Informa ao usuário a contagem final  */
     cout << "Há " << bolhasEncontradas << " bolhas nesa imagem." << endl;
     imshow("imagem", imagem);
     imwrite("saida.png", imagem);
