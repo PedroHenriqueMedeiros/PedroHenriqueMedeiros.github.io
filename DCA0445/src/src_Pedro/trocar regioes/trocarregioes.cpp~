@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cv.h>
+#include <highgui.h>
+
+using namespace cv;
+using namespace std;
+// a imagem é de tamanho 512x512
+int main(int, char**){
+  Mat image;
+  Mat image2;
+  Vec3i val;
+  int p1_x, p1_y, p2_x, p2_y, p3_x, p3_y;
+  
+  namedWindow("janela",WINDOW_AUTOSIZE);
+
+  image= imread("lena.png",CV_LOAD_IMAGE_COLOR);
+  
+  /* cout<<"Sabendo que o tamanho da imagem é 512x512\n";
+  cout<<"Diga o valor do ponto X de p1:\n";
+  cin>> p1_x;
+  cout<<"Diga o valor do ponto Y de p1:\n";
+  cin>> p1_y;
+  
+  cout<<"Diga o valor do ponto X de p2:\n";
+  cin>> p2_x;
+  cout<<"Diga o valor do ponto Y de p2:\n";
+  cin>> p2_y;
+
+  cout<<"Diga o valor do ponto X de p3:\n";
+  cin>> p3_x;
+  cout<<"Diga o valor do ponto Y de p3:\n";
+  cin>> p3_y;
+
+  int p1[p1_x][p1_y];
+  int p2[p2_x][p2_y];
+  int p3[p3_x][p3_y];
+
+  image1= image.clone();
+  for(int i=0;i<p1_x;i++){
+    for(int j=0;j<p1_y;j++){
+      p1[i][j]= image.at<Vec3i>(i,j);
+    }
+
+  }
+
+  for(int i=0;i<p2_x;i++){
+    for(int j=0;j<p2_y;j++){
+      p2[i][j]= image.at<Vec3i>(i,j);
+    }
+
+  }
+
+  for(int i=0;i<p3_x;i++){
+    for(int j=0;j<p3_y;j++){
+      p3[i][j]= image.at<Vec3b>(i,j);
+    }
+
+  }
+
+  for(int i=0;i<p1_x;i++){
+    for(int j=0;j<p1_y;j++){
+      image2.at<Vec3i>(i,j)=p1[i][j];
+    }
+
+  }
+  
+  imshow("janela", image);  
+  waitKey();
+
+  imshow("janela", image2);  
+  waitKey();*/
+  cout<<image.diag();
+  imshow("janela", image);  
+  waitKey();
+  return 0;
+}

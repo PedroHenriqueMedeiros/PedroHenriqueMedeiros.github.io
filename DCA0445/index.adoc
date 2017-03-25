@@ -1,5 +1,5 @@
 = DCA0445 - Processamento Digital de Imagens
-Denis Medeiros <denis@dimap.ufrn.br>
+Denis Medeiros <denis@dimap.ufrn.br> Pedro Henrique <pedrohenriquedemedeiros@gmail.com>
 :toc:
 :toc-placement: left
 :toc-title: Sumário
