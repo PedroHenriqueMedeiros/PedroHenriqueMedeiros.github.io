@@ -159,39 +159,3 @@ image::bolhas.png[Troca Regioes, 400, 400]
 image::bolhas-rotulacao.png[Regiões, 400, 400] 
 
 ====
-
-== Manipulação de histogramas
-
-=== Seção 5.2 - Exercício 1
-
-****
-Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem. Teste sua implementação apontando a câmera para ambientes com iluminações variadas e observando o efeito gerado. Assuma que as imagens processadas serão em tons de cinza.
-****
-
-O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
-
-.equalizador.cpp
-[[equalizador]]
-[source,cpp,linenums]
-----
-include::{sourcedir}/equalizador/equalizador.cpp[]
-----
-
-A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do programador e então fazer o processo de equalização da imagem, o qual consiste em uma distribuição mais uniforme dos valores da intensidade da distribuição, nesse caso o histograma.
-
-Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador e então realiza o processo de conver são da imagem coloridada para a escala de cinza, evidenciado das linhas 36 a 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem com que os histogramas sejam inseridos nos frames e uma mensagem para distinção das imagens mostradas nos frames. 
-
-====
-.Exemplo de execução
-* Comando: ./equalizador 
-* Foto de saída: 
-
-[[img-imequalizada]] 
-.Figura imequalizada.png 
-image::imequalizada.png[Equalizador, 400, 400] 
-
-====
-
-====
-
-====
