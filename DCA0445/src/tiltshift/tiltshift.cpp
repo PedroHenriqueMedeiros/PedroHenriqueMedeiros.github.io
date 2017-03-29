@@ -1,49 +1,74 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <cmath>
 
 using namespace cv;
 using namespace std;
 
-float altura;
+double altura_regiao_central;
+double forca_decaimento;
+double posicao_vertical_centro; 
+double alfa;
 
-int alfa_slider = 0;
-int alfa_slider_max = 100;
+int slide_altura_regiao_central = 1;
+int slide_altura_regiao_central_max = 100;
 
-int top_slider = 0;
-int top_slider_max = 100;
+int slide_forca_decaimento = 1;
+int slide_forca_decaimento_max = 100;
 
-int altura_regiao_central = 0;
-int altura_regiao_central_max = 100;
+int slide_posicao_vertical_centro = 1;
+int slide_posicao_vertical_centro_max = 100;
 
-int forca_decaimento = 0;
-int forca_decaimento_max = 100;
-
-int posicao_vertical_centro = 0;
-int posicao_vertical_centro_max = 100;
-
-Mat imagem, imagemFiltrada, imagemFinal;
-
+Mat imagem, imagemBorrada, imagemFinal;
 char TrackbarName[50];
 
-void alterar_altura_regiao_central(int, void*)
+void calcularImagemFinal() 
 {
-   //alfa = (double) alfa_slider/alfa_slider_max ;
-   //addWeighted( image1, alfa, imageTop, 1-alfa, 0.0, blended);
+   for(int i = 0; i < imagem.rows; i++)
+   {
 
-  altura = (double) altura_regiao_central/altura_regiao_central_max ;
-  addWeighted(imagem, altura, imagemFiltrada, 1-altura, 0.0, imagemFinal);
-  imshow("addweighted", imagemFinal);
+      alfa = 0.5 * (tanh((i + altura_regiao_central/2)/forca_decaimento) - 
+        tanh((i - altura_regiao_central/2)/forca_decaimento));
 
+      cout << altura_regiao_central << ", " << forca_decaimento << ", " << posicao_vertical_centro << ", " << alfa << endl;
+
+      for(int j = 0; j < imagem.cols; j++)
+      {
+        imagemFinal.at<uchar>(i, j) = alfa * imagem.at<uchar>(i, j) + (1-alfa)*imagemBorrada.at<uchar>(i, j);
+      }
+   }
 }
 
-void alterar_forca_decaimento(int, void*)
+void alterar_slide_altura_regiao_central(int, void*)
 {
-  imshow("addweighted", imagem);
+    altura_regiao_central = (double) slide_altura_regiao_central/slide_altura_regiao_central_max;
+    altura_regiao_central *= imagem.rows;
+
+    calcularImagemFinal();
+    imshow("resultado", imagemFinal);
 }
 
-void alterar_posicao_vertical_centro(int, void*)
+void alterar_slide_forca_decaimento(int, void*)
+{  
+  forca_decaimento = (double) slide_forca_decaimento/slide_forca_decaimento_max;
+  forca_decaimento *= 5;
+
+  if(forca_decaimento == 0)
+  {
+    forca_decaimento = 0.05;
+  }
+  
+  calcularImagemFinal();
+  imshow("resultado", imagemFinal);
+}
+
+void alterar_slide_posicao_vertical_centro(int, void*)
 {
-imshow("addweighted", imagem);
+  posicao_vertical_centro = (double) slide_posicao_vertical_centro/slide_posicao_vertical_centro_max;
+  posicao_vertical_centro *= imagem.rows;
+
+  calcularImagemFinal();
+  imshow("resultado", imagemFinal);
 }
 
 int main(int argc, char* argv[]){
@@ -58,40 +83,48 @@ int main(int argc, char* argv[]){
     }
     
     /* Checa se a imagem pode ser aberta. */
-    imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    //imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    imagemFinal = imagem.clone();
+
     if (!imagem.data) 
     {
         cout << "A imagem não pode ser aberta." << endl;
         return -2;
     }
 
-  //imagemFiltrada = imagem.clone();
-    imagemFiltrada = imread("copacabana2.png", CV_LOAD_IMAGE_COLOR);
+    namedWindow("resultado", 1);
+    //imshow("resultado", imagem);
 
+    blur(imagem, imagemBorrada, Size(5, 5), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
 
+    
+    
+    createTrackbar("Altura", "resultado",
+            &slide_altura_regiao_central,
+            slide_altura_regiao_central_max,
+            alterar_slide_altura_regiao_central);
+    alterar_slide_altura_regiao_central(slide_altura_regiao_central, 0);
+    
+    
+    createTrackbar("Decaimento", "resultado",
+            &slide_forca_decaimento,
+            slide_forca_decaimento_max,
+            alterar_slide_forca_decaimento );
+    alterar_slide_forca_decaimento(slide_forca_decaimento, 0);
 
-  namedWindow("addweighted", 1);
-  
-  createTrackbar("Altura", "addweighted",
-				  &altura_regiao_central,
-				  altura_regiao_central_max,
-				  alterar_altura_regiao_central);
-  alterar_altura_regiao_central(altura_regiao_central, 0);
-  
-  
-  createTrackbar("Decaimento", "addweighted",
-          &forca_decaimento,
-          forca_decaimento_max,
-          alterar_forca_decaimento );
-  alterar_forca_decaimento(forca_decaimento, 0 );
+    createTrackbar( "Centro", "resultado",
+            &slide_posicao_vertical_centro,
+            slide_posicao_vertical_centro_max,
+            alterar_slide_posicao_vertical_centro );
+    alterar_slide_posicao_vertical_centro(slide_posicao_vertical_centro, 0);
 
-  createTrackbar( "Centro", "addweighted",
-          &posicao_vertical_centro,
-          posicao_vertical_centro_max,
-          alterar_posicao_vertical_centro );
-  alterar_posicao_vertical_centro(posicao_vertical_centro, 0 );
+    while(1)
+    {
+      if( waitKey(30) == 27 ) break; // esc pressed!
+    }
 
-
-  waitKey(0);
   return 0;
 }
