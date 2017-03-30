@@ -5,87 +5,79 @@
 using namespace cv;
 using namespace std;
 
-double altura_regiao_central;
-double forca_decaimento;
-double posicao_vertical_centro; 
+double alturaRegiaoCentral;
+double forcaDecaimento;
+double posicaoVerticalCentro; 
 double alfa;
 
-int slide_altura_regiao_central = 1;
-int slide_altura_regiao_central_max = 100;
-
-int slide_forca_decaimento = 1;
-int slide_forca_decaimento_max = 100;
-
-int slide_posicao_vertical_centro = 1;
-int slide_posicao_vertical_centro_max = 100;
+int slideAlturaRegiaoCentral;
+int slideAlturaRegiaoCentralMax ;
+int slideForcaDecaimento;
+int slideForcaDecaimentoMax;
+int slidePosicaoVerticalCentro;
+int slidePosicaoVerticalCentroMax;
 
 Mat imagem, imagemBorrada, imagemFinal;
-char TrackbarName[50];
+char trackbarName[50];
 
+/* Calcula a imagem final a partir da imagem original e de sua versão borrada,
+com as devidas ponderações escolhidas pelo usuário. */
 void calcularImagemFinal() 
 {
-   for(int i = 0; i < imagem.rows; i++)
-   {
+    double xDeslocado;
 
-      alfa = 0.5 * (tanh((i + altura_regiao_central/2)/forca_decaimento) - 
-        tanh((i - altura_regiao_central/2)/forca_decaimento));
+    for(int i = 0; i < imagem.rows; i++)
+    {
+        xDeslocado = i - (posicaoVerticalCentro + alturaRegiaoCentral/2.0);
+        
+        alfa = 0.5 * (tanh((xDeslocado + alturaRegiaoCentral/2)/forcaDecaimento) 
+            - tanh((xDeslocado - alturaRegiaoCentral/2)/forcaDecaimento));
 
-      cout << altura_regiao_central << ", " << forca_decaimento << ", " << posicao_vertical_centro << ", " << alfa << endl;
-
-      for(int j = 0; j < imagem.cols; j++)
-      {
-        imagemFinal.at<uchar>(i, j) = alfa * imagem.at<uchar>(i, j) + (1-alfa)*imagemBorrada.at<uchar>(i, j);
-      }
-   }
+        for(int j = 0; j < imagem.cols; j++)
+        {
+            imagemFinal.at<Vec3b>(i, j) = alfa * imagem.at<Vec3b>(i, j) 
+                + (1-alfa)*imagemBorrada.at<Vec3b>(i, j);
+        }
+    }
 }
 
-void alterar_slide_altura_regiao_central(int, void*)
+void alterarSlideAlturaRegiaoCentral(int, void*)
 {
-    altura_regiao_central = (double) slide_altura_regiao_central/slide_altura_regiao_central_max;
-    altura_regiao_central *= imagem.rows;
-
+    alturaRegiaoCentral = slideAlturaRegiaoCentral;
     calcularImagemFinal();
     imshow("resultado", imagemFinal);
 }
 
-void alterar_slide_forca_decaimento(int, void*)
+void alterarSlideForcaDecaimento(int, void*)
 {  
-  forca_decaimento = (double) slide_forca_decaimento/slide_forca_decaimento_max;
-  forca_decaimento *= 5;
-
-  if(forca_decaimento == 0)
-  {
-    forca_decaimento = 0.05;
-  }
-  
-  calcularImagemFinal();
-  imshow("resultado", imagemFinal);
+    forcaDecaimento = slideForcaDecaimento;
+    if(forcaDecaimento == 0)
+    {
+        forcaDecaimento = 1;
+    }
+    calcularImagemFinal();
+    imshow("resultado", imagemFinal);
 }
 
-void alterar_slide_posicao_vertical_centro(int, void*)
+void alterarSlidePosicaoVerticalCentro(int, void*)
 {
-  posicao_vertical_centro = (double) slide_posicao_vertical_centro/slide_posicao_vertical_centro_max;
-  posicao_vertical_centro *= imagem.rows;
-
-  calcularImagemFinal();
-  imshow("resultado", imagemFinal);
+    posicaoVerticalCentro = slidePosicaoVerticalCentro;
+    calcularImagemFinal();
+    imshow("resultado", imagemFinal);
 }
 
 int main(int argc, char* argv[]){
-
 
     /* Verifica o número de argumentos.  */
     if (argc != 2) 
     {
         cout << "A lista de argumentos deve ser: "
-                                            "./tiltshift <imagem>" << endl;
+        "./tiltshift <imagem>" << endl;
         return -1;
     }
     
     /* Checa se a imagem pode ser aberta. */
-    //imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
-    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
-    imagemFinal = imagem.clone();
+    imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
 
     if (!imagem.data) 
     {
@@ -93,38 +85,47 @@ int main(int argc, char* argv[]){
         return -2;
     }
 
+    imagemFinal = imagem.clone();
     namedWindow("resultado", 1);
-    //imshow("resultado", imagem);
 
+    /* Primeiramente faz o borramento da imagem original. */
     blur(imagem, imagemBorrada, Size(5, 5), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
 
-    
-    
+    slideAlturaRegiaoCentral = 1;
+    slideForcaDecaimento = 1;
+    slidePosicaoVerticalCentro = 1;
+
+    slideAlturaRegiaoCentralMax = imagemFinal.rows;
+    slidePosicaoVerticalCentroMax = imagemFinal.rows;
+    slideForcaDecaimentoMax = 100;
+
+    /* Cria as barras de rolagem. */
     createTrackbar("Altura", "resultado",
-            &slide_altura_regiao_central,
-            slide_altura_regiao_central_max,
-            alterar_slide_altura_regiao_central);
-    alterar_slide_altura_regiao_central(slide_altura_regiao_central, 0);
+        &slideAlturaRegiaoCentral,
+        slideAlturaRegiaoCentralMax,
+        alterarSlideAlturaRegiaoCentral);
+    alterarSlideAlturaRegiaoCentral(slideAlturaRegiaoCentral, 0);
     
     
     createTrackbar("Decaimento", "resultado",
-            &slide_forca_decaimento,
-            slide_forca_decaimento_max,
-            alterar_slide_forca_decaimento );
-    alterar_slide_forca_decaimento(slide_forca_decaimento, 0);
+        &slideForcaDecaimento,
+        slideForcaDecaimentoMax,
+        alterarSlideForcaDecaimento );
+    alterarSlideForcaDecaimento(slideForcaDecaimento, 0);
 
     createTrackbar( "Centro", "resultado",
-            &slide_posicao_vertical_centro,
-            slide_posicao_vertical_centro_max,
-            alterar_slide_posicao_vertical_centro );
-    alterar_slide_posicao_vertical_centro(slide_posicao_vertical_centro, 0);
+        &slidePosicaoVerticalCentro,
+        slidePosicaoVerticalCentroMax,
+        alterarSlidePosicaoVerticalCentro );
+    alterarSlidePosicaoVerticalCentro(slidePosicaoVerticalCentro, 0);
 
+    /* Fecha o programa quando o usuário digita ESC. */
     while(1)
     {
-      if( waitKey(30) == 27 ) break; // esc pressed!
-    }
+      if( waitKey(30) == 27 ) break; 
+  }
 
   return 0;
 }
