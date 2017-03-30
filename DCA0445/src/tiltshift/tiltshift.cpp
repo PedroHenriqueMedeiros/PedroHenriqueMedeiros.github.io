@@ -27,14 +27,16 @@ void calcularImagemFinal()
    for(int i = 0; i < imagem.rows; i++)
    {
 
-      alfa = 0.5 * (tanh((i + altura_regiao_central/2)/forca_decaimento) - 
-        tanh((i - altura_regiao_central/2)/forca_decaimento));
+      double temp = i - (posicao_vertical_centro + altura_regiao_central/2);
+
+      alfa = 0.5 * (tanh((temp + altura_regiao_central/2)/forca_decaimento) - 
+        tanh((temp - altura_regiao_central/2)/forca_decaimento));
 
       cout << altura_regiao_central << ", " << forca_decaimento << ", " << posicao_vertical_centro << ", " << alfa << endl;
 
       for(int j = 0; j < imagem.cols; j++)
       {
-        imagemFinal.at<uchar>(i, j) = alfa * imagem.at<uchar>(i, j) + (1-alfa)*imagemBorrada.at<uchar>(i, j);
+        imagemFinal.at<Vec3b>(i, j) = alfa * imagem.at<Vec3b>(i, j) + (1-alfa)*imagemBorrada.at<Vec3b>(i, j);
       }
    }
 }
@@ -51,11 +53,11 @@ void alterar_slide_altura_regiao_central(int, void*)
 void alterar_slide_forca_decaimento(int, void*)
 {  
   forca_decaimento = (double) slide_forca_decaimento/slide_forca_decaimento_max;
-  forca_decaimento *= 5;
+  forca_decaimento *= 100;
 
   if(forca_decaimento == 0)
   {
-    forca_decaimento = 0.05;
+    forca_decaimento = 1;
   }
   
   calcularImagemFinal();
@@ -83,8 +85,8 @@ int main(int argc, char* argv[]){
     }
     
     /* Checa se a imagem pode ser aberta. */
-    //imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
-    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    //imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
     imagemFinal = imagem.clone();
 
     if (!imagem.data) 
@@ -100,8 +102,6 @@ int main(int argc, char* argv[]){
     blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
 
-    
-    
     createTrackbar("Altura", "resultado",
             &slide_altura_regiao_central,
             slide_altura_regiao_central_max,
