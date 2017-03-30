@@ -184,14 +184,93 @@ Inicialmente o programa realiza a captura de um frame a partir da camera do comp
 ====
 .Exemplo de execução
 * Comando: ./equalizador 
-* Foto de saída: 
+* Fotos de saída: 
 
-[[img-imequalizada]] 
-.Figura imequalizada.png 
-image::imequalizada.png[Equalizador, 400, 400] 
+[[img-ImagemOriginalEscalaCinza]] 
+.Figura ImagemOriginalEscalaCinza.png 
+image::ImagemOriginalEscalaCinza.png[ImagemOriginalEscalaCinza, 400, 400] 
+
+[[img-ImagemEqualizada]] 
+.Figura ImagemEqualizada.png 
+image::ImagemEqualizada.png[ImagemEqualizada, 400, 400] 
 
 ====
 
-====
+
+
+== Filtragem Espacial I
+
+=== Seção 6.2 Exercício 1
+
+****
+Utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
+
+.laplgauss.cpp
+[[laplgauss]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/laplgauss/laplgauss.cpp[]
+----
+
+A ideia básica do programa é verificar a utilização dos diversos filtros espaciais definidos pelo professor no  link para o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp] e que foram modificados no programa laplgauss.cpp e então aplicamos um filtro do laplaciano do gaussiano.
 
 ====
+.Exemplo de execução
+* Comando: ./laplgauss 
+* Fotos de saída: 
+
+[[img-Imagem_Filtro_Vertical]] 
+.Figura Imagem_Filtro_Vertical.png 
+image::Imagem_Filtro_Vertical.png[Imagem_Filtro_Vertical, 400, 400] 
+
+[[img-Imagem_Filtro_Horizontal]] 
+.Figura Imagem_Filtro_Horizontal.png 
+image::Imagem_Filtro_Horizontal.png[Imagem_Filtro_Horizontal, 400, 400] 
+
+[[img-Imagem_Filtro_Mediana]] 
+.Figura Imagem_Filtro_Mediana.png 
+image::Imagem_Filtro_Mediana.png[Imagem_Filtro_Mediana, 400, 400] 
+
+[[img-Imagem_Filtro_Gauss]] 
+.Figura Imagem_Filtro_Gauss.png 
+image::Imagem_Filtro_Gauss.png[Imagem_Filtro_Gauss, 400, 400] 
+
+[[img-Imagem_Filtro_Laplaciano]] 
+.Figura Imagem_Filtro_Laplaciano.png 
+image::Imagem_Filtro_Laplaciano.png[Imagem_Filtro_Laplaciano, 400, 400]
+
+[[img-Imagem_Filtro_LaplacianoGaussiano]] 
+.Figura Imagem_Filtro_LaplacianoGaussiano.png 
+image::Imagem_Filtro_LaplacianoGaussiano.png[Imagem_Filtro_LaplacianoGaussiano, 400, 400]
+====
+
+As linhas 7 a 44 mostram os diferentes tipos de máscaras utilizadas, as quais são:
+
+* Media
+* Gauss
+* Horizontal
+* Vertical
+* Laplaciano
+* Laplaciano do gaussiano
+
+A máscara do laplaciano do gaussiano foi obtida através da operação de convolução entre as máscaras de gauss e laplaciana.
+
+As linhas 59 a 69 mostram a função menu que foi feita pelo programador para permitir o usuário escolher qual máscara vai ser utilizada.
+
+O trecho de código que vai das linhas 81 a 101 mostra através das linhas 81 a 90 a tentativa de abertura do vídeo e consequentemente a abertura de duas janelas mostrando a imagem original e a imagem com filtro aplicado pelas linhas 93 e 94. Nas linhas 96 a 99 temos o procedimento padrão para construção da matriz que será usada como máscara de filtragem. A variável mask recebe uma matriz de tamanho 3X3 em ponto flutuante (CV_32F) com valores iniciais iguais ao do array media que é repassado. O tipo da matriz precisa ser estabelecido em ponto flutuante, posto que as operações de cálculo contarão com a presença de números fracionários. 
+
+O uso da função scaleAdd() serve para dar o ganho de 1/9 nos coeficientes do filtro da média. A operação multiplica o primeiro argumento pelo segundo, soma com o terceiro argumento (neste caso, uma matriz de zeros) e armazena o resultado no terceiro argumento, mask1. Logo em seguida, a troca entre as matrizes mask e mask1 ocorre para que use apenas a matriz mask no cálculo da convolução digital.
+
+Por fim na linha 101 temos a chamada da função menu() para pedir ao usuário que escolha o tipo de máscara a ser utilizada.
+
+Nas linhas 106 e 107 temos em um loop infinito que as imagens coloridas captadas pela camera do computador são enviadas a matriz cap e depois tem os seus pixels convertidos em tons de cinza pela função cvtColor. Nas linhas 110 e 111 temos um giro horizontal da imagem, para aparentar um espelho através da função flip(). Na linha 112 e 115 temos o cálculo da filtragem espacial. A imagem em tom de cinza na variável frame é convertida para outra equivalente com representação em ponto flutuante - frame32f. A conversão é necessária devido aos tipos de operação que serão realizados pela função filter2D().
+
+A função filter2d() recebe então a matriz da imagem em ponto flutuante - frame32f - e produz a matriz frameFiltered, de acordo com o tipo do elemento da matriz de entrada - neste caso, CV_32F (ou float). O objeto Point(1,1) que é repassado como próximo argumento identifica a origem do sistema de coordenadas atribuído para a máscara que, neste caso, é o ponto central da matriz.   
+
+Na linha 121 temos uma conversão da matriz frameFiltered para CV_8U que significa oito bits por pixel, ou seja, os pixels podem ir do valor 0 a 255 como normalmente é nas imagens e vídeos.
+
+O restante do código apenas tem a função de apresentar um menu para o usuário escolher qual máscara aplicar e salvaar uma imagem do efeito do filtro laplaciano do gaussiano.
+

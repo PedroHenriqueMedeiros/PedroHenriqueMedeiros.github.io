@@ -71,12 +71,12 @@ void menu(){
 int main(int argvc, char** argv){
     VideoCapture video;
     Mat cap, frame, frame32f, frameFiltered;
-    Mat mask(3,3,CV_32F), mask1;
+    Mat mask(3,3,CV_32F), mask1, mask2(3,3,CV_32F);
     Mat result, result1;
     double width, height;
     int absolut;
     char key;
-
+    bool lapgauss=false;
     /* Tenta abrir o vídeo. */
     video.open(0); 
     if(!video.isOpened()) 
@@ -96,6 +96,8 @@ int main(int argvc, char** argv){
     mask = Mat(3, 3, CV_32F, media); 
     scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
     swap(mask, mask1);
+    scaleAdd(mask2, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
+    swap(mask2, mask1);
     absolut=1; // calcs abs of the image
 
     menu();
@@ -112,6 +114,10 @@ int main(int argvc, char** argv){
         frame.convertTo(frame32f, CV_32F);
 
         /* Aplica o filtro selecionado (filtro inicial: média) */
+	if(key==){
+		filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+		filter2D(frame32f, frameFiltered, frame32f.depth(), mask2, Point(1,1), 0);
+	}
         filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
 
         if(absolut)
@@ -122,7 +128,6 @@ int main(int argvc, char** argv){
         imshow("filtroespacial", result);
         key = (char) waitKey(10);
         if( key == 27 ) break; // esc pressed!
-	
         switch(key)
         {
             case 'a':
@@ -161,22 +166,17 @@ int main(int argvc, char** argv){
             case 'p':
                 menu();
                 /* Aplica o filtro 5 x 5, que representa o gaussinado + laplaciano */
-                mask = Mat(5, 5, CV_32F, laplgauss);
+                //mask = Mat(5, 5, CV_32F, laplgauss);
+		lapgauss=true;
+		mask= Mat(3, 3, CV_32F, gauss);
+		mask2= Mat(3, 3, CV_32F, laplacian);
                 printMask(mask);
+		printMask(mask2);
                 break;
             default:
                 break;
         }
     }
-	
-    // imwrite("Imagem_Filtro_Mediana.png",frameFiltered);
-    // imwrite("Imagem_Filtro_Vertical.png",frameFiltered);
-    //imwrite("Imagem_Filtro_Horizontal.png",frameFiltered);
-    //imwrite("Imagem_Filtro_Gauss.png",frameFiltered);
-    //imwrite("Imagem_Filtro_Laplaciano.png",frameFiltered);
-    imwrite("Imagem_Filtro_LaplacianoGaussiano.png",frameFiltered);
-    
-
     return 0;
 }
 
