@@ -1,6 +1,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <cmath>
+#include <string>
 
 using namespace cv;
 using namespace std;
@@ -30,6 +31,22 @@ void borrarImagem()
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+}
+
+/* Aumenta a saturação do quadro atual. */
+void aumentarSaturacao()
+{   
+    Mat imagemHSV;
+    Mat hsv[3];
+   
+    cvtColor(imagemFinal, imagemHSV, COLOR_BGR2HSV);
+
+    split(imagemHSV, hsv);
+    hsv[1] = hsv[1] * 1.6;
+        
+    merge(hsv, 3, imagemHSV);
+    
+    cvtColor(imagemHSV, imagemFinal, COLOR_HSV2BGR);
 }
 
 /* Calcula a imagem final a partir da imagem original e de sua versão borrada,
@@ -99,6 +116,10 @@ int main(int argc, char* argv[])
         return -2;
     }
     
+    string nomeArquivoCompleto(argv[1]);
+    size_t indicePonto = nomeArquivoCompleto.find_last_of("."); 
+    string nomeArquivo = nomeArquivoCompleto.substr(0, indicePonto); 
+    
     /* Obtém algumas propriedades do vídeo carregado. */
     largura = cap.get(CV_CAP_PROP_FRAME_WIDTH);
     altura = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -114,6 +135,7 @@ int main(int argc, char* argv[])
     imagemFinal = imagem.clone();
     borrarImagem();
     calcularImagemFinal();
+    aumentarSaturacao();
         
     sliderAlturaRegiaoCentralMax = altura;
     sliderPosicaoVerticalCentroMax = altura;
@@ -138,7 +160,7 @@ int main(int argc, char* argv[])
         alterarSliderPosicaoVerticalCentro );
     alterarSliderPosicaoVerticalCentro(sliderPosicaoVerticalCentro, 0);
     
-    cout << "[1] Selecionando regiões para efeito de tilt-shift..." << endl;
+    cout << "[1] Selecionando regiões para efeito de tilt-shift..." << endl ;
     
     /* Abre a janela para o usuário conseguir selecionar a região de efeito
      * do tilt-shift. */
@@ -161,13 +183,11 @@ int main(int argc, char* argv[])
     
     /* Sobrescrevendo por falta de suporte ao MP4. */
     fourcc = CV_FOURCC('P','I','M','1');
-    saida = VideoWriter("saida.mpg", fourcc, fps, Size(largura, altura));   
+    saida = VideoWriter(nomeArquivo + ".mpg", fourcc, fps, Size(largura, altura));   
     
     /* Escreve o primeiro quadro. */
     saida << imagemFinal;
-    
-    //cout << "[2] Processando vídeo..." << endl;
-    
+        
     while(1)
     {
         cap >> imagem; 
@@ -183,20 +203,19 @@ int main(int argc, char* argv[])
         
         /* Gera o quadro com o efeito de tiltshift. */
         calcularImagemFinal();
-        
+        aumentarSaturacao();
         saida << imagemFinal;
         quadroAtual = cap.get(CV_CAP_PROP_POS_FRAMES);
         percentagem = 100*quadroAtual/quantidadeTotalQuadros;
         
         cout << "[2] Processando vídeo... " << round(percentagem) << " % \r";
         cout.flush();
-        
     }
-
+    
     cap.release();
     saida.release();
     
-    cout << "[3] Processamento do vídeo concluído." << endl;
+    cout << endl << "[3] Processamento do vídeo concluído." << endl;
 
     return 0;
 }
