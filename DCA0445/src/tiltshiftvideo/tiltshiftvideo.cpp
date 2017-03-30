@@ -1,7 +1,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <cmath>
-#include <string>
 
 using namespace cv;
 using namespace std;
@@ -28,6 +27,8 @@ char nomeTrackbar[50];
 void borrarImagem()
 {
     blur(imagem, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
@@ -97,7 +98,7 @@ void alterarSliderPosicaoVerticalCentro(int, void*)
 
 int main(int argc, char* argv[])
 {
-    int largura, altura, fourcc;
+    int largura, altura, fourcc, contador;
     double fps, quantidadeTotalQuadros, quadroAtual, percentagem;
 
     /* Verifica o número de argumentos.  */
@@ -115,10 +116,6 @@ int main(int argc, char* argv[])
         cout << "O vídeo não pôde ser aberta." << endl;
         return -2;
     }
-    
-    string nomeArquivoCompleto(argv[1]);
-    size_t indicePonto = nomeArquivoCompleto.find_last_of("."); 
-    string nomeArquivo = nomeArquivoCompleto.substr(0, indicePonto); 
     
     /* Obtém algumas propriedades do vídeo carregado. */
     largura = cap.get(CV_CAP_PROP_FRAME_WIDTH);
@@ -183,14 +180,23 @@ int main(int argc, char* argv[])
     
     /* Sobrescrevendo por falta de suporte ao MP4. */
     fourcc = CV_FOURCC('P','I','M','1');
-    saida = VideoWriter(nomeArquivo + ".mpg", fourcc, fps, Size(largura, altura));   
+    saida = VideoWriter("saida.mpg", fourcc, fps, Size(largura, altura));   
     
     /* Escreve o primeiro quadro. */
     saida << imagemFinal;
-        
+    
+    contador = 0;
     while(1)
     {
         cap >> imagem; 
+        
+        /* Simula o efeito de stop-motion. */
+        if(contador < 3)
+        {
+            saida << imagemFinal;
+            contador++;
+            continue;
+        }
         
         /* Verifica se a imagem foi toda processada. */
         if (imagem.empty())
@@ -208,8 +214,11 @@ int main(int argc, char* argv[])
         quadroAtual = cap.get(CV_CAP_PROP_POS_FRAMES);
         percentagem = 100*quadroAtual/quantidadeTotalQuadros;
         
+        /* Exibe o progresso atual do processamento. */
         cout << "[2] Processando vídeo... " << round(percentagem) << " % \r";
         cout.flush();
+        
+        contador = 0;
     }
     
     cap.release();
