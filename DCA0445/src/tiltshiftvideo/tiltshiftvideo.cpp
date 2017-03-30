@@ -66,10 +66,10 @@ int main(int argc, char* argv[]){
 
     int largura = cap.get(CV_CAP_PROP_FRAME_WIDTH);
     int altura = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+    int fourcc = cap.get(CV_CAP_PROP_FOURCC);
+    double fps = cap.get(CV_CAP_PROP_FPS);
 
-    cout << largura << " " << altura << endl;
-
-    VideoWriter saida("saida.mpg", CV_FOURCC('M','J','P','G'), 20.0, Size(largura, altura));
+    VideoWriter saida("saida.mpg", CV_FOURCC('P','I','M','1'), fps, Size(largura, altura));
 
     //namedWindow("resultado", 1);
 
@@ -96,6 +96,8 @@ int main(int argc, char* argv[]){
 
     cap.release();
     saida.release();
+    
+    cout << "Processamento do vídeo concluído." << endl;
 
     /*
     slideAlturaRegiaoCentral = 1;
