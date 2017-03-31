@@ -72,6 +72,7 @@ int main(int argvc, char** argv){
     VideoCapture video;
     Mat cap, frame, frame32f, frameFiltered;
     Mat mask(3,3,CV_32F), mask1;
+    Mat imagem_filtro_media, imagem_filtro_gauss, imagem_filtro_vertical, imagem_filtro_laplaciano, imagem_filtro_laplgauss, imagem_filtro_horizontal;
     Mat result, result1;
     double width, height;
     int absolut;
@@ -113,16 +114,51 @@ int main(int argvc, char** argv){
 
         /* Aplica o filtro selecionado (filtro inicial: média) */
         filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
-
+	/*	
+	if(key=='m'){
+	 imagem_filtro_media=frameFiltered;
+	}
+	if(key=='g'){
+	 imagem_filtro_gauss=frameFiltered;
+	}
+	if(key=='h'){
+	 imagem_filtro_horizontal=frameFiltered;
+	}
+	if(key=='v'){
+	 imagem_filtro_vertical=frameFiltered;
+	}
+	if(key=='l'){
+	 imagem_filtro_laplaciano=frameFiltered;
+	}
+	if(key=='p'){
+	 imagem_filtro_laplgauss=frameFiltered;
+	}
         if(absolut)
         {
             frameFiltered=abs(frameFiltered);
-        }
+        }*/
         frameFiltered.convertTo(result, CV_8U);
         imshow("filtroespacial", result);
         key = (char) waitKey(10);
         if( key == 27 ) break; // esc pressed!
-	
+	/*if(key=='m'){
+	 imwrite("Imagem_Filtro_Mediana.png",imagem_filtro_media);
+	}
+	if(key=='g'){
+	  imwrite("Imagem_Filtro_Gauss.png",imagem_filtro_gauss);
+	}
+	if(key=='h'){
+	 imwrite("Imagem_Filtro_Horizontal.png",imagem_filtro_horizontal);
+	}
+	if(key=='v'){
+	  imwrite("Imagem_Filtro_Vertical.png",imagem_filtro_vertical);
+	}
+	if(key=='l'){
+	 imwrite("Imagem_Filtro_Laplaciano.png",imagem_filtro_laplaciano);
+	}
+	if(key=='p'){
+	  imwrite("Imagem_Filtro_LaplacianoGaussiano.png",imagem_filtro_laplgauss);
+	  }*/
         switch(key)
         {
             case 'a':
@@ -179,4 +215,3 @@ int main(int argvc, char** argv){
 
     return 0;
 }
-

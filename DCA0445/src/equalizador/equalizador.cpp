@@ -87,5 +87,7 @@ int main(int argc, char** argv)
         /* Fehca o programa ao apertar ESC */
         if(waitKey(30) >= 0) break;
     }
+    imwrite("ImagemOriginalEscalaCinza.png",imagemEscalaCinza);
+    imwrite("ImagemEqualizada.png",imagemEqualizada);
     return 0;
 }

@@ -101,7 +101,6 @@ int main(int argc, char** argv){
     normalize(histG2, histG2, 0, 1, NORM_MINMAX, -1, Mat());
     normalize(histB2, histB2, 0, 1, NORM_MINMAX, -1, Mat());
     
-    
     histImgR.setTo(Scalar(0));
     histImgG.setTo(Scalar(0));
     histImgB.setTo(Scalar(0));
