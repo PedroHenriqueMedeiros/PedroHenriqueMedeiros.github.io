@@ -1441,7 +1441,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do programador e então fazer o processo de equalização da imagem, o qual consiste em uma distribuição mais uniforme dos valores da intensidade da distribuição, nesse caso o histograma.</p>
 </div>
 <div class="paragraph">
-<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador e então realiza o processo de conver são da imagem coloridada para a escala de cinza, evidenciado das linhas 36 a 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem com que os histogramas sejam inseridos nos frames e uma mensagem para distinção das imagens mostradas nos frames.</p>
+<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador através da classe do opencv VideoCapture, evidenciado na linha 9. Nas linhas 32 e 33 define-se a largura e altura das imagens que serão usadas para desenhar os histogramas.  As imagens são criadas com o tipo CV_8UC1, ou seja, com 8 bits por pixel, com tipo de dados unsigned char contendo 1 canal de cor.</p>
+</div>
+<div class="paragraph">
+<p>O processo de conversão da imagem colorida para a escala de cinza, através da função cvtColor(), evidenciado na linha 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem o cálculo do histograma com a função calcHist(), sua normalização com a função normalize(), em relação ao número de linhas da imagem equalizada, a inserção dos histogramas nos frames através da funções line() e copyTo() e por fim uma mensagem para distinção das imagens mostradas nos frames com a função putText.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1477,7 +1480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_filtragem_espacial_i">Filtragem Espacial I</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_seção_6_2_exercício_1">Seção 6.2 Exercício 1</h3>
+<h3 id="_seção_6_2_exercício_1">Seção 6.2 - Exercício 1</h3>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -2339,8 +2342,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>No programa acima, o cálculo do \$α(x)\$ é feito na através da função <strong>calcularImagemFinal()</strong>, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará se valor e gerará a imagem final resultante \$g(x,y)\$. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado.</p>
 </div>
+<div class="paragraph">
+<p>Por fim, vale ressaltar que, antes da imagem original ser processa, ocorre um aumento na sua saturação com o intuito de deixar as cores mais vivas. Isso é importante para tornar o efeito de <em>tilt-shift</em> mais forte.</p>
+</div>
 <div class="exampleblock">
 <div class="content">
+<div class="paragraph">
+<p>Exemplo da janela de configuração dos parâmetros</p>
+</div>
+<div id="img-janela-tiltshift" class="imageblock">
+<div class="content">
+<img src="./img/janela-tiltshift.png" alt="Janela Tilt-shift">
+</div>
+<div class="title">Figura 17. Figura janela-tiltshift.png</div>
+</div>
 <div class="ulist">
 <div class="title">Exemplo de execução 1</div>
 <ul>
@@ -2356,7 +2371,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <img src="./img/saopaulo.png" alt="São Paulo">
 </div>
-<div class="title">Figura 17. Figura saopaulo.png original</div>
+<div class="title">Figura 18. Figura saopaulo.png original</div>
 </div>
 <div class="ulist">
 <ul>
@@ -2369,7 +2384,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <img src="./img/saopaulo-tiltshift.png" alt="São Paulo - Tilt Shift">
 </div>
-<div class="title">Figura 18. Figura saopaulo.png após processamento</div>
+<div class="title">Figura 19. Figura saopaulo.png após processamento</div>
 </div>
 <div class="ulist">
 <div class="title">Exemplo de execução 2</div>
@@ -2386,7 +2401,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <img src="./img/china.png" alt="China">
 </div>
-<div class="title">Figura 19. Figura china.png original</div>
+<div class="title">Figura 20. Figura china.png original</div>
 </div>
 <div class="ulist">
 <ul>
@@ -2399,21 +2414,544 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <img src="./img/china-tiltshift.png" alt="China - Tilt Shift">
 </div>
-<div class="title">Figura 20. Figura china.png após processamento</div>
+<div class="title">Figura 21. Figura china.png após processamento</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_seção_7_1_exercício_2">Seção 7.1 - Exercício 2</h3>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>Utilizando o programa <a href="http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp" target="_blank">exemplos/addweighted.cpp</a> como referência, implemente um programa tiltshiftvideo.cpp. Tal programa deverá ser capaz de processar um arquivo de vídeo, produzir o efeito de tilt-shift nos quadros presentes e escrever o resultado em outro arquivo de vídeo. A ideia é criar um efeito de miniaturização de cenas. Descarte quadros em uma taxa que julgar conveniente para evidenciar o efeito de stop motion, comum em vídeos desse tipo.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A solução deste exercício é apenas uma adaptação do programa anterior (<a href="#tiltshift">tiltshift.cpp</a>), conforme pode ser visto a seguir:</p>
+</div>
+<div id="tiltshiftvideo" class="listingblock">
+<div class="title">tiltshiftvideo.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><table class="pyhltable"><tr><td class="linenos"><div class="linenodiv">  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230</div></td><td class="code"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;opencv2/opencv.hpp&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;cmath&gt;</span><span class="tok-cp"></span>
 
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+
+<span class="tok-n">VideoCapture</span> <span class="tok-n">cap</span><span class="tok-p">;</span>
+<span class="tok-n">VideoWriter</span> <span class="tok-n">saida</span><span class="tok-p">;</span>
+
+<span class="tok-kt">double</span> <span class="tok-n">alturaRegiaoCentral</span><span class="tok-p">;</span>
+<span class="tok-kt">double</span> <span class="tok-n">forcaDecaimento</span><span class="tok-p">;</span>
+<span class="tok-kt">double</span> <span class="tok-n">posicaoVerticalCentro</span><span class="tok-p">;</span>
+<span class="tok-kt">double</span> <span class="tok-n">alfa</span><span class="tok-p">;</span>
+
+<span class="tok-kt">int</span> <span class="tok-n">sliderAlturaRegiaoCentral</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">sliderAlturaRegiaoCentralMax</span> <span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">sliderForcaDecaimento</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">sliderForcaDecaimentoMax</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">sliderPosicaoVerticalCentro</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">sliderPosicaoVerticalCentroMax</span><span class="tok-p">;</span>
+
+<span class="tok-n">Mat</span> <span class="tok-n">imagem</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">;</span>
+<span class="tok-kt">char</span> <span class="tok-n">nomeTrackbar</span><span class="tok-p">[</span><span class="tok-mi">50</span><span class="tok-p">];</span>
+
+<span class="tok-cm">/* Faz o borramento da imagem utilizando filtro da média. */</span>
+<span class="tok-kt">void</span> <span class="tok-nf">borrarImagem</span><span class="tok-p">()</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagem</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+    <span class="tok-n">blur</span><span class="tok-p">(</span><span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">imagemBorrada</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">),</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">));</span>
+<span class="tok-p">}</span>
+
+<span class="tok-cm">/* Aumenta a saturação do quadro atual. */</span>
+<span class="tok-kt">void</span> <span class="tok-nf">aumentarSaturacao</span><span class="tok-p">()</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">imagemHSV</span><span class="tok-p">;</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">hsv</span><span class="tok-p">[</span><span class="tok-mi">3</span><span class="tok-p">];</span>
+
+    <span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">imagemFinal</span><span class="tok-p">,</span> <span class="tok-n">imagemHSV</span><span class="tok-p">,</span> <span class="tok-n">COLOR_BGR2HSV</span><span class="tok-p">);</span>
+
+    <span class="tok-n">split</span><span class="tok-p">(</span><span class="tok-n">imagemHSV</span><span class="tok-p">,</span> <span class="tok-n">hsv</span><span class="tok-p">);</span>
+    <span class="tok-n">hsv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-n">hsv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">]</span> <span class="tok-o">*</span> <span class="tok-mf">1.6</span><span class="tok-p">;</span>
+
+    <span class="tok-n">merge</span><span class="tok-p">(</span><span class="tok-n">hsv</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">imagemHSV</span><span class="tok-p">);</span>
+
+    <span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">imagemHSV</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">,</span> <span class="tok-n">COLOR_HSV2BGR</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+
+<span class="tok-cm">/* Calcula a imagem final a partir da imagem original e de sua versão borrada,</span>
+<span class="tok-cm">com as devidas ponderações escolhidas pelo usuário. */</span>
+<span class="tok-kt">void</span> <span class="tok-nf">calcularImagemFinal</span><span class="tok-p">()</span>
+<span class="tok-p">{</span>
+    <span class="tok-kt">double</span> <span class="tok-n">xDeslocado</span><span class="tok-p">;</span>
+
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span> <span class="tok-o">&lt;</span> <span class="tok-n">imagem</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">xDeslocado</span> <span class="tok-o">=</span> <span class="tok-n">i</span> <span class="tok-o">-</span> <span class="tok-p">(</span><span class="tok-n">posicaoVerticalCentro</span> <span class="tok-o">+</span> <span class="tok-n">alturaRegiaoCentral</span><span class="tok-o">/</span><span class="tok-mf">2.0</span><span class="tok-p">);</span>
+
+        <span class="tok-n">alfa</span> <span class="tok-o">=</span> <span class="tok-mf">0.5</span> <span class="tok-o">*</span> <span class="tok-p">(</span><span class="tok-n">tanh</span><span class="tok-p">((</span><span class="tok-n">xDeslocado</span> <span class="tok-o">+</span> <span class="tok-n">alturaRegiaoCentral</span><span class="tok-o">/</span><span class="tok-mi">2</span><span class="tok-p">)</span><span class="tok-o">/</span><span class="tok-n">forcaDecaimento</span><span class="tok-p">)</span>
+            <span class="tok-o">-</span> <span class="tok-n">tanh</span><span class="tok-p">((</span><span class="tok-n">xDeslocado</span> <span class="tok-o">-</span> <span class="tok-n">alturaRegiaoCentral</span><span class="tok-o">/</span><span class="tok-mi">2</span><span class="tok-p">)</span><span class="tok-o">/</span><span class="tok-n">forcaDecaimento</span><span class="tok-p">));</span>
+
+        <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">j</span> <span class="tok-o">&lt;</span> <span class="tok-n">imagem</span><span class="tok-p">.</span><span class="tok-n">cols</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">imagemFinal</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">Vec3b</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">)</span> <span class="tok-o">=</span> <span class="tok-n">alfa</span> <span class="tok-o">*</span> <span class="tok-n">imagem</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">Vec3b</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">)</span>
+                <span class="tok-o">+</span> <span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-o">-</span><span class="tok-n">alfa</span><span class="tok-p">)</span><span class="tok-o">*</span><span class="tok-n">imagemBorrada</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">Vec3b</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">alterarSliderAlturaRegiaoCentral</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-p">,</span> <span class="tok-kt">void</span><span class="tok-o">*</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">alturaRegiaoCentral</span> <span class="tok-o">=</span> <span class="tok-n">sliderAlturaRegiaoCentral</span><span class="tok-p">;</span>
+    <span class="tok-n">calcularImagemFinal</span><span class="tok-p">();</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">alterarSliderForcaDecaimento</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-p">,</span> <span class="tok-kt">void</span><span class="tok-o">*</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">forcaDecaimento</span> <span class="tok-o">=</span> <span class="tok-n">sliderForcaDecaimento</span><span class="tok-p">;</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">forcaDecaimento</span> <span class="tok-o">==</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">forcaDecaimento</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">calcularImagemFinal</span><span class="tok-p">();</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">alterarSliderPosicaoVerticalCentro</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-p">,</span> <span class="tok-kt">void</span><span class="tok-o">*</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">posicaoVerticalCentro</span> <span class="tok-o">=</span> <span class="tok-n">sliderPosicaoVerticalCentro</span><span class="tok-p">;</span>
+    <span class="tok-n">calcularImagemFinal</span><span class="tok-p">();</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">);</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">*</span> <span class="tok-n">argv</span><span class="tok-p">[])</span>
+<span class="tok-p">{</span>
+    <span class="tok-kt">int</span> <span class="tok-n">largura</span><span class="tok-p">,</span> <span class="tok-n">altura</span><span class="tok-p">,</span> <span class="tok-n">fourcc</span><span class="tok-p">,</span> <span class="tok-n">contador</span><span class="tok-p">;</span>
+    <span class="tok-kt">double</span> <span class="tok-n">fps</span><span class="tok-p">,</span> <span class="tok-n">quantidadeTotalQuadros</span><span class="tok-p">,</span> <span class="tok-n">quadroAtual</span><span class="tok-p">,</span> <span class="tok-n">percentagem</span><span class="tok-p">;</span>
+
+    <span class="tok-cm">/* Verifica o número de argumentos.  */</span>
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">argc</span> <span class="tok-o">!=</span> <span class="tok-mi">2</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;A lista de argumentos deve ser: &quot;</span>
+        <span class="tok-s">&quot;./tiltshiftvideo &lt;video&gt;&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-cm">/* Checa se o video pode ser aberto. */</span>
+
+    <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">open</span><span class="tok-p">(</span><span class="tok-n">argv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">]);</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">isOpened</span><span class="tok-p">()){</span>
+        <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;O vídeo não pôde ser aberta.&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-cm">/* Obtém algumas propriedades do vídeo carregado. */</span>
+    <span class="tok-n">largura</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_WIDTH</span><span class="tok-p">);</span>
+    <span class="tok-n">altura</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_HEIGHT</span><span class="tok-p">);</span>
+    <span class="tok-n">fourcc</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FOURCC</span><span class="tok-p">);</span>
+    <span class="tok-n">fps</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FPS</span><span class="tok-p">);</span>
+    <span class="tok-n">quantidadeTotalQuadros</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_COUNT</span><span class="tok-p">);</span>
+
+    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">);</span>
+
+    <span class="tok-cm">/* Utiliza o primeiro frame como a imagem base para ajustar a região do</span>
+<span class="tok-cm">     * efeito do tiltshift. */</span>
+    <span class="tok-n">cap</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">imagem</span><span class="tok-p">;</span>
+    <span class="tok-n">imagemFinal</span> <span class="tok-o">=</span> <span class="tok-n">imagem</span><span class="tok-p">.</span><span class="tok-n">clone</span><span class="tok-p">();</span>
+    <span class="tok-n">borrarImagem</span><span class="tok-p">();</span>
+    <span class="tok-n">calcularImagemFinal</span><span class="tok-p">();</span>
+    <span class="tok-n">aumentarSaturacao</span><span class="tok-p">();</span>
+
+    <span class="tok-n">sliderAlturaRegiaoCentralMax</span> <span class="tok-o">=</span> <span class="tok-n">altura</span><span class="tok-p">;</span>
+    <span class="tok-n">sliderPosicaoVerticalCentroMax</span> <span class="tok-o">=</span> <span class="tok-n">altura</span><span class="tok-p">;</span>
+    <span class="tok-n">sliderForcaDecaimentoMax</span> <span class="tok-o">=</span> <span class="tok-mi">100</span><span class="tok-p">;</span>
+
+    <span class="tok-cm">/* Cria as barras de rolagem.  */</span>
+    <span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-s">&quot;Altura&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">sliderAlturaRegiaoCentral</span><span class="tok-p">,</span>
+        <span class="tok-n">sliderAlturaRegiaoCentralMax</span><span class="tok-p">,</span>
+        <span class="tok-n">alterarSliderAlturaRegiaoCentral</span><span class="tok-p">);</span>
+    <span class="tok-n">alterarSliderAlturaRegiaoCentral</span><span class="tok-p">(</span><span class="tok-n">sliderAlturaRegiaoCentral</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+
+    <span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-s">&quot;Decaimento&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">sliderForcaDecaimento</span><span class="tok-p">,</span>
+        <span class="tok-n">sliderForcaDecaimentoMax</span><span class="tok-p">,</span>
+        <span class="tok-n">alterarSliderForcaDecaimento</span> <span class="tok-p">);</span>
+    <span class="tok-n">alterarSliderForcaDecaimento</span><span class="tok-p">(</span><span class="tok-n">sliderForcaDecaimento</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+
+    <span class="tok-n">createTrackbar</span><span class="tok-p">(</span> <span class="tok-s">&quot;Centro&quot;</span><span class="tok-p">,</span> <span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span>
+        <span class="tok-o">&amp;</span><span class="tok-n">sliderPosicaoVerticalCentro</span><span class="tok-p">,</span>
+        <span class="tok-n">sliderPosicaoVerticalCentroMax</span><span class="tok-p">,</span>
+        <span class="tok-n">alterarSliderPosicaoVerticalCentro</span> <span class="tok-p">);</span>
+    <span class="tok-n">alterarSliderPosicaoVerticalCentro</span><span class="tok-p">(</span><span class="tok-n">sliderPosicaoVerticalCentro</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;[1] Selecionando regiões para efeito de tilt-shift...&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span> <span class="tok-p">;</span>
+
+    <span class="tok-cm">/* Abre a janela para o usuário conseguir selecionar a região de efeito</span>
+<span class="tok-cm">     * do tilt-shift. */</span>
+    <span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">,</span> <span class="tok-n">imagemFinal</span><span class="tok-p">);</span>
+        <span class="tok-cm">/* If the values are set, then start video conversion. */</span>
+        <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">30</span><span class="tok-p">)</span> <span class="tok-o">&gt;=</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">destroyWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;resultado&quot;</span><span class="tok-p">);</span>
+
+            <span class="tok-cm">/* Única forma da janela fechar. */</span>
+            <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+            <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+            <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+            <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+            <span class="tok-k">break</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-cm">/* Sobrescrevendo por falta de suporte ao MP4. */</span>
+    <span class="tok-n">fourcc</span> <span class="tok-o">=</span> <span class="tok-n">CV_FOURCC</span><span class="tok-p">(</span><span class="tok-sc">&#39;P&#39;</span><span class="tok-p">,</span><span class="tok-sc">&#39;I&#39;</span><span class="tok-p">,</span><span class="tok-sc">&#39;M&#39;</span><span class="tok-p">,</span><span class="tok-sc">&#39;1&#39;</span><span class="tok-p">);</span>
+    <span class="tok-n">saida</span> <span class="tok-o">=</span> <span class="tok-n">VideoWriter</span><span class="tok-p">(</span><span class="tok-s">&quot;saida.mpg&quot;</span><span class="tok-p">,</span> <span class="tok-n">fourcc</span><span class="tok-p">,</span> <span class="tok-n">fps</span><span class="tok-p">,</span> <span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-n">largura</span><span class="tok-p">,</span> <span class="tok-n">altura</span><span class="tok-p">));</span>
+
+    <span class="tok-cm">/* Escreve o primeiro quadro. */</span>
+    <span class="tok-n">saida</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">imagemFinal</span><span class="tok-p">;</span>
+
+    <span class="tok-n">contador</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">cap</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">imagem</span><span class="tok-p">;</span>
+
+        <span class="tok-cm">/* Simula o efeito de stop-motion. */</span>
+        <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">contador</span> <span class="tok-o">&lt;</span> <span class="tok-mi">3</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-n">saida</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">imagemFinal</span><span class="tok-p">;</span>
+            <span class="tok-n">contador</span><span class="tok-o">++</span><span class="tok-p">;</span>
+            <span class="tok-k">continue</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
+
+        <span class="tok-cm">/* Verifica se a imagem foi toda processada. */</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">imagem</span><span class="tok-p">.</span><span class="tok-n">empty</span><span class="tok-p">())</span>
+        <span class="tok-p">{</span>
+            <span class="tok-k">break</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
+
+        <span class="tok-cm">/* Faz o borramento da imagem. */</span>
+        <span class="tok-n">borrarImagem</span><span class="tok-p">();</span>
+
+        <span class="tok-cm">/* Gera o quadro com o efeito de tiltshift. */</span>
+        <span class="tok-n">calcularImagemFinal</span><span class="tok-p">();</span>
+        <span class="tok-n">aumentarSaturacao</span><span class="tok-p">();</span>
+        <span class="tok-n">saida</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">imagemFinal</span><span class="tok-p">;</span>
+        <span class="tok-n">quadroAtual</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_POS_FRAMES</span><span class="tok-p">);</span>
+        <span class="tok-n">percentagem</span> <span class="tok-o">=</span> <span class="tok-mi">100</span><span class="tok-o">*</span><span class="tok-n">quadroAtual</span><span class="tok-o">/</span><span class="tok-n">quantidadeTotalQuadros</span><span class="tok-p">;</span>
+
+        <span class="tok-cm">/* Exibe o progresso atual do processamento. */</span>
+        <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;[2] Processando vídeo... &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">round</span><span class="tok-p">(</span><span class="tok-n">percentagem</span><span class="tok-p">)</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot; % </span><span class="tok-se">\r</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-n">cout</span><span class="tok-p">.</span><span class="tok-n">flush</span><span class="tok-p">();</span>
+
+        <span class="tok-n">contador</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+    <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">release</span><span class="tok-p">();</span>
+    <span class="tok-n">saida</span><span class="tok-p">.</span><span class="tok-n">release</span><span class="tok-p">();</span>
+
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;[3] Processamento do vídeo concluído.&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+</td></tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A ideia deste programa foi abrir um arquivo de vídeo e sair aplicando o efeito de <em>tilt-shift</em> do exemplo anterior a cada quadro do vídeo. Para isso, é apresentado usuário uma janela com o primeiro quadro do vídeo para ele definir como o filtro será aplicado (linha 164 à linha 179). Uma vez que isso é concluído, o usuário pressionar qualquer tecla para iniciar o processamento (linha 189 +a linha 222).</p>
+</div>
+<div class="paragraph">
+<p>Durante o processamento, foi adicionado um pequeno trecho para descartar alguns quadros do vídeo para produzir um efeito de <em>stop-motion</em> (linha 194 à linha 199). Além disso, é exibido para o usuário o progresso atual do processamento em percentagem (linha 218), já que, dependendo do vídeo, isso pode demorar e é importante que o usuário consiga estimar o tempo total.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Exemplo da janela de configuração dos parâmetros que aparece no primeiro quadro do vídeo.</p>
+</div>
+<div id="img-janela-tiltshiftvideo" class="imageblock">
+<div class="content">
+<img src="./img/janela-tiltshiftvideo.png" alt="Janela Tilt-shift Vídeo">
+</div>
+<div class="title">Figura 22. Figura janela-tiltshiftvideo.png</div>
+</div>
+<div class="ulist">
+<div class="title">Exemplo de execução</div>
+<ul>
+<li>
+<p>Comando: ./tiltshiftvideo congestionamento.mp4</p>
+</li>
+<li>
+<p>Vídeo de entrada:</p>
+</li>
+</ul>
+</div>
+<div id="video-congestionamento" class="videoblock">
+<div class="title">Vídeo congestionamento.mp4 original</div>
+<div class="content">
+<iframe width="640" height="480" src="https://www.youtube.com/embed/5tiWGREedi4?rel=0&amp;autoplay=1&amp;loop=1&amp;playlist=5tiWGREedi4" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vídeo de saída:</p>
+</li>
+</ul>
+</div>
+<div id="video-congestionamento-tiltshift" class="videoblock">
+<div class="title">Vídeo congestionamento.mp4 processado</div>
+<div class="content">
+<iframe width="640" height="480" src="https://www.youtube.com/embed/1ziU0PYewVU?rel=0&amp;autoplay=1&amp;loop=1&amp;playlist=1ziU0PYewVU" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-30 22:36:33 -03
+Last updated 2017-03-30 23:20:10 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
