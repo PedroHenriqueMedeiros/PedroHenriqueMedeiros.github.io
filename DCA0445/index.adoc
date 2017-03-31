@@ -157,7 +157,6 @@ image::bolhas.png[Troca Regioes, 400, 400]
 [[img-gato-trocaregioes]] 
 .Figura bolhas.png após processamento
 image::bolhas-rotulacao.png[Regiões, 400, 400] 
-
 ====
 
 == Manipulação de histogramas
@@ -303,7 +302,37 @@ Para tornar isso possível, o primeiro objetivo do programa é, então, receber 
 
 Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função stem:[g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)], sendo stem:[g(x,y)] a imagem com efeito de tilt-shit aplicado, stem:[f(x,y)] a imagem original e stem:[bf(x,y)] a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função stem:[α(x)], definida por stem:[α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})], "onde stem:[l1] e stem:[l2] são as linhas cujo valor de stem:[α]  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e stem:[d]  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".
 
-No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal()*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem. 
+No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal()*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará se valor e gerará a imagem final resultante stem:[g(x,y)]. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado.
+
+====
+.Exemplo de execução 1
+* Comando: ./tiltshift saopaulo.png
+* Foto de entrada: 
+
+[[img-saopaulo]] 
+.Figura saopaulo.png original
+image::saopaulo.png[São Paulo] 
+
+* Foto de saída: 
+
+[[img-saopaulo-tiltshift]] 
+.Figura saopaulo.png após processamento
+image::saopaulo-tiltshift.png[São Paulo - Tilt Shift] 
+
+.Exemplo de execução 2
+* Comando: ./tiltshift china.png
+* Foto de entrada: 
+
+[[img-china]] 
+.Figura china.png original
+image::china.png[China] 
+
+* Foto de saída: 
+
+[[img-china-tiltshift]] 
+.Figura china.png após processamento
+image::china-tiltshift.png[China - Tilt Shift] 
+====
 
 === Seção 7.1 - Exercício 2
 

@@ -2334,7 +2334,71 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função \$g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)\$, sendo \$g(x,y)\$ a imagem com efeito de tilt-shit aplicado, \$f(x,y)\$ a imagem original e \$bf(x,y)\$ a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função \$α(x)\$, definida por \$α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})\$, "onde \$l1\$ e \$l2\$ são as linhas cujo valor de \$α\$  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e \$d\$  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".</p>
 </div>
 <div class="paragraph">
-<p>No programa acima, o cálculo do \$α(x)\$ é feito na através da função <strong>calcularImagemFinal()</strong>, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem.</p>
+<p>No programa acima, o cálculo do \$α(x)\$ é feito na através da função <strong>calcularImagemFinal()</strong>, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará se valor e gerará a imagem final resultante \$g(x,y)\$. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<div class="title">Exemplo de execução 1</div>
+<ul>
+<li>
+<p>Comando: ./tiltshift saopaulo.png</p>
+</li>
+<li>
+<p>Foto de entrada:</p>
+</li>
+</ul>
+</div>
+<div id="img-saopaulo" class="imageblock">
+<div class="content">
+<img src="./img/saopaulo.png" alt="São Paulo">
+</div>
+<div class="title">Figura 17. Figura saopaulo.png original</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Foto de saída:</p>
+</li>
+</ul>
+</div>
+<div id="img-saopaulo-tiltshift" class="imageblock">
+<div class="content">
+<img src="./img/saopaulo-tiltshift.png" alt="São Paulo - Tilt Shift">
+</div>
+<div class="title">Figura 18. Figura saopaulo.png após processamento</div>
+</div>
+<div class="ulist">
+<div class="title">Exemplo de execução 2</div>
+<ul>
+<li>
+<p>Comando: ./tiltshift china.png</p>
+</li>
+<li>
+<p>Foto de entrada:</p>
+</li>
+</ul>
+</div>
+<div id="img-china" class="imageblock">
+<div class="content">
+<img src="./img/china.png" alt="China">
+</div>
+<div class="title">Figura 19. Figura china.png original</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Foto de saída:</p>
+</li>
+</ul>
+</div>
+<div id="img-china-tiltshift" class="imageblock">
+<div class="content">
+<img src="./img/china-tiltshift.png" alt="China - Tilt Shift">
+</div>
+<div class="title">Figura 20. Figura china.png após processamento</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -2346,7 +2410,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-30 22:03:42 -03
+Last updated 2017-03-30 22:36:33 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
