@@ -726,7 +726,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>A estratégia adotada neste programa consiste em receber do usuário dois pontos, criar um retângulo a partir deles e calcular o negativo deste retângulo.</p>
 </div>
 <div class="paragraph">
-<p>As primeiras linhas do programa (linha 21 à linha 61) consiste em validar os  dados fornecidos pelo usuário (se os parâmetros são válidos, se os pontos estão dentro da figura etc.). Uma vez que os dois pontos são válidos, é criado um retângulo (linha 66) e, finalmente, é relizado uma iteração sob todos aqueles pixels representados pelo retângulo dentro da própria matriz <em>image</em> (linha 67 à linha 73), de modo que é calculado o negativo de cada pixel subtraindo seu  valor de 255. Por fim, a imagem processada é exibida na tela.</p>
+<p>As primeiras linhas do programa (linha 21 à linha 36) consiste na validação dos dados fornecidos pelo usuário, ou seja, se o usuário inseriu o número correto as coordenadas x e y de dois pontos e depois se também inseriu uma imagem para retirar o negativo de uma região dela. Depois nas linhas 39 à 64 temos a verificação de que os dados referentes aos dois pontos necessários ao programa são de fato números, pelo uso da função stoi() e então verifica-se se os pontos pertencem a imagem utilizando os comandos imagem.rols e imagem.cols.</p>
+</div>
+<div class="paragraph">
+<p>Uma vez que os dois pontos são válidos, é criado um retângulo (linha 66) e, finalmente, é relizado uma iteração sob todos aqueles pixels representados pelo retângulo dentro da própria matriz <em>image</em> (linha 67 à linha 73), de modo que é calculado o negativo de cada pixel subtraindo seu  valor de 255, em que os pixels são acessados pelo método at, recebendo o dado <em>unsigned char</em> da imagem em tons de cinza. Por fim, a imagem processada é exibida na tela.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -917,13 +920,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>O objetivo do programa acima foi criar 4 sub-matrizes representando cada quadrante (representação dos quadrantes da linha 12 à linha 14), para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.</p>
+<p>O objetivo do programa acima foi criar 4 sub-matrizes representando cada quadrante para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.</p>
 </div>
 <div class="paragraph">
 <p>A criação das submatrizes ocorrem utilizando o próprio construtor da classe <strong>Mat</strong> (da linha 39 à 42), que permite receber a matriz original e um retângulo representando a ser extraída para criação da nova submatriz. Os retângulos são montados tomando como referência o início, fim e pontos médios horizontais e verticais da matriz original.</p>
 </div>
 <div class="paragraph">
-<p>Com as submatrizes criadas, primeiro são montadas as partes superior e inferior do resultado final (linhas 48 e 53), através da função <strong>hconcat</strong>, que realiza o concatenamento horizontal. Com esses dois resultados intermediários, por fim, é realizado um concatenamento vertical (linha 58), com a função <strong>vconcat</strong>, que produz o resultado final.</p>
+<p>Com as submatrizes criadas, primeiro são montadas as partes superior e inferior do resultado final (linhas 48 e 53), através da função hconcat(), que primeiro realiza o concatenamento horizontal da metade de baixo da figura original e depois o concatenamento da metade de cima da figura original, em que as submatrizes q1, q2, q3 e q4 são colocadas nas matrizes temp1 e temp2. Com esses dois resultados intermediários, por fim, é realizado um concatenamento vertical (linha 58), com a função vconcat(), que produz o resultado final.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1432,7 +1435,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do programador e então fazer o processo de equalização da imagem, o qual consiste em uma distribuição mais uniforme dos valores da intensidade da distribuição, nesse caso o histograma.</p>
 </div>
 <div class="paragraph">
-<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador e então realiza o processo de conver são da imagem coloridada para a escala de cinza, evidenciado das linhas 36 a 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem com que os histogramas sejam inseridos nos frames e uma mensagem para distinção das imagens mostradas nos frames.</p>
+<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador através da classe do opencv VideoCapture, evidenciado na linha 9. Nas linhas 32 e 33 define-se a largura e altura das imagens que serão usadas para desenhar os histogramas.  As imagens são criadas com o tipo CV_8UC1, ou seja, com 8 bits por pixel, com tipo de dados unsigned char contendo 1 canal de cor.</p>
+</div>
+<div class="paragraph">
+<p>O processo de conversão da imagem colorida para a escala de cinza, através da função cvtColor(), evidenciado na linha 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem o cálculo do histograma com a função calcHist(), sua normalização com a função normalize(), em relação ao número de linhas da imagem equalizada, a inserção dos histogramas nos frames através da funções line() e copyTo() e por fim uma mensagem para distinção das imagens mostradas nos frames com a função putText.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1958,7 +1964,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-30 17:03:14 BRT
+Last updated 2017-03-30 21:42:04 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">
