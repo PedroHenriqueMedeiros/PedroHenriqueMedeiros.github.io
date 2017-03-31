@@ -1441,7 +1441,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do programador e então fazer o processo de equalização da imagem, o qual consiste em uma distribuição mais uniforme dos valores da intensidade da distribuição, nesse caso o histograma.</p>
 </div>
 <div class="paragraph">
-<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador e então realiza o processo de conver são da imagem coloridada para a escala de cinza, evidenciado das linhas 36 a 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem com que os histogramas sejam inseridos nos frames e uma mensagem para distinção das imagens mostradas nos frames.</p>
+<p>Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador através da classe do opencv VideoCapture, evidenciado na linha 9. Nas linhas 32 e 33 define-se a largura e altura das imagens que serão usadas para desenhar os histogramas.  As imagens são criadas com o tipo CV_8UC1, ou seja, com 8 bits por pixel, com tipo de dados unsigned char contendo 1 canal de cor.</p>
+</div>
+<div class="paragraph">
+<p>O processo de conversão da imagem colorida para a escala de cinza, através da função cvtColor(), evidenciado na linha 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem o cálculo do histograma com a função calcHist(), sua normalização com a função normalize(), em relação ao número de linhas da imagem equalizada, a inserção dos histogramas nos frames através da funções line() e copyTo() e por fim uma mensagem para distinção das imagens mostradas nos frames com a função putText.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1477,7 +1480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_filtragem_espacial_i">Filtragem Espacial I</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_seção_6_2_exercício_1">Seção 6.2 Exercício 1</h3>
+<h3 id="_seção_6_2_exercício_1">Seção 6.2 - Exercício 1</h3>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -2413,7 +2416,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-30 22:36:33 -03
+Last updated 2017-03-30 22:38:14 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
