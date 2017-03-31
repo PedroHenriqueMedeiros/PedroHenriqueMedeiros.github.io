@@ -161,7 +161,7 @@ image::bolhas.png[Troca Regioes, 400, 400]
 image::bolhas-rotulacao.png[Regiões, 400, 400] 
 ====
 
-== Manipulação de histogramas
+== Manipulação de Histogramas
 
 === Seção 5.2 - Exercício 1
 
@@ -198,6 +198,8 @@ image::ImagemOriginalEscalaCinza.png[ImagemOriginalEscalaCinza, 400, 400]
 image::ImagemEqualizada.png[ImagemEqualizada, 400, 400] 
 
 ====
+
+=== Seção 5.2 - Exercício 2
 
 
 
@@ -382,12 +384,12 @@ image::janela-tiltshiftvideo.png[Janela Tilt-shift Vídeo]
 
 [[video-congestionamento]] 
 .Vídeo congestionamento.mp4 original
-video::5tiWGREedi4[youtube, width=640, height=480, options="autoplay,loop"]
+video::5tiWGREedi4[youtube, width=640, height=480, options="loop"]
 
 * Vídeo de saída: 
 
 [[video-congestionamento-tiltshift]] 
 .Vídeo congestionamento.mp4 processado
-video::1ziU0PYewVU[youtube, width=640, height=480, options="autoplay,loop"]
+video::1ziU0PYewVU[youtube, width=640, height=480, options="loop"]
 
 ====
