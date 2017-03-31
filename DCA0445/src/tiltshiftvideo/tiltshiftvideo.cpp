@@ -30,6 +30,24 @@ void borrarImagem()
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
     blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+}
+
+/* Aumenta a saturação do quadro atual. */
+void aumentarSaturacao()
+{   
+    Mat imagemHSV;
+    Mat hsv[3];
+   
+    cvtColor(imagemFinal, imagemHSV, COLOR_BGR2HSV);
+
+    split(imagemHSV, hsv);
+    hsv[1] = hsv[1] * 1.6;
+        
+    merge(hsv, 3, imagemHSV);
+    
+    cvtColor(imagemHSV, imagemFinal, COLOR_HSV2BGR);
 }
 
 /* Calcula a imagem final a partir da imagem original e de sua versão borrada,
@@ -80,7 +98,7 @@ void alterarSliderPosicaoVerticalCentro(int, void*)
 
 int main(int argc, char* argv[])
 {
-    int largura, altura, fourcc;
+    int largura, altura, fourcc, contador;
     double fps, quantidadeTotalQuadros, quadroAtual, percentagem;
 
     /* Verifica o número de argumentos.  */
@@ -114,6 +132,7 @@ int main(int argc, char* argv[])
     imagemFinal = imagem.clone();
     borrarImagem();
     calcularImagemFinal();
+    aumentarSaturacao();
         
     sliderAlturaRegiaoCentralMax = altura;
     sliderPosicaoVerticalCentroMax = altura;
@@ -138,7 +157,7 @@ int main(int argc, char* argv[])
         alterarSliderPosicaoVerticalCentro );
     alterarSliderPosicaoVerticalCentro(sliderPosicaoVerticalCentro, 0);
     
-    cout << "[1] Selecionando regiões para efeito de tilt-shift..." << endl;
+    cout << "[1] Selecionando regiões para efeito de tilt-shift..." << endl ;
     
     /* Abre a janela para o usuário conseguir selecionar a região de efeito
      * do tilt-shift. */
@@ -166,11 +185,18 @@ int main(int argc, char* argv[])
     /* Escreve o primeiro quadro. */
     saida << imagemFinal;
     
-    //cout << "[2] Processando vídeo..." << endl;
-    
+    contador = 0;
     while(1)
     {
         cap >> imagem; 
+        
+        /* Simula o efeito de stop-motion. */
+        if(contador < 3)
+        {
+            saida << imagemFinal;
+            contador++;
+            continue;
+        }
         
         /* Verifica se a imagem foi toda processada. */
         if (imagem.empty())
@@ -183,20 +209,22 @@ int main(int argc, char* argv[])
         
         /* Gera o quadro com o efeito de tiltshift. */
         calcularImagemFinal();
-        
+        aumentarSaturacao();
         saida << imagemFinal;
         quadroAtual = cap.get(CV_CAP_PROP_POS_FRAMES);
         percentagem = 100*quadroAtual/quantidadeTotalQuadros;
         
+        /* Exibe o progresso atual do processamento. */
         cout << "[2] Processando vídeo... " << round(percentagem) << " % \r";
         cout.flush();
         
+        contador = 0;
     }
-
+    
     cap.release();
     saida.release();
     
-    cout << "[3] Processamento do vídeo concluído." << endl;
+    cout << endl << "[3] Processamento do vídeo concluído." << endl;
 
     return 0;
 }

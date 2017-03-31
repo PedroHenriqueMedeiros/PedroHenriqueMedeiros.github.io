@@ -10,15 +10,42 @@ double forcaDecaimento;
 double posicaoVerticalCentro; 
 double alfa;
 
-int slideAlturaRegiaoCentral;
-int slideAlturaRegiaoCentralMax ;
-int slideForcaDecaimento;
-int slideForcaDecaimentoMax;
-int slidePosicaoVerticalCentro;
-int slidePosicaoVerticalCentroMax;
+int sliderAlturaRegiaoCentral;
+int sliderAlturaRegiaoCentralMax ;
+int sliderForcaDecaimento;
+int sliderForcaDecaimentoMax;
+int sliderPosicaoVerticalCentro;
+int sliderPosicaoVerticalCentroMax;
 
 Mat imagem, imagemBorrada, imagemFinal;
-char trackbarName[50];
+char nomeTrackbar[50];
+
+/* Faz o borramento da imagem utilizando filtro da média. */
+void borrarImagem()
+{
+    blur(imagem, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+    blur(imagemBorrada, imagemBorrada, Size(3, 3), Point(-1,-1));
+}
+
+/* Aumenta a saturação do quadro atual. */
+void aumentarSaturacao()
+{   
+    Mat imagemHSV;
+    Mat hsv[3];
+   
+    cvtColor(imagemFinal, imagemHSV, COLOR_BGR2HSV);
+
+    split(imagemHSV, hsv);
+    hsv[1] = hsv[1] * 1.6;
+        
+    merge(hsv, 3, imagemHSV);
+    
+    cvtColor(imagemHSV, imagemFinal, COLOR_HSV2BGR);
+}
 
 /* Calcula a imagem final a partir da imagem original e de sua versão borrada,
 com as devidas ponderações escolhidas pelo usuário. */
@@ -41,28 +68,31 @@ void calcularImagemFinal()
     }
 }
 
-void alterarSlideAlturaRegiaoCentral(int, void*)
+void alterarSliderAlturaRegiaoCentral(int, void*)
 {
-    alturaRegiaoCentral = slideAlturaRegiaoCentral;
+    alturaRegiaoCentral = sliderAlturaRegiaoCentral;
     calcularImagemFinal();
+    aumentarSaturacao();
     imshow("resultado", imagemFinal);
 }
 
-void alterarSlideForcaDecaimento(int, void*)
+void alterarSliderForcaDecaimento(int, void*)
 {  
-    forcaDecaimento = slideForcaDecaimento;
+    forcaDecaimento = sliderForcaDecaimento;
     if(forcaDecaimento == 0)
     {
         forcaDecaimento = 1;
     }
     calcularImagemFinal();
+    aumentarSaturacao();
     imshow("resultado", imagemFinal);
 }
 
-void alterarSlidePosicaoVerticalCentro(int, void*)
+void alterarSliderPosicaoVerticalCentro(int, void*)
 {
-    posicaoVerticalCentro = slidePosicaoVerticalCentro;
+    posicaoVerticalCentro = sliderPosicaoVerticalCentro;
     calcularImagemFinal();
+    aumentarSaturacao();
     imshow("resultado", imagemFinal);
 }
 
@@ -89,43 +119,47 @@ int main(int argc, char* argv[]){
     namedWindow("resultado", 1);
 
     /* Primeiramente faz o borramento da imagem original. */
-    blur(imagem, imagemBorrada, Size(5, 5), Point(-1,-1));
-    blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
-    blur(imagemBorrada, imagemBorrada, Size(5, 5), Point(-1,-1));
+    borrarImagem();
 
-    slideAlturaRegiaoCentral = 1;
-    slideForcaDecaimento = 1;
-    slidePosicaoVerticalCentro = 1;
+    sliderAlturaRegiaoCentral = 1;
+    sliderForcaDecaimento = 1;
+    sliderPosicaoVerticalCentro = 1;
 
-    slideAlturaRegiaoCentralMax = imagemFinal.rows;
-    slidePosicaoVerticalCentroMax = imagemFinal.rows;
-    slideForcaDecaimentoMax = 100;
+    sliderAlturaRegiaoCentralMax = imagemFinal.rows;
+    sliderPosicaoVerticalCentroMax = imagemFinal.rows;
+    sliderForcaDecaimentoMax = 100;
 
     /* Cria as barras de rolagem. */
     createTrackbar("Altura", "resultado",
-        &slideAlturaRegiaoCentral,
-        slideAlturaRegiaoCentralMax,
-        alterarSlideAlturaRegiaoCentral);
-    alterarSlideAlturaRegiaoCentral(slideAlturaRegiaoCentral, 0);
-    
+        &sliderAlturaRegiaoCentral,
+        sliderAlturaRegiaoCentralMax,
+        alterarSliderAlturaRegiaoCentral);
+    alterarSliderAlturaRegiaoCentral(sliderAlturaRegiaoCentral, 0);
     
     createTrackbar("Decaimento", "resultado",
-        &slideForcaDecaimento,
-        slideForcaDecaimentoMax,
-        alterarSlideForcaDecaimento );
-    alterarSlideForcaDecaimento(slideForcaDecaimento, 0);
+        &sliderForcaDecaimento,
+        sliderForcaDecaimentoMax,
+        alterarSliderForcaDecaimento );
+    alterarSliderForcaDecaimento(sliderForcaDecaimento, 0);
 
     createTrackbar( "Centro", "resultado",
-        &slidePosicaoVerticalCentro,
-        slidePosicaoVerticalCentroMax,
-        alterarSlidePosicaoVerticalCentro );
-    alterarSlidePosicaoVerticalCentro(slidePosicaoVerticalCentro, 0);
+        &sliderPosicaoVerticalCentro,
+        sliderPosicaoVerticalCentroMax,
+        alterarSliderPosicaoVerticalCentro );
+    alterarSliderPosicaoVerticalCentro(sliderPosicaoVerticalCentro, 0);
 
     /* Fecha o programa quando o usuário digita ESC. */
     while(1)
     {
-      if( waitKey(30) == 27 ) break; 
-  }
+      if(waitKey(30) >= 0) 
+      {
+        break;
+      } 
+    }
+    
+    /* Salva a imagem processada. */
+    imwrite("saida.png", imagemFinal);
+    
 
   return 0;
 }
