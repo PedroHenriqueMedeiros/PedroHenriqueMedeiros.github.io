@@ -204,7 +204,7 @@ image::ImagemEqualizada.png[ImagemEqualizada, 400, 400]
 
 == Filtragem Espacial I
 
-=== Seção 6.2 - Exercício 1
+=== Seção 6.2 Exercício 1
 
 ****
 Utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
@@ -277,37 +277,4 @@ A função filter2d() recebe então a matriz da imagem em ponto flutuante - fram
 Na linha 121 temos uma conversão da matriz frameFiltered para CV_8U que significa oito bits por pixel, ou seja, os pixels podem ir do valor 0 a 255 como normalmente é nas imagens e vídeos.
 
 O restante do código apenas tem a função de apresentar um menu para o usuário escolher qual máscara aplicar e salvaar uma imagem do efeito do filtro laplaciano do gaussiano.
-
-== Filtragem Espacial II
-
-=== Seção 7.1 - Exercício 1
-
-****
-Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"] como referência, implemente um programa tiltshift.cpp. Três ajustes deverão ser providos na tela da interface:
-
-* um ajuste para regular a altura da região central que entrará em foco;
-
-* um ajuste para regular a força de decaimento da região borrada;
-
-* um ajuste para regular a posição vertical do centro da região que entrará em foco. Finalizado o programa, a imagem produzida deverá ser salva em arquivo.
-****
-
-A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito de __tilt shift__ foi desenvolvido:
-
-.tiltshift.cpp
-[[tiltshift]]
-[source,cpp,linenums]
-----
-include::{sourcedir}/tiltshift/tiltshift.cpp[]
-----
-
-A ideia do efeito de __tilt shift__, conforme descrito no link:http://agostinhobritojr.github.io/tutoriais/pdi/#_filtragem_no_domínio_espacial_ii[Capítulo 7, window="_blank"], consiste em "combinar a imagem original com sua versão filtrada com filtro passa-baixas, de sorte a produzir nas proximidades da borda o efeito do borramento enquanto se mantém na região central a imagem sem borramento".
-
-Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 127, através da função *borrarImagem()*. Esta função, basicamente, aplica o fitro da média de tamanho stem:[3 times 3]  seis vezes seguidas na imagem original, para provocar um borramento bem intenso. 
-
-Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função stem:[g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)], sendo stem:[g(x,y)] a imagem com efeito de tilt-shit aplicado, stem:[f(x,y)] a imagem original e stem:[bf(x,y)] a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função stem:[α(x)], definida por stem:[α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})], "onde stem:[l1] e stem:[l2] são as linhas cujo valor de stem:[α]  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e stem:[d]  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".
-
-No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal()*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem. 
-
-=== Seção 7.1 - Exercício 2
 

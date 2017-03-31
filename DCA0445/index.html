@@ -1480,7 +1480,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_filtragem_espacial_i">Filtragem Espacial I</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_seção_6_2_exercício_1">Seção 6.2 Exercício 1</h3>
+<h3 id="_seção_6_2_exercício_1">Seção 6.2 - Exercício 1</h3>
 <div class="sidebarblock">
 <div class="content">
 <div class="paragraph">
@@ -2334,7 +2334,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>A ideia do efeito de <em>tilt shift</em>, conforme descrito no <a href="http://agostinhobritojr.github.io/tutoriais/pdi/#_filtragem_no_domínio_espacial_ii" target="_blank">Capítulo 7</a>, consiste em "combinar a imagem original com sua versão filtrada com filtro passa-baixas, de sorte a produzir nas proximidades da borda o efeito do borramento enquanto se mantém na região central a imagem sem borramento".</p>
 </div>
 <div class="paragraph">
-<p>Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 127, através da função <strong>borrarImagem()</strong>.</p>
+<p>Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 127, através da função <strong>borrarImagem()</strong>. Esta função, basicamente, aplica o fitro da média de tamanho \$3 times 3\$  seis vezes seguidas na imagem original, para provocar um borramento bem intenso.</p>
+</div>
+<div class="paragraph">
+<p>Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função \$g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)\$, sendo \$g(x,y)\$ a imagem com efeito de tilt-shit aplicado, \$f(x,y)\$ a imagem original e \$bf(x,y)\$ a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função \$α(x)\$, definida por \$α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})\$, "onde \$l1\$ e \$l2\$ são as linhas cujo valor de \$α\$  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e \$d\$  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".</p>
+</div>
+<div class="paragraph">
+<p>No programa acima, o cálculo do \$α(x)\$ é feito na através da função <strong>calcularImagemFinal()</strong>, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2346,7 +2352,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-30 20:22:50 BRT
+Last updated 2017-03-30 22:18:53 BRT
 </div>
 </div>
 <script type="text/x-mathjax-config">
