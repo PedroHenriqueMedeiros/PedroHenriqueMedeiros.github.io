@@ -4,11 +4,12 @@ require 'date'
 input = "index.adoc"
 output = "index.html"
 backend = "html5"
+theme = "readthedocs.css"
 
 guard 'shell' do
   watch(input) {|m|
     #asciidoctor -a stylesheet=riak.css index.adoc
-    system("asciidoctor" + " -b " + backend +  " -o " + output + " " + input)
+    system("asciidoctor" + " -b " + backend + " -a stylesheet=" + theme + " -o " + output + " " + input)
     current_time = DateTime.now()
     current_time_str = current_time.strftime("%d/%m/%Y %H:%M")
     puts("New update at " + current_time_str + ".")

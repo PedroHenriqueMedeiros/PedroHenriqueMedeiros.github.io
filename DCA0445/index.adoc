@@ -1,5 +1,5 @@
 = DCA0445 - Processamento Digital de Imagens
-Denis Medeiros <denis@dimap.ufrn.br> Pedro Henrique <pedrohenriquedemedeiros@gmail.com>
+Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gmail.com>
 :toc:
 :toc-placement: left
 :toc-title: Sumário
@@ -23,7 +23,7 @@ Denis Medeiros <denis@dimap.ufrn.br> Pedro Henrique <pedrohenriquedemedeiros@gma
 :scriptsdir: ./js
 :sourcedir: ./src
 
-Esta página contém uma série de exercícios sobre processamento digital de imagens implementados em C++ com a biblioteca OpenCV. Todos eles, bem como os textos introdutórios são de crédito do professor Dr. link:http://agostinhobritojr.github.io/[Agostinho de Medeiros Brito Junior, window="_blank"], professor da Universidade Federal do Rio Grande do Norte e responsável pelo curso link:http://agostinhobritojr.github.io/tutoriais/pdi/[DCA0445 - Processamento Digital de Imagens, window="_blank"].
+Esta página contém uma série de exercícios sobre processamento digital de imagens implementados em C++ com a biblioteca OpenCV. Todos eles, assim como os textos introdutórios, são de crédito do professor Dr. link:http://agostinhobritojr.github.io/[Agostinho de Medeiros Brito Junior, window="_blank"], professor da Universidade Federal do Rio Grande do Norte e responsável pelo curso link:http://agostinhobritojr.github.io/tutoriais/pdi/[DCA0445 - Processamento Digital de Imagens, window="_blank"].
 
 == Manipulando pixels em uma imagem
 
@@ -35,7 +35,7 @@ O efeito é ilustrado na figura regiões (abaixo).
 
 [[img-regioes]] 
 .Figura regioes.png
-image::regioes.png[Regiões, 400, 400] 
+image::regioes.png[Regiões,  400, 400] 
 ****
 
 Para resolver o exercício acima, o seguinte programa foi desenvolvido:
@@ -47,11 +47,11 @@ Para resolver o exercício acima, o seguinte programa foi desenvolvido:
 include::{sourcedir}/regioes/regioes.cpp[]
 ----
 
-A estratégia adotada neste programa consiste em receber do usuário dois pontos, criar um retângulo a partir deles e calcular o negativo deste retângulo. 
+A estratégia adotada neste programa consiste em receber do usuário dois pontos, criar um retângulo a partir deles e calcular o negativo deste retângulo. Ele representará a região da foto que será negativada, logo precisará está contido dentro da matriz da imagem.
 
-As primeiras linhas do programa (linha 21 à linha 36) consiste na validação dos dados fornecidos pelo usuário, ou seja, se o usuário inseriu o número correto as coordenadas x e y de dois pontos e depois se também inseriu uma imagem para retirar o negativo de uma região dela. Depois nas linhas 39 à 64 temos a verificação de que os dados referentes aos dois pontos necessários ao programa são de fato números, pelo uso da função stoi() e então verifica-se se os pontos pertencem a imagem utilizando os comandos imagem.rols e imagem.cols. 
+As primeiras linhas do programa (linha 22 à linha 62) consiste na validação dos dados fornecidos pelo usuário, ou seja, se o usuário inseriu o número correto as coordenadas x e y de dois pontos, se a imagem é válida e se o retângulo está contido dentro da figura. 
 
-Uma vez que os dois pontos são válidos, é criado um retângulo (linha 66) e, finalmente, é relizado uma iteração sob todos aqueles pixels representados pelo retângulo dentro da própria matriz __image__ (linha 67 à linha 73), de modo que é calculado o negativo de cada pixel subtraindo seu  valor de 255, em que os pixels são acessados pelo método at, recebendo o dado __unsigned char__ da imagem em tons de cinza. Por fim, a imagem processada é exibida na tela.
+Uma vez que os dois pontos são válidos, é criado um retângulo (linha 64) e, finalmente, é relizado uma iteração sob todos aqueles pixels representados pelo retângulo dentro da própria matriz *imagem* (linha 67 à linha 73), de modo que é calculado o negativo de cada pixel subtraindo seu  valor de 255. Por fim, a imagem processada é exibida na tela.
 
 
 ====
@@ -89,11 +89,12 @@ A versão modificada do programa pixels.cpp pode ser vista abaixo:
 include::{sourcedir}/trocaregioes/trocaregioes.cpp[]
 ----
 
-O objetivo do programa acima foi criar 4 sub-matrizes representando cada quadrante para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.
+Para atender os requisitos do problema, a ideia do programa acima foi criar 4 sub-matrizes representando cada quadrante para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.
 
-A criação das submatrizes ocorrem utilizando o próprio construtor da classe *Mat* (da linha 39 à 42), que permite receber a matriz original e um retângulo representando a ser extraída para criação da nova submatriz. Os retângulos são montados tomando como referência o início, fim e pontos médios horizontais e verticais da matriz original.
+A criação das submatrizes ocorrem utilizando o próprio construtor da classe *Mat* (da linha 39 à 42), que permite receber a matriz original e um retângulo representando a sub-matriz a ser extraída para criação da nova imagem. Os retângulos são montados tomando como referência o início, fim e pontos médios horizontais e verticais da imagem original.
 
-Com as submatrizes criadas, primeiro são montadas as partes superior e inferior do resultado final (linhas 48 e 53), através da função hconcat(), que primeiro realiza o concatenamento horizontal da metade de baixo da figura original e depois o concatenamento da metade de cima da figura original, em que as submatrizes q1, q2, q3 e q4 são colocadas nas matrizes temp1 e temp2. Com esses dois resultados intermediários, por fim, é realizado um concatenamento vertical (linha 58), com a função vconcat(), que produz o resultado final.
+Com as submatrizes criadas, primeiro são montadas as partes superior e inferior do resultado final (linhas 48 e 53), através da função *hconcat*, que primeiro realiza o concatenamento horizontal da metade de baixo da figura original e depois o concatenamento da metade de cima da figura original. Com esses dois resultados intermediários, por fim, é realizado um concatenamento vertical (linha 58), com a função *vconcat*, que produz o resultado final.
+
 
 ====
 .Exemplo de execução
@@ -119,7 +120,7 @@ image::gato-trocaregioes.png[Regiões, 400, 400]
 Observando-se o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/labeling.cpp[labeling.cpp] como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.
 ****
 
-O algoritmo padrão de labeling fornecido pelo professor contem um problema, pois utiliza a própria cor do pixel rotulado para armazenar a contagem de elementos. No caso de uma imagem em escala de cinza, em que cada pixel é representado por 1 byte, logo poder-se-ia contar apenas 255 elementos. Uma abordagem diferente seria utilizar a cor do pixel como um tipo de classificação para os objetos contados, de modo que os pixels de uma mesma categoria assumam apenas um rótulo específico, sendo reservado um contador à parte para contar quantos elementos dessa categoria foram encontrados.
+O algoritmo padrão de labeling fornecido pelo professor contem um problema, pois utiliza a própria cor do pixel rotulado para armazenar a contagem de elementos. No caso de uma imagem em escala de cinza, em que cada pixel é representado por 1 byte, logo poder-se-ia contar apenas 256 elementos. Uma abordagem diferente seria utilizar a cor do pixel como um tipo de classificação para os objetos contados, de modo que os pixels de uma mesma categoria assumam apenas o papel de rótulo, sendo reservado um contador à parte para contar quantos elementos dessa categoria foram encontrados.
 
 === Seção 4.2 - Exercício 2
 
@@ -136,14 +137,13 @@ O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/labelin
 include::{sourcedir}/rotulacao/rotulacao.cpp[]
 ----
 
-A ideia por trás da contagem das bolhas baseiou-se no princípio de rotulação. Os rótulos foram definidos no início do programa, pois já sabia-se, a princípio, quais eram as cores de fundo e dos objetos da cena (linha 4 à linha 7).
+A ideia por trás da contagem das bolhas baseiou-se no princípio de rotulação. Os rótulos foram definidos no início do programa, pois já se sabia, a princípio, quais eram as cores de fundo e dos objetos da cena (linha 4 à linha 7).
 
 Para realizar isso, foi necessário, inicialmente, remover todos os objetos presentes nas bordas da imagem, já que não é possível saber se eles continham ou não buracos iternos na região exterior à imagem (da linha 38 à linha 61). Para isso, foi utilizado um algoritmo de _flood fill_, mudando a cor do objeto encontrado para a mesma cor de fundo da cena.
 
-Uma vez que as imagens localizadas na borda foram removidas, o passo seguinte foi mudar a cor de fundo da cena através do mesmo algoritmo de _flood fill_, iniciando do primeiro pixel da matriz da imagem (linha 64 à linha 66). Isso foi feito com o objetivo de fazer com que os elementos que continham buracos continuassem com tais buracos na cor de fundo antiga, já que, caso um objeto desses não fosse completamente fechado, o buraco seria preenchido pela nova cor de fundo.
+Uma vez que as imagens localizadas na borda foram removidas, o passo seguinte foi mudar a cor de fundo da cena através do mesmo algoritmo de _flood fill_, iniciando a partir do primeiro pixel da matriz da imagem (linha 64 à linha 66). Isso foi feito com o objetivo de fazer com que os elementos que continham buracos continuassem com tais buracos na cor de fundo antiga, já que, caso um objeto desses não fosse completamente fechado, o buraco seria preenchido pela nova cor de fundo.
 
 Por fim, foi feita uma busca na imagem por qualquer região que ainda estivesse rotulado com a cor de fundo inicial (linha 69 à 81). Tal região seria, consequentemente, um buraco dentro de um objeto. Assim, o número de bolhas seria exatamente igual ao número de buracos encontrados. 
-
 
 ====
 .Exemplo de execução
@@ -159,6 +159,12 @@ image::bolhas.png[Troca Regioes, 400, 400]
 [[img-gato-trocaregioes]] 
 .Figura bolhas.png após processamento
 image::bolhas-rotulacao.png[Regiões, 400, 400] 
+
+
+* Saída do programa: 
+
+"Há 7 bolhas nesa imagem."
+
 ====
 
 == Manipulação de Histogramas
@@ -166,7 +172,7 @@ image::bolhas-rotulacao.png[Regiões, 400, 400]
 === Seção 5.2 - Exercício 1
 
 ****
-Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem. Teste sua implementação apontando a câmera para ambientes com iluminações variadas e observando o efeito gerado. Assuma que as imagens processadas serão em tons de cinza.
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[exemplos/histogram.cpp, window="_blank"] como referência, implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem. Teste sua implementação apontando a câmera para ambientes com iluminações variadas e observando o efeito gerado. Assuma que as imagens processadas serão em tons de cinza.
 ****
 
 O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
@@ -178,31 +184,26 @@ O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogr
 include::{sourcedir}/equalizador/equalizador.cpp[]
 ----
 
-A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do programador e então fazer o processo de equalização da imagem, o qual consiste em uma distribuição mais uniforme dos valores da intensidade da distribuição, nesse caso o histograma.
+A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do computador e então fazer o processo de equalização da imagem, que consiste em uma distribuição mais uniforme dos valores da intensidade das cores, representado pelo o histograma.
 
-Inicialmente o programa realiza a captura de um frame a partir da camera do computador do programador através da classe do opencv VideoCapture, evidenciado na linha 9. Nas linhas 32 e 33 define-se a largura e altura das imagens que serão usadas para desenhar os histogramas.  As imagens são criadas com o tipo CV_8UC1, ou seja, com 8 bits por pixel, com tipo de dados unsigned char contendo 1 canal de cor.
+Inicialmente, são definidos vários parâmetros a respeito de como os histogramas serão criados, tais como a quantidade de níveis de matiz, de saturação e o tamanho do histograma em si (linha 14 à linha 26). Uma vez que a câmera inicia a captura (linha 45), é necessário converter a imagem para escala de cinza (linha 47), pois, por padrão, o objeto da classe _VideoCapture_ gera imagens coloridas.
 
-O processo de conversão da imagem colorida para a escala de cinza, através da função cvtColor(), evidenciado na linha 47. Depois temos o uso da função equalizeHist() para a equalização do histograma, evidenciado na linha 49. As outras linhas de código fazem o cálculo do histograma com a função calcHist(), sua normalização com a função normalize(), em relação ao número de linhas da imagem equalizada, a inserção dos histogramas nos frames através da funções line() e copyTo() e por fim uma mensagem para distinção das imagens mostradas nos frames com a função putText. 
+Com a imagem obtida, o passo seguinte é gerar a sua versão equalizada (linha 49) e gerar os histogramas de versão normal e equalizada da imagem original (linha 51 à linha 57). Em seguida, é realizada a normalização de ambos os histogramas para facilitar a geração das imagens com os histogramas (linha 68 à 78) a serem sobrepostas sobre a imagem original e equalizadas (linha 80 à 82). Finalmente, ambas as imagens são mostradas lado a lado com os seus respectivos histogramas.
 
 ====
 .Exemplo de execução
 * Comando: ./equalizador 
 * Fotos de saída: 
 
-[[img-ImagemOriginalEscalaCinza]] 
-.Figura ImagemOriginalEscalaCinza.png 
-image::ImagemOriginalEscalaCinza.png[ImagemOriginalEscalaCinza, 400, 400] 
-
-[[img-ImagemEqualizada]] 
-.Figura ImagemEqualizada.png 
-image::ImagemEqualizada.png[ImagemEqualizada, 400, 400] 
-
+[[img-equalizador]] 
+.Figura equalizador.png
+image::equalizador.png[Equalizador] 
 ====
 
 === Seção 5.2 - Exercício 2
 
 ****
-Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[exemplos/histogram.cpp, window="_blank"] como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.
 ****
 
 O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
@@ -214,15 +215,23 @@ O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogr
 include::{sourcedir}/detectormovimento/detectormovimento.cpp[]
 ----
 
-A ideia básica do programa é fazer o uso de duas imagens, uma será a imagem atual que aparece na camera e a outra será uma imagem base tirada momentos antes da imagem atual e será então utilizada a técnica de comparação de histograma para verificar se ouve algum movimento entre as imagens comparadas.
- 
-Nas linhas 6 e 9 verifica-se a inserção de um novo tempo de captura para a nova imagem base que consiste em 50ms e por conseguinte o limiar da sensibilidade da detecção do movimento que é de 0.99.
+A ideia básica do programa é fazer o uso de duas imagens, uma sendo uma imagem base, para servir como referência, e outra uma imagem atal, que fica sendo obtida constamente atualizada a partir da câmera do computador, com o objetivo de comparar seus histogramas para detectar presença de movimento na cena monitorada. Essa imagem base é capturada a cada intervalo de tempo específico e é feita uma comparação de seu histograma com o histograma da imagem recentemente capturada. Caso haja uma diferença significativa entre os histogramas, então é porque houve mudança na cena, o que sugere presença de movimento.
 
-Na linha 28 temos a definição das variáveis inicio e fim do tipo std::chrono::time_point, que significam que são apenas pontos no tempo. Na linha 29 temos a variável que simboliza a variação do tempo inicial e final para então termos outra captura de uma imagem base. As linhas 32 e 35 mostram a separação entre os planos das componentes de cores RGB e as varáveis que vão ser responsáveis por guardar os seus histogramas. As linhas 38 a 78 tem a mesma função dos códigos utilizados no exércio 1 desta seção, com a diferença no termo CV_8UC3 que tem três canais de cor.
+Os parâmetros da frequência de captura da imagem que serve como base e do limiar de comparação dos histogramas são definidos logo no início (linha 6 à linha 9). Os parâmetros relacionados aos formatos do histograma seguem no início da função *main* (linha 38 à linha 54).
 
-Na linha 80 o comando chrono::steady_clock::now(); pega o tempo atual e guarda na variável inicio e no começo do while infinito a variável fim recebe o valor do tempo atual pelo comando chrono::steady_clock::now(); e nas linhas 89 a 93 temos uma comparação entre a varável fim e inicio com o intuito da verificação da se a diferença de tempo foi maior que 50ms para então fazer uma nova captura para a imagem base. 
+A captura da imagem atual é feita constantemente no início do _loop_ principal (linha 84) e, logo em seguida, é verificado se já passou o tempo para a captura de uma nova imagem base (linha 86 à 93). Após isso, ambas as imagens são divididas em seus 3 canais de cores, para que seja possível calcular o histograma de cada canal, bem como ser feita a normalização de cada um deles (linha 96 à 124). Esses procedimentos são semelhantes no quesito que os seus códigos estão cumprindo a mesma função do que os códigos do exercício 1 desta seção, com a diferença que aqui trabalha-se com 3 planos  (RBG) em vez de 1 (escala de cinza).
 
-As linhas 95  a 127 são semelhantes no quesito que os seus códigos estão cumprindo a mesma função do que os códigos do exercício 1 desta seção com a diferença que estamos trabalhando com três planos da imagem colorida que são o RGB. Nas linhas 128 a 151 temos o uso da função calcHist() da comparação dos histogramas pelo método da correlação e depois vamos ter o teste para verificar se o limiar do método da correlação foi violado e assim informar ao usuário que ouve movimento na comparação da imagem base com a imagem atual.
+Com todos os histogramas prontos e normalizados, é feita uma comparação entre eles através da função *compareHist*, utilizando o método da correlação. Pelos testes feitos, quanto mais parecido um histograma é do outro, mais próximo de 1 o resultado desta função se aproxima. Por exemplo, estimando um limiar 0.99, estima-se que os histogramas são parecidos em 99% de seus componentes. Assim, tal teste é feito (linha 146 à linha 151) e, caso o histograma da imagem atual seja menos de 99% semelhante ao da imagem base, então considerou-se que ocorreu movimento na cena. Tal resultado é exibido na tela.
+
+====
+.Exemplo de execução
+* Comando: ./detectormovimento 
+* Fotos de saída: 
+
+[[img-detectormovimento]] 
+.Figura detectormovimento.gif
+image::detectormovimento.gif[Detector de Movimento] 
+====
 
 
 == Filtragem Espacial I
