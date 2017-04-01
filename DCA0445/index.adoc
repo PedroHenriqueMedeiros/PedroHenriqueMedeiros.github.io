@@ -201,6 +201,28 @@ image::ImagemEqualizada.png[ImagemEqualizada, 400, 400]
 
 === Seção 5.2 - Exercício 2
 
+****
+Utilizando o programa exemplos/histogram.cpp como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
+
+.detectormovimento.cpp
+[[detectormovimento]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/detectormovimento/detectormovimento.cpp[]
+----
+
+A ideia básica do programa é fazer o uso de duas imagens, uma será a imagem atual que aparece na camera e a outra será uma imagem base tirada momentos antes da imagem atual e será então utilizada a técnica de comparação de histograma para verificar se ouve algum movimento entre as imagens comparadas.
+ 
+Nas linhas 6 e 9 verifica-se a inserção de um novo tempo de captura para a nova imagem base que consiste em 50ms e por conseguinte o limiar da sensibilidade da detecção do movimento que é de 0.99.
+
+Na linha 28 temos a definição das variáveis inicio e fim do tipo std::chrono::time_point, que significam que são apenas pontos no tempo. Na linha 29 temos a variável que simboliza a variação do tempo inicial e final para então termos outra captura de uma imagem base. As linhas 32 e 35 mostram a separação entre os planos das componentes de cores RGB e as varáveis que vão ser responsáveis por guardar os seus histogramas. As linhas 38 a 78 tem a mesma função dos códigos utilizados no exércio 1 desta seção, com a diferença no termo CV_8UC3 que tem três canais de cor.
+
+Na linha 80 o comando chrono::steady_clock::now(); pega o tempo atual e guarda na variável inicio e no começo do while infinito a variável fim recebe o valor do tempo atual pelo comando chrono::steady_clock::now(); e nas linhas 89 a 93 temos uma comparação entre a varável fim e inicio com o intuito da verificação da se a diferença de tempo foi maior que 50ms para então fazer uma nova captura para a imagem base. 
+
+As linhas 95  a 127 são semelhantes no quesito que os seus códigos estão cumprindo a mesma função do que os códigos do exercício 1 desta seção com a diferença que estamos trabalhando com três planos da imagem colorida que são o RGB. Nas linhas 128 a 151 temos o uso da função calcHist() da comparação dos histogramas pelo método da correlação e depois vamos ter o teste para verificar se o limiar do método da correlação foi violado e assim informar ao usuário que ouve movimento na comparação da imagem base com a imagem atual.
 
 
 == Filtragem Espacial I
@@ -279,8 +301,7 @@ Na linha 121 temos uma conversão da matriz frameFiltered para CV_8U que signifi
 
 O restante do código apenas tem a função de apresentar um menu para o usuário escolher qual máscara aplicar e salvaar uma imagem do efeito do filtro laplaciano do gaussiano.
 
-<<<<<<< HEAD
-=======
+
 == Filtragem Espacial II
 
 === Seção 7.1 - Exercício 1
