@@ -234,6 +234,7 @@ video::detectormovimento.mp4[Detector de Movimento, width=640, options="autoplay
 ====
 
 
+
 == Filtragem Espacial I
 
 === Seção 6.2 Exercício 1
