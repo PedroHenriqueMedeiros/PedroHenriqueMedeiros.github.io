@@ -27,6 +27,8 @@ Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gm
 
 Esta página contém uma série de exercícios sobre processamento digital de imagens implementados em C++ com a biblioteca OpenCV. Todos eles, assim como os textos introdutórios, são de crédito do professor Dr. link:http://agostinhobritojr.github.io/[Agostinho de Medeiros Brito Junior, window="_blank"], professor da Universidade Federal do Rio Grande do Norte e responsável pelo curso link:http://agostinhobritojr.github.io/tutoriais/pdi/[DCA0445 - Processamento Digital de Imagens, window="_blank"].
 
+Observação importante: vários dos exercícios foram resolvidos com as imagens sendo tratadas em escala de cinza, mas a maioria dos algoritmos usados poderiam ser aplicados em imagens coloridas sem muita dificuldade e com pouca alteração no código fonte.
+
 == Manipulando pixels em uma imagem
 
 === Seção 3.2 - Exercício 1
@@ -37,7 +39,7 @@ O efeito é ilustrado na figura regiões (abaixo).
 
 [[img-regioes]] 
 .Figura regioes.png
-image::regioes.png[Regiões,  400, 400] 
+image::regioes.png[Regiões] 
 ****
 
 Para resolver o exercício acima, o seguinte programa foi desenvolvido:
@@ -63,13 +65,13 @@ Uma vez que os dois pontos são válidos, é criado um retângulo (linha 64) e, 
 
 [[img-onca]] 
 .Figura onca.png original
-image::onca.png[Regiões, 400, 400] 
+image::onca.png[Regiões] 
 
 * Foto de saída: 
 
 [[img-onca-regions]] 
 .Figura onca.png após processamento
-image::onca-regioes.png[Regiões, 400, 400] 
+image::onca-regioes.png[Regiões] 
 
 ====
 
@@ -79,7 +81,7 @@ Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemp
 
 [[img-regioes]] 
 .Figura trocaregioes.png
-image::trocaregioes.png[Troca Regiões, 400, 400] 
+image::trocaregioes.png[Troca Regiões] 
 ****
 
 A versão modificada do programa pixels.cpp pode ser vista abaixo:
@@ -289,27 +291,27 @@ O restante do código apenas tem a função de apresentar o menu para o usuário
 
 [[img-filtro-vertical]] 
 .Figura filtro-vertical.png 
-image::filtro-vertical.png[Filtro Vertical, 400, 400] 
+image::filtro-vertical.png[Filtro Vertical] 
 
 [[img-filtro-horizontal]] 
 .Figura filtro-horizontal.png 
-image::filtro-horizontal.png[Filtro Horizontal, 400, 400] 
+image::filtro-horizontal.png[Filtro Horizontal] 
 
 [[img-filtro-media]] 
 .Figura filtro-media.png 
-image::filtro-media.png[Filtro da Média, 400, 400] 
+image::filtro-media.png[Filtro da Média] 
 
 [[img-filtro-gaussiano]] 
 .Figura filtro-gaussiano.png 
-image::filtro-gaussiano.png[Filtro Gaussiano, 400, 400] 
+image::filtro-gaussiano.png[Filtro Gaussiano] 
 
 [[img-filtro-laplaciano]] 
 .Figura filtro-laplaciano.png 
-image::filtro-laplaciano.png[Filtro Laplaciano, 400, 400]
+image::filtro-laplaciano.png[Filtro Laplaciano]
 
 [[img-filtro-laplacianodogaussiano]] 
 .Figura filtro-laplacianodogaussiano.png 
-image::filtro-laplacianodogaussiano.png[Filtro Laplaciano do Gaussiano, 400, 400]
+image::filtro-laplacianodogaussiano.png[Filtro Laplaciano do Gaussiano]
 ====
 
 
