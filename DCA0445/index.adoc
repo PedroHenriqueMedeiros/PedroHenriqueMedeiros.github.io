@@ -228,9 +228,9 @@ Com todos os histogramas prontos e normalizados, é feita uma comparação entre
 * Comando: ./detectormovimento 
 * Fotos de saída: 
 
-[[img-detectormovimento]] 
-.Figura detectormovimento.gif
-image::detectormovimento.gif[Detector de Movimento] 
+[[video-detectormovimento]] 
+.Vídeo detectormovimento.mp4
+video::detectormovimento.mp4[Detector de Movimento, width=640, options="autoplay,loop"]
 ====
 
 
