@@ -13,7 +13,7 @@ Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gm
 :figure-caption: Figura 
 :table-caption: Tabela
 :stem:
-//:numbered:
+:numbered:
 :source-highlighter: pygments
 :icons: font
 :linkattrs:
@@ -22,6 +22,8 @@ Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gm
 :stylesdir: ./css
 :scriptsdir: ./js
 :sourcedir: ./src
+
+== Introdução
 
 Esta página contém uma série de exercícios sobre processamento digital de imagens implementados em C++ com a biblioteca OpenCV. Todos eles, assim como os textos introdutórios, são de crédito do professor Dr. link:http://agostinhobritojr.github.io/[Agostinho de Medeiros Brito Junior, window="_blank"], professor da Universidade Federal do Rio Grande do Norte e responsável pelo curso link:http://agostinhobritojr.github.io/tutoriais/pdi/[DCA0445 - Processamento Digital de Imagens, window="_blank"].
 
@@ -240,10 +242,10 @@ video::detectormovimento.mp4[Detector de Movimento, width=640, options="autoplay
 === Seção 6.2 Exercício 1
 
 ****
-Utilizando o programa exemplos/filtroespacial.cpp como referência, implemente um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[exemplos/filtroespacial.cpp] como referência, implemente um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
 ****
 
-O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], disponibilizado pelo professor, foi adaptado para que o novo filtro ficasse disponível quando o usuário digitasse a tecla 'p':
 
 .laplgauss.cpp
 [[laplgauss]]
@@ -252,37 +254,9 @@ O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroe
 include::{sourcedir}/laplgauss/laplgauss.cpp[]
 ----
 
-A ideia básica do programa é verificar a utilização dos diversos filtros espaciais definidos pelo professor no  link para o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp] e que foram modificados no programa laplgauss.cpp e então aplicamos um filtro do laplaciano do gaussiano.
+A ideia básica do programa é verificar a utilização dos diversos filtros espaciais definidos pelo professor no  link para o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], através da operação de convolução discreta. A novidade foi a adição de um novo filtro: laplaciano do gaussiano. Esse filtro consiste em aplicar primeiro o filtro gaussiano a uma imagem e, em seguida, aplicar o filtro laplaciano no resultado anterior.
 
-====
-.Exemplo de execução
-* Comando: ./laplgauss 
-* Fotos de saída: 
-
-[[img-Imagem_Filtro_Vertical]] 
-.Figura Imagem_Filtro_Vertical.png 
-image::Imagem_Filtro_Vertical.png[Imagem_Filtro_Vertical, 400, 400] 
-
-[[img-Imagem_Filtro_Horizontal]] 
-.Figura Imagem_Filtro_Horizontal.png 
-image::Imagem_Filtro_Horizontal.png[Imagem_Filtro_Horizontal, 400, 400] 
-
-[[img-Imagem_Filtro_Mediana]] 
-.Figura Imagem_Filtro_Mediana.png 
-image::Imagem_Filtro_Mediana.png[Imagem_Filtro_Mediana, 400, 400] 
-
-[[img-Imagem_Filtro_Gauss]] 
-.Figura Imagem_Filtro_Gauss.png 
-image::Imagem_Filtro_Gauss.png[Imagem_Filtro_Gauss, 400, 400] 
-
-[[img-Imagem_Filtro_Laplaciano]] 
-.Figura Imagem_Filtro_Laplaciano.png 
-image::Imagem_Filtro_Laplaciano.png[Imagem_Filtro_Laplaciano, 400, 400]
-
-[[img-Imagem_Filtro_LaplacianoGaussiano]] 
-.Figura Imagem_Filtro_LaplacianoGaussiano.png 
-image::Imagem_Filtro_LaplacianoGaussiano.png[Imagem_Filtro_LaplacianoGaussiano, 400, 400]
-====
+Para facilitar a implementação, em vez de realizar duas aplicações de filtragem com as máscaras já disponibilizadas pelo professor, foi gerada uma única máscara capaz de aplicar ambos os filtros de uma vez só. Essa máscara única foi obtida através da operação de convolução discreta entre as máscaras de gauss e laplaciana e isso só foi possível porque a operação de convolução admite a propriedade de associatividade. Logo, é possível convolver os dois filtros antes e, em seguida, convolver tal resultado com a imagem a ser processada.
 
 As linhas 7 a 44 mostram os diferentes tipos de máscaras utilizadas, as quais são:
 
@@ -293,23 +267,51 @@ As linhas 7 a 44 mostram os diferentes tipos de máscaras utilizadas, as quais s
 * Laplaciano
 * Laplaciano do gaussiano
 
-A máscara do laplaciano do gaussiano foi obtida através da operação de convolução entre as máscaras de gauss e laplaciana.
 
-As linhas 59 a 69 mostram a função menu que foi feita pelo programador para permitir o usuário escolher qual máscara vai ser utilizada.
-
-O trecho de código que vai das linhas 81 a 101 mostra através das linhas 81 a 90 a tentativa de abertura do vídeo e consequentemente a abertura de duas janelas mostrando a imagem original e a imagem com filtro aplicado pelas linhas 93 e 94. Nas linhas 96 a 99 temos o procedimento padrão para construção da matriz que será usada como máscara de filtragem. A variável mask recebe uma matriz de tamanho 3X3 em ponto flutuante (CV_32F) com valores iniciais iguais ao do array media que é repassado. O tipo da matriz precisa ser estabelecido em ponto flutuante, posto que as operações de cálculo contarão com a presença de números fracionários. 
+As linhas 59 à 69 mostram a função menu para permitir o usuário escolher qual máscara vai ser utilizada. Nas linhas 96 à 99, tem-se o procedimento padrão para construção da matriz que será usada como máscara de filtragem.  A variável mask recebe uma matriz de tamanho 3x3 em ponto flutuante (CV_32F) com valores iniciais iguais ao do array media que é repassado. O tipo da matriz precisa ser estabelecido em ponto flutuante, posto que as operações de cálculo contarão com a presença de números fracionários. 
 
 O uso da função scaleAdd() serve para dar o ganho de 1/9 nos coeficientes do filtro da média. A operação multiplica o primeiro argumento pelo segundo, soma com o terceiro argumento (neste caso, uma matriz de zeros) e armazena o resultado no terceiro argumento, mask1. Logo em seguida, a troca entre as matrizes mask e mask1 ocorre para que use apenas a matriz mask no cálculo da convolução digital.
 
-Por fim na linha 101 temos a chamada da função menu() para pedir ao usuário que escolha o tipo de máscara a ser utilizada.
+Por fim, na linha 101, ocorre a chamada da função menu() para pedir ao usuário que escolha o tipo de máscara a ser utilizada.
 
-Nas linhas 106 e 107 temos em um loop infinito que as imagens coloridas captadas pela camera do computador são enviadas a matriz cap e depois tem os seus pixels convertidos em tons de cinza pela função cvtColor. Nas linhas 110 e 111 temos um giro horizontal da imagem, para aparentar um espelho através da função flip(). Na linha 112 e 115 temos o cálculo da filtragem espacial. A imagem em tom de cinza na variável frame é convertida para outra equivalente com representação em ponto flutuante - frame32f. A conversão é necessária devido aos tipos de operação que serão realizados pela função filter2D().
+Nas linhas 106 e 107, as imagens coloridas capturadas pela camera do computador são enviadas a matriz *cap* e depois tem os seus pixels convertidos em tons de cinza pela função *cvtColor*. Nas linhas 110 e 111 tem-se um giro horizontal da imagem, através da função *flip*, apenas para melhor representação da imagem capturada. Da linha 112 à 115 ocorre o cálculo da filtragem espacial. A imagem em tom de cinza na variável *frame* é convertida para outra equivalente com representação em ponto flutuante - *frame32f*. A conversão é necessária devido aos tipos de operação que serão realizados pela função *filter2D*, que geram resultados em ponto flutuante.
 
-A função filter2d() recebe então a matriz da imagem em ponto flutuante - frame32f - e produz a matriz frameFiltered, de acordo com o tipo do elemento da matriz de entrada - neste caso, CV_32F (ou float). O objeto Point(1,1) que é repassado como próximo argumento identifica a origem do sistema de coordenadas atribuído para a máscara que, neste caso, é o ponto central da matriz.   
+A função0 *filter2d* recebe então a matriz da imagem em ponto flutuante - frame32f - e produz a matriz *frameFiltered*, de acordo com o tipo do elemento da matriz de entrada - neste caso, *CV_32F* (ou _float_). O objeto *Point(1,1)* que é repassado como próximo argumento identifica a origem do sistema de coordenadas atribuído para a máscara que, neste caso, é o ponto central da matriz.   
 
-Na linha 121 temos uma conversão da matriz frameFiltered para CV_8U que significa oito bits por pixel, ou seja, os pixels podem ir do valor 0 a 255 como normalmente é nas imagens e vídeos.
+Na linha 121 é feita uma conversão da matriz *frameFiltered* para CV_8U, que significa oito bits por pixel, ou seja, os pixels podem ir do valor 0 a 255, que é a forma que imagens e vídeos em escala de cinza são representados.
 
-O restante do código apenas tem a função de apresentar um menu para o usuário escolher qual máscara aplicar e salvaar uma imagem do efeito do filtro laplaciano do gaussiano.
+O restante do código apenas tem a função de apresentar o menu para o usuário escolher qual máscara aplicar. Ao fim do programa, a imagem mostrada na tela, com qualquer um dos filtros aplicados, é salva em disco (linha 178).
+
+====
+.Exemplo de execução
+* Comando: ./laplgauss 
+* Fotos de saída: 
+
+[[img-filtro-vertical]] 
+.Figura filtro-vertical.png 
+image::filtro-vertical.png[Filtro Vertical, 400, 400] 
+
+[[img-filtro-horizontal]] 
+.Figura filtro-horizontal.png 
+image::filtro-horizontal.png[Filtro Horizontal, 400, 400] 
+
+[[img-filtro-media]] 
+.Figura filtro-media.png 
+image::filtro-media.png[Filtro da Média, 400, 400] 
+
+[[img-filtro-gaussiano]] 
+.Figura filtro-gaussiano.png 
+image::filtro-gaussiano.png[Filtro Gaussiano, 400, 400] 
+
+[[img-filtro-laplaciano]] 
+.Figura filtro-laplaciano.png 
+image::filtro-laplaciano.png[Filtro Laplaciano, 400, 400]
+
+[[img-filtro-laplacianodogaussiano]] 
+.Figura filtro-laplacianodogaussiano.png 
+image::filtro-laplacianodogaussiano.png[Filtro Laplaciano do Gaussiano, 400, 400]
+====
+
 
 
 == Filtragem Espacial II
@@ -326,7 +328,7 @@ Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemp
 * um ajuste para regular a posição vertical do centro da região que entrará em foco. Finalizado o programa, a imagem produzida deverá ser salva em arquivo.
 ****
 
-A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito de __tilt shift__ foi desenvolvido:
+A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito de __tilt-shift__ foi desenvolvido:
 
 .tiltshift.cpp
 [[tiltshift]]
@@ -335,15 +337,15 @@ A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exempl
 include::{sourcedir}/tiltshift/tiltshift.cpp[]
 ----
 
-A ideia do efeito de __tilt shift__, conforme descrito no link:http://agostinhobritojr.github.io/tutoriais/pdi/#_filtragem_no_domínio_espacial_ii[Capítulo 7, window="_blank"], consiste em "combinar a imagem original com sua versão filtrada com filtro passa-baixas, de sorte a produzir nas proximidades da borda o efeito do borramento enquanto se mantém na região central a imagem sem borramento".
+A ideia do efeito de __tilt-shift__, conforme descrito no link:http://agostinhobritojr.github.io/tutoriais/pdi/#_filtragem_no_domínio_espacial_ii[Capítulo 7, window="_blank"], consiste em "combinar a imagem original com sua versão filtrada com filtro passa-baixas, de sorte a produzir nas proximidades da borda o efeito do borramento enquanto se mantém na região central a imagem sem borramento".
 
-Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 127, através da função *borrarImagem()*. Esta função, basicamente, aplica o fitro da média de tamanho stem:[3 times 3]  seis vezes seguidas na imagem original, para provocar um borramento bem intenso. 
+Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 122, através da função *borrarImagem*. Esta função, basicamente, aplica o fitro da média de tamanho stem:[3 times 3]  seis vezes seguidas na imagem original, para provocar um borramento bem intenso. 
 
 Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função stem:[g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)], sendo stem:[g(x,y)] a imagem com efeito de tilt-shit aplicado, stem:[f(x,y)] a imagem original e stem:[bf(x,y)] a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função stem:[α(x)], definida por stem:[α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})], "onde stem:[l1] e stem:[l2] são as linhas cujo valor de stem:[α]  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e stem:[d]  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".
 
-No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal()*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará se valor e gerará a imagem final resultante stem:[g(x,y)]. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado. 
+No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará seu valor e gerará a imagem final resultante stem:[g(x,y)]. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado. 
 
-Por fim, vale ressaltar que, antes da imagem original ser processa, ocorre um aumento na sua saturação com o intuito de deixar as cores mais vivas. Isso é importante para tornar o efeito de _tilt-shift_ mais forte.
+Por fim, vale ressaltar que, antes da imagem original ser processa, ocorre um aumento na sua saturação com o intuito de deixar as cores mais vivas. Isso é importante para tornar o efeito de _tilt-shift_ mais realista.
 
 ====
 
@@ -398,9 +400,11 @@ A solução deste exercício é apenas uma adaptação do programa anterior (<<t
 include::{sourcedir}/tiltshiftvideo/tiltshiftvideo.cpp[]
 ----
 
-A ideia deste programa foi abrir um arquivo de vídeo e sair aplicando o efeito de _tilt-shift_ do exemplo anterior a cada quadro do vídeo. Para isso, é apresentado usuário uma janela com o primeiro quadro do vídeo para ele definir como o filtro será aplicado (linha 164 à linha 179). Uma vez que isso é concluído, o usuário pressionar qualquer tecla para iniciar o processamento (linha 189 +a linha 222).
+A ideia deste programa foi abrir um arquivo de vídeo e sair aplicando o efeito de _tilt-shift_ do exemplo anterior a cada quadro do vídeo. Para isso, é apresentado usuário uma janela com o primeiro quadro do vídeo para ele definir como o filtro será aplicado (linha 164 à linha 179). Uma vez que isso é concluído, o usuário pressionar qualquer tecla para iniciar o processamento do vídeo (linha 189 a linha 222).
 
 Durante o processamento, foi adicionado um pequeno trecho para descartar alguns quadros do vídeo para produzir um efeito de _stop-motion_ (linha 194 à linha 199). Além disso, é exibido para o usuário o progresso atual do processamento em percentagem (linha 218), já que, dependendo do vídeo, isso pode demorar e é importante que o usuário consiga estimar o tempo total.
+
+Ao final do programa, o vídeo resultante é salvo e o usuário pode executá-lo em qualquer player de vídeo. Um detalhe importante é que o OpenCV não trabalha com áudio, logo o resultado gerado é apenas uma vídeo sem áudio. No exemplo mostrado abaixo, foi necessário mesclar o vídeo resultante com o áudio do vídeo original através de outro programa editor de vídeo.
 
 ====
 
@@ -426,4 +430,3 @@ video::5tiWGREedi4[youtube, width=640, height=480, options="loop"]
 video::1ziU0PYewVU[youtube, width=640, height=480, options="loop"]
 
 ====
->>>>>>> 23b77eb497a46354eb352ba8013c93b19fa4be2a
