@@ -1,14 +1,30 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <cmath>
 
-#define RADIUS 20
+#define GAMA_MAX 100
+#define C_MAX 100
 
 using namespace cv;
 using namespace std;
 
-// troca os quadrantes da imagem da DFT
-void deslocaDFT(Mat& image ){
+Mat imagem, padded, filter, tmp, complexImage, complexImageTmp, imagemFinal;
+vector<Mat> planos;
+Mat_<float> realInput, zeros;
+
+int sliderGamaL;
+int sliderGamaH ;
+int sliderD0;
+int sliderC;
+
+int dft_M;
+int dft_N;
+int altura;
+int largura; 
+
+/* Troca os quadrantes da imagem da DFT. */
+void deslocaDFT(Mat& image)
+{
   Mat tmp, A, B, C, D;
 
   // se a imagem tiver tamanho impar, recorta a regiao para
@@ -32,189 +48,210 @@ void deslocaDFT(Mat& image ){
   C.copyTo(tmp);  B.copyTo(C);  tmp.copyTo(B);
 }
 
-int main(int , char**){
-  VideoCapture cap;
-  Mat imaginaryInput, complexImage, multsp;
-  Mat padded, filter, mag;
-  Mat image, imagegray, tmp;
-  Mat_<float> realInput, zeros;
-  vector<Mat> planos;
 
-  // habilita/desabilita ruido
-  int noise=0;
-  // frequencia do ruido
-  int freq=10;
-  // ganho inicial do ruido
-  float gain=1;
+void aplicarFiltroHomomorfico()
+{
+	cout << "Filtro executado!" << endl;
+	
+    // Construção do filtro com base nos parâmetros.
+    Mat Du2, expoente, resultExp, Hu;
+    Mat Du = Mat(padded.size(), CV_32FC1, Scalar(0));
+     
+    for(int i = 0; i < dft_M; i++)
+    {
+		for(int j = 0; j < dft_N; j++)
+		{
+			Du.at<float>(i,j) = sqrt(pow((i - dft_M/2.0),2) + pow((j - dft_N/2.0),2)) / sliderD0;
+		}
+	}
+	
+	multiply(Du, Du, Du2);
+	expoente = -sliderC * Du2;
+	exp(expoente, resultExp);
+	
+	Hu = (sliderGamaH - sliderGamaL) * (1 - resultExp) + sliderGamaL;
+    
+    Mat comps[]= {Hu, Hu};
+	merge(comps, 2, filter);
+    
+    cout << complexImage.rows << ", " << complexImage.cols << endl;
+    cout << filter.rows << ", " << filter.cols << endl;
+    
+    cout << complexImage.type() << endl;
+    cout << filter.type() << endl;
+   
+    // aplica o filtro frequencial
+    mulSpectrums(complexImage, filter, complexImageTmp, 0);
+ 
+	// calcula a DFT inversa
+    idft(complexImageTmp, complexImageTmp);
 
-  // valor do ruido
-  float mean;
-
-  // guarda tecla capturada
-  char key;
-
-  // valores ideais dos tamanhos da imagem
-  // para calculo da DFT
-  int dft_M, dft_N;
-
-  // abre a câmera default
-  cap.open(0);
-  if(!cap.isOpened())
-    return -1;
-
-  // captura uma imagem para recuperar as
-  // informacoes de gravação
-  cap >> image;
-
-  // identifica os tamanhos otimos para
-  // calculo do FFT
-  dft_M = getOptimalDFTSize(image.rows);
-  dft_N = getOptimalDFTSize(image.cols);
-
-  // realiza o padding da imagem
-  copyMakeBorder(image, padded, 0,
-                 dft_M - image.rows, 0,
-                 dft_N - image.cols,
-                 BORDER_CONSTANT, Scalar::all(0));
-
-  // parte imaginaria da matriz complexa (preenchida com zeros)
-  zeros = Mat_<float>::zeros(padded.size());
-
-  // prepara a matriz complexa para ser preenchida
-  complexImage = Mat(padded.size(), CV_32FC2, Scalar(0));
-
-  // a função de transferência (filtro frequencial) deve ter o
-  // mesmo tamanho e tipo da matriz complexa
-  filter = complexImage.clone();
-
-  // cria uma matriz temporária para criar as componentes real
-  // e imaginaria do filtro ideal
-  tmp = Mat(dft_M, dft_N, CV_32F);
-
-  // prepara o filtro passa-baixas ideal
-  for(int i=0; i<dft_M; i++){
-    for(int j=0; j<dft_N; j++){
-      if((i-dft_M/2)*(i-dft_M/2)+(j-dft_N/2)*(j-dft_N/2) < RADIUS*RADIUS){
-        tmp.at<float> (i,j) = 1.0;
-      }
-    }
-  }
-
-  // cria a matriz com as componentes do filtro e junta
-  // ambas em uma matriz multicanal complexa
-  Mat comps[]= {tmp, tmp};
-  merge(comps, 2, filter);
-
-  for(;;){
-    cap >> image;
-    cvtColor(image, imagegray, CV_BGR2GRAY);
-    imshow("original", imagegray);
-
-    // realiza o padding da imagem
-    copyMakeBorder(imagegray, padded, 0,
-                   dft_M - image.rows, 0,
-                   dft_N - image.cols,
-                   BORDER_CONSTANT, Scalar::all(0));
-
-    // limpa o array de matrizes que vao compor a
-    // imagem complexa
+	// limpa o array de planos
     planos.clear();
-    // cria a compoente real
+
+    // separa as partes real e imaginaria da
+    // imagem filtrada
+    split(complexImageTmp, planos);
+    
+    // normaliza a parte real para exibicao
+    normalize(planos[0], imagemFinal, 0, 1, CV_MINMAX);	
+	
+	/*
+	// realiza o padding da imagem
+	copyMakeBorder(imagem, padded, 0,
+                 dft_M - altura, 0,
+                 dft_N - largura,
+                 BORDER_CONSTANT, Scalar::all(0));
+                 
+     /I
+                 
+	// parte imaginaria da matriz complexa (preenchida com zeros)
+	zeros = Mat_<float>::zeros(padded.size());
+
+	// prepara a matriz complexa para ser preenchida
+	complexImage = Mat(padded.size(), CV_32FC2, Scalar(0));
+
+	// a função de transferência (filtro frequencial) deve ter o
+	// mesmo tamanho e tipo da matriz complexa
+	filter = complexImage.clone();
+
+	// cria uma matriz temporária para criar as componentes real
+	// e imaginaria do filtro ideal
+	tmp = Mat(dft_M, dft_N, CV_32F);
+	*/
+    
+}
+
+
+
+void alterarSliderGamaH(int, void*)
+{
+	imshow("resultado", imagemFinal);
+	aplicarFiltroHomomorfico();
+}
+
+void alterarSliderGamaL(int, void*)
+{
+	if(sliderGamaL > sliderGamaH)
+	{
+		sliderGamaL = sliderGamaH;
+	}
+	
+	aplicarFiltroHomomorfico();
+	imshow("resultado", imagemFinal);
+}
+
+void alterarSliderD0(int, void*)
+{
+	if(sliderD0 == 0)
+    {
+        sliderD0 = 1;
+    }
+    
+    aplicarFiltroHomomorfico();
+	imshow("resultado", imagemFinal);
+}
+
+void alterarSliderC(int, void*)
+{
+	if(sliderC == 0)
+    {
+        sliderC = 1;
+    }
+    aplicarFiltroHomomorfico();
+	imshow("resultado", imagemFinal);
+}
+
+int main(int argc, char* argv[]){
+
+    /* Verifica o número de argumentos.  */
+    if (argc != 2) 
+    {
+        cout << "A lista de argumentos deve ser: "
+        "./homomorfico <imagem>" << endl;
+        return -1;
+    }
+    
+    /* Checa se a imagem pode ser aberta. */
+    imagem = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+
+    if (!imagem.data) 
+    {
+        cout << "A imagem não pode ser aberta." << endl;
+        return -2;
+    }
+    
+    imagemFinal = imagem.clone();
+    
+    largura = imagem.cols;
+    altura = imagem.rows;
+    
+    dft_M = getOptimalDFTSize(altura);
+    dft_N = getOptimalDFTSize(largura);
+	
+	namedWindow("resultado", 1);
+	
+	  // realiza o padding da imagem
+	  copyMakeBorder(imagem, padded, 0,
+					 dft_M - altura, 0,
+					 dft_N - largura,
+					 BORDER_CONSTANT, Scalar::all(0));
+					 
+	  // parte imaginaria da matriz complexa (preenchida com zeros)
+	  zeros = Mat_<float>::zeros(padded.size());
+
+	  // prepara a matriz complexa para ser preenchida
+	  complexImage = Mat(padded.size(), CV_32FC2, Scalar(0));
+	  
+	// cria a compoente real
     realInput = Mat_<float>(padded);
+
+    
     // insere as duas componentes no array de matrizes
     planos.push_back(realInput);
     planos.push_back(zeros);
-
-    // combina o array de matrizes em uma unica
-    // componente complexa
+    
     merge(planos, complexImage);
-
+    
     // calcula o dft
     dft(complexImage, complexImage);
 
     // realiza a troca de quadrantes
     deslocaDFT(complexImage);
+    
+    /* Cria as barras de rolagem. */
+    createTrackbar("GamaH", "resultado",
+        &sliderGamaH,
+        GAMA_MAX,
+        alterarSliderGamaH);  
+    alterarSliderGamaH(sliderGamaH, 0);
+    
+    createTrackbar("GamaL", "resultado",
+        &sliderGamaL,
+        GAMA_MAX,
+        alterarSliderGamaL);  
+    alterarSliderGamaH(sliderGamaL, 0);
+    
+    createTrackbar("D0", "resultado",
+        &sliderD0,
+        altura,
+        alterarSliderD0);  
+    alterarSliderD0(sliderD0, 0);
+    
+	createTrackbar("C", "resultado",
+        &sliderD0,
+        C_MAX,
+        alterarSliderC);  
+    alterarSliderC(sliderC, 0);
 
-    // aplica o filtro frequencial
-    mulSpectrums(complexImage,filter,complexImage,0);
-
-    // limpa o array de planos
-    planos.clear();
-    // separa as partes real e imaginaria para modifica-las
-    split(complexImage, planos);
-
-    // usa o valor medio do espectro para dosar o ruido
-    mean = abs(planos[0].at<float> (dft_M/2,dft_N/2));
-
-    // insere ruido coerente, se habilitado
-    if(noise){
-      // F(u,v) recebe ganho proporcional a F(0,0)
-      planos[0].at<float>(dft_M/2 +freq, dft_N/2 +freq) +=
-        gain*mean;
-
-      planos[1].at<float>(dft_M/2 +freq, dft_N/2 +freq) +=
-        gain*mean;
-
-      // F*(-u,-v) = F(u,v)
-      planos[0].at<float>(dft_M/2 -freq, dft_N/2 -freq) =
-        planos[0].at<float>(dft_M/2 +freq, dft_N/2 +freq);
-
-      planos[1].at<float>(dft_M/2 -freq, dft_N/2 -freq) =
-        -planos[1].at<float>(dft_M/2 +freq, dft_N/2 +freq);
-
+    /* Fecha o programa quando o usuário digita ESC. */
+    while(1)
+    {
+      if(waitKey(30) >= 0) 
+      {
+        break;
+      } 
     }
 
-    // recompoe os planos em uma unica matriz complexa
-    merge(planos, complexImage);
-
-    // troca novamente os quadrantes
-    deslocaDFT(complexImage);
-
-	cout << complexImage.size().height << endl;
-    // calcula a DFT inversa
-    idft(complexImage, complexImage);
-
-    // limpa o array de planos
-    planos.clear();
-
-    // separa as partes real e imaginaria da
-    // imagem filtrada
-    split(complexImage, planos);
-
-    // normaliza a parte real para exibicao
-    normalize(planos[0], planos[0], 0, 1, CV_MINMAX);
-    imshow("filtrada", planos[0]);
-
-    key = (char) waitKey(10);
-    if( key == 27 ) break; // esc pressed!
-    switch(key){
-      // aumenta a frequencia do ruido
-    case 'q':
-      freq=freq+1;
-      if(freq > dft_M/2-1)
-        freq = dft_M/2-1;
-      break;
-      // diminui a frequencia do ruido
-    case 'a':
-      freq=freq-1;
-      if(freq < 1)
-        freq = 1;
-      break;
-      // amplifica o ruido
-    case 'x':
-      gain += 0.1;
-      break;
-      // atenua o ruido
-    case 'z':
-      gain -= 0.1;
-      if(gain < 0)
-        gain=0;
-      break;
-      // insere/remove ruido
-    case 'e':
-      noise=!noise;
-      break;
-    }
-  }
   return 0;
 }
