@@ -1,6 +1,5 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <cmath>
 
 #define GAMA_MAX 100
 #define C_MAX 100
@@ -57,8 +56,7 @@ void aplicarFiltroHomomorfico()
     Mat filter, complexImageTmp, imagemFinal;
     Mat planos[2];
 	
-    // Construção do filtro com base nos parâmetros.
-    cout << complexImage.rows << " " << complexImage.cols << endl;
+    // Construção do filtro com base nos parâmetros
     
     Mat Du = Mat(complexImage.size(), CV_32FC1, Scalar(0));
     Mat Du2, expoente, resultExp, Hu;
@@ -84,8 +82,6 @@ void aplicarFiltroHomomorfico()
     
     Mat comps[]= {Hu, Hu};
 	merge(comps, 2, filter);
-
-
    
     // aplica o filtro frequencial
     mulSpectrums(complexImage, filter, complexImageTmp, 0);
@@ -95,14 +91,33 @@ void aplicarFiltroHomomorfico()
 	// calcula a DFT inversa
     idft(complexImageTmp, complexImageTmp);
     
-    exp(complexImageTmp, complexImageTmp);
+    //exp(complexImageTmp, complexImageTmp);
 
     // separa as partes real e imaginaria da
     // imagem filtrada
     split(complexImageTmp, planos);
     
+    //exp(planos[0], planos[0]);
+    
+    Mat temp1, temp2, temp3;
+    temp1 = planos[0];
+    exp(planos[0], temp2);
+    log(temp2, temp3);
+    
+    normalize(temp1, temp1, 0, 1, CV_MINMAX);	
+    normalize(temp2, temp2, 0, 1, CV_MINMAX);	
+    normalize(temp3, temp3, 0, 1, CV_MINMAX);	
+    
+    imshow("t1", temp1);
+    imshow("t2", temp2);
+    imshow("t3", temp2);
+    
     // normaliza a parte real para exibicao
     normalize(planos[0], imagemFinal, 0, 1, CV_MINMAX);	
+    
+    //exp(imagemFinal, imagemFinal);
+    
+    //imagemFinal = planos[0];
     
     imshow("resultado", imagemFinal);
 }
@@ -242,6 +257,9 @@ void exibirEspectro(Mat& complexI)
 {
     Mat espectro;
     Mat planos[2];
+    
+    deslocaDFT(complexI);
+    
     split(complexI, planos);
     
     magnitude(planos[0], planos[1], espectro);
