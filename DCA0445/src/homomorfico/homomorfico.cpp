@@ -86,6 +86,9 @@ void aplicarFiltroHomomorfico()
     // aplica o filtro frequencial
     mulSpectrums(complexImage, filter, complexImageTmp, 0);
     
+    deslocaDFT(filter);
+    exibirEspectro(filter);
+    
     deslocaDFT(complexImageTmp);
  
 	// calcula a DFT inversa
@@ -147,7 +150,7 @@ void alterarSliderC(int, void*)
         sliderC = 1;
     }
     
-    C = (float) sliderC/10.0;
+    C = (float) sliderC/1000.0;
     aplicarFiltroHomomorfico();
 }
 
@@ -252,5 +255,6 @@ void exibirEspectro(Mat& complexI)
     normalize(magI, magI, 0, 1, CV_MINMAX); // Transform the matrix with float values into a
                                             // viewable image form (float between values 0 and 1).
 
-    imshow("spectrum magnitude", magI);
+    imshow("spectrum magnitude", magI);   
+
 }
