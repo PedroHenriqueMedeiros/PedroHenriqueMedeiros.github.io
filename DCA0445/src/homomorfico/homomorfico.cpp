@@ -91,33 +91,14 @@ void aplicarFiltroHomomorfico()
 	// calcula a DFT inversa
     idft(complexImageTmp, complexImageTmp);
     
-    //exp(complexImageTmp, complexImageTmp);
-
-    // separa as partes real e imaginaria da
-    // imagem filtrada
     split(complexImageTmp, planos);
     
-    //exp(planos[0], planos[0]);
+    normalize(planos[0], planos[0], 0, 1, CV_MINMAX);	
     
-    Mat temp1, temp2, temp3;
-    temp1 = planos[0];
-    exp(planos[0], temp2);
-    log(temp2, temp3);
-    
-    normalize(temp1, temp1, 0, 1, CV_MINMAX);	
-    normalize(temp2, temp2, 0, 1, CV_MINMAX);	
-    normalize(temp3, temp3, 0, 1, CV_MINMAX);	
-    
-    imshow("t1", temp1);
-    imshow("t2", temp2);
-    imshow("t3", temp2);
-    
+    exp(planos[0], planos[0]);
+ 
     // normaliza a parte real para exibicao
     normalize(planos[0], imagemFinal, 0, 1, CV_MINMAX);	
-    
-    //exp(imagemFinal, imagemFinal);
-    
-    //imagemFinal = planos[0];
     
     imshow("resultado", imagemFinal);
 }
@@ -166,7 +147,7 @@ void alterarSliderC(int, void*)
         sliderC = 1;
     }
     
-    C = (float) sliderC/1000.0;
+    C = (float) sliderC/10.0;
     aplicarFiltroHomomorfico();
 }
 
