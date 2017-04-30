@@ -8,19 +8,22 @@
 using namespace cv;
 using namespace std;
 
-Mat imagem, padded, filter, tmp, complexImage, complexImageTmp, imagemFinal;
-vector<Mat> planos;
-Mat_<float> realInput, zeros;
+Mat complexImage;
 
-int sliderGamaL;
-int sliderGamaH ;
-int sliderD0;
-int sliderC;
+int sliderGamaL = 2;
+int sliderGamaH = 1;
+int sliderD0 = 1;
+int sliderC = 1;
+
+float gamaH = 1;
+float gamaL = 0.5;
+float D0 = 0.2;
+float C = 0.2;
 
 int dft_M;
 int dft_N;
-int altura;
-int largura; 
+
+void exibirEspectro(Mat& complexI);
 
 /* Troca os quadrantes da imagem da DFT. */
 void deslocaDFT(Mat& image)
@@ -51,43 +54,48 @@ void deslocaDFT(Mat& image)
 
 void aplicarFiltroHomomorfico()
 {
-	cout << "Filtro executado!" << endl;
+    Mat filter, complexImageTmp, imagemFinal;
+    Mat planos[2];
 	
     // Construção do filtro com base nos parâmetros.
+    cout << complexImage.rows << " " << complexImage.cols << endl;
+    
+    Mat Du = Mat(complexImage.size(), CV_32FC1, Scalar(0));
     Mat Du2, expoente, resultExp, Hu;
-    Mat Du = Mat(padded.size(), CV_32FC1, Scalar(0));
-     
-    for(int i = 0; i < dft_M; i++)
+    
+    // definição de Du.
+    for(int u = 0; u < dft_M; u++)
     {
-		for(int j = 0; j < dft_N; j++)
+		for(int v = 0; v < dft_N; v++)
 		{
-			Du.at<float>(i,j) = sqrt(pow((i - dft_M/2.0),2) + pow((j - dft_N/2.0),2)) / sliderD0;
+			Du.at<float>(u, v) = sqrt(
+                (u - dft_M/2.0)*(u - dft_M/2.0) + 
+                (v - dft_N/2.0)*(v - dft_N/2.0)
+            );
 		}
 	}
-	
+    
 	multiply(Du, Du, Du2);
-	expoente = -sliderC * Du2;
+    Du2 = Du2 / (D0 * D0);
+	expoente = -1.0 * C * Du2;
 	exp(expoente, resultExp);
 	
-	Hu = (sliderGamaH - sliderGamaL) * (1 - resultExp) + sliderGamaL;
+	Hu = (gamaH - gamaL) * (1 - resultExp) + gamaL;
     
     Mat comps[]= {Hu, Hu};
 	merge(comps, 2, filter);
-    
-    cout << complexImage.rows << ", " << complexImage.cols << endl;
-    cout << filter.rows << ", " << filter.cols << endl;
-    
-    cout << complexImage.type() << endl;
-    cout << filter.type() << endl;
+
+
    
     // aplica o filtro frequencial
     mulSpectrums(complexImage, filter, complexImageTmp, 0);
+    
+    deslocaDFT(complexImageTmp);
  
 	// calcula a DFT inversa
     idft(complexImageTmp, complexImageTmp);
-
-	// limpa o array de planos
-    planos.clear();
+    
+    exp(complexImageTmp, complexImageTmp);
 
     // separa as partes real e imaginaria da
     // imagem filtrada
@@ -95,50 +103,34 @@ void aplicarFiltroHomomorfico()
     
     // normaliza a parte real para exibicao
     normalize(planos[0], imagemFinal, 0, 1, CV_MINMAX);	
-	
-	/*
-	// realiza o padding da imagem
-	copyMakeBorder(imagem, padded, 0,
-                 dft_M - altura, 0,
-                 dft_N - largura,
-                 BORDER_CONSTANT, Scalar::all(0));
-                 
-     /I
-                 
-	// parte imaginaria da matriz complexa (preenchida com zeros)
-	zeros = Mat_<float>::zeros(padded.size());
-
-	// prepara a matriz complexa para ser preenchida
-	complexImage = Mat(padded.size(), CV_32FC2, Scalar(0));
-
-	// a função de transferência (filtro frequencial) deve ter o
-	// mesmo tamanho e tipo da matriz complexa
-	filter = complexImage.clone();
-
-	// cria uma matriz temporária para criar as componentes real
-	// e imaginaria do filtro ideal
-	tmp = Mat(dft_M, dft_N, CV_32F);
-	*/
     
+    imshow("resultado", imagemFinal);
 }
-
-
 
 void alterarSliderGamaH(int, void*)
 {
-	imshow("resultado", imagemFinal);
-	aplicarFiltroHomomorfico();
+    if(sliderGamaH < 1)
+    {
+        sliderGamaH = 1;
+    }
+    
+    if(sliderGamaH <= sliderGamaL)
+    {
+        sliderGamaH = sliderGamaL + 1;
+    }
+    gamaH = (float) sliderGamaH/10.0;
+    aplicarFiltroHomomorfico();  
 }
 
 void alterarSliderGamaL(int, void*)
 {
-	if(sliderGamaL > sliderGamaH)
+	if(sliderGamaL >= sliderGamaH)
 	{
-		sliderGamaL = sliderGamaH;
+		sliderGamaL = sliderGamaH - 1;
 	}
-	
+    
+	gamaL = (float) sliderGamaL/10.0;
 	aplicarFiltroHomomorfico();
-	imshow("resultado", imagemFinal);
 }
 
 void alterarSliderD0(int, void*)
@@ -148,8 +140,8 @@ void alterarSliderD0(int, void*)
         sliderD0 = 1;
     }
     
+    D0 = (float) sliderD0/10.0;
     aplicarFiltroHomomorfico();
-	imshow("resultado", imagemFinal);
 }
 
 void alterarSliderC(int, void*)
@@ -158,11 +150,15 @@ void alterarSliderC(int, void*)
     {
         sliderC = 1;
     }
+    
+    C = (float) sliderC/1000.0;
     aplicarFiltroHomomorfico();
-	imshow("resultado", imagemFinal);
 }
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[])
+{
+
+    Mat  imagem, padded;
 
     /* Verifica o número de argumentos.  */
     if (argc != 2) 
@@ -180,43 +176,28 @@ int main(int argc, char* argv[]){
         cout << "A imagem não pode ser aberta." << endl;
         return -2;
     }
+       
     
-    imagemFinal = imagem.clone();
-    
-    largura = imagem.cols;
-    altura = imagem.rows;
-    
-    dft_M = getOptimalDFTSize(altura);
-    dft_N = getOptimalDFTSize(largura);
+  dft_M = getOptimalDFTSize(imagem.rows);
+  dft_N = getOptimalDFTSize(imagem.cols);
+
+  // realiza o padding da imagem
+  copyMakeBorder(imagem, padded, 0,
+                 dft_M - imagem.rows, 0,
+                 dft_N - imagem.cols,
+                 BORDER_CONSTANT, Scalar::all(0));
 	
 	namedWindow("resultado", 1);
-	
-	  // realiza o padding da imagem
-	  copyMakeBorder(imagem, padded, 0,
-					 dft_M - altura, 0,
-					 dft_N - largura,
-					 BORDER_CONSTANT, Scalar::all(0));
-					 
-	  // parte imaginaria da matriz complexa (preenchida com zeros)
-	  zeros = Mat_<float>::zeros(padded.size());
 
-	  // prepara a matriz complexa para ser preenchida
-	  complexImage = Mat(padded.size(), CV_32FC2, Scalar(0));
-	  
-	// cria a compoente real
-    realInput = Mat_<float>(padded);
-
+                 
+    Mat planos[] = {Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F)};
+    merge(planos, 2, complexImage);         // Add to the expanded another plane with zeros
     
-    // insere as duas componentes no array de matrizes
-    planos.push_back(realInput);
-    planos.push_back(zeros);
-    
-    merge(planos, complexImage);
+    log(complexImage + 1, complexImage);
     
     // calcula o dft
     dft(complexImage, complexImage);
-
-    // realiza a troca de quadrantes
+    
     deslocaDFT(complexImage);
     
     /* Cria as barras de rolagem. */
@@ -234,7 +215,7 @@ int main(int argc, char* argv[]){
     
     createTrackbar("D0", "resultado",
         &sliderD0,
-        altura,
+        dft_M,
         alterarSliderD0);  
     alterarSliderD0(sliderD0, 0);
     
@@ -243,6 +224,7 @@ int main(int argc, char* argv[]){
         C_MAX,
         alterarSliderC);  
     alterarSliderC(sliderC, 0);
+
 
     /* Fecha o programa quando o usuário digita ESC. */
     while(1)
@@ -254,4 +236,22 @@ int main(int argc, char* argv[]){
     }
 
   return 0;
+}
+
+void exibirEspectro(Mat& complexI)
+{
+    Mat espectro;
+    Mat planos[2];
+    split(complexI, planos);
+    
+    magnitude(planos[0], planos[1], espectro);
+    Mat magI = planos[0];
+    
+    magI += Scalar::all(1);                    // switch to logarithmic scale
+    log(magI, magI);
+    
+    normalize(magI, magI, 0, 1, CV_MINMAX); // Transform the matrix with float values into a
+                                            // viewable image form (float between values 0 and 1).
+
+    imshow("spectrum magnitude", magI);
 }
