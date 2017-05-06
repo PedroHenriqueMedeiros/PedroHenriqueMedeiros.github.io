@@ -7,6 +7,9 @@
 using namespace std;
 using namespace cv;
 
+/* Matrizes usadas para armazenadas as imagens, bordas, etc. */
+Mat imageGray, imageColor, border, points, resultado;
+
 /* Slider usado para configurar o limiar do algoritmo de Canny. */
 int threshold_slider = 10;
 int threshold_slider_max = 200;
@@ -45,9 +48,8 @@ void mudar_raio_borda()
     }
 }
 
-
-Mat imageGray, imageColor, border, points, resultado;
-
+/* Função chamada quando o limiar do algortimo de Canny é alterado. Nela,
+ * a imagem com o resultado final é gerada novamente. */
 void alterarSliderCanny(int, void*)
 {
     Canny(imageGray, border, threshold_slider, 3 * threshold_slider);
@@ -62,15 +64,20 @@ void alterarSliderCanny(int, void*)
     {
         for (int j = 0; j < border.cols; j++)
         {
+            
+            /* Existe borda onde a cor do píxel é branca (255). */
             if (border.at<uchar>(i, j) == 255)
             {
+                
+                /* Separa os 3 canais de cores. */
                 colors = imageColor.at<Vec3b>(i, j);
                 b = colors[0];
                 g = colors[1];
                 r = colors[2];
-
+                
+                /* Cria o círculo em cima da borda. */
                 circle(resultado, cv::Point(j, i), raio_borda, CV_RGB(r, g, b), 
-                    -1, CV_AA);
+                -1, CV_AA);
             }
         }
     }
@@ -79,6 +86,9 @@ void alterarSliderCanny(int, void*)
     imshow("resultado", resultado);
 }
 
+/* Função chamada quando algum parâmetro do efeito de pointilhismo é alterado.
+ * Ao fim, o resultado final é gerado novamente através da chamada da função
+ * alterarSliderCanny. */
 void alterarSliderPointilhismo(int, void*)
 {
     vector<int> yrange;
@@ -87,7 +97,8 @@ void alterarSliderPointilhismo(int, void*)
     int x, y;
     uchar r, g, b;
     Vec3b colors;
-
+    
+    /* Evite que o passo seja menor que 1. */
     if (step_slider < 1)
     {
         step_slider = 1;
@@ -161,6 +172,8 @@ int main(int argc, char** argv)
         return -2;
     }
     
+    /* Mantenha a imagem original em dois formatos: em escala de cinza e 
+     * colorido. A em escala de cinza será usada na detecção de bordas. */
     cvtColor(imageColor, imageGray, CV_BGR2GRAY);
 
     points = imageColor.clone();
@@ -172,19 +185,18 @@ int main(int argc, char** argv)
 
     Canny(imageGray, border, threshold_slider, 3 * threshold_slider);
 
-    createTrackbar(
-    "Treshold inferior", "canny", &threshold_slider, threshold_slider_max, alterarSliderCanny);
+    createTrackbar("Treshold inferior", "canny", &threshold_slider, 
+        threshold_slider_max, alterarSliderCanny);
 
-    createTrackbar(
-    "Step", "pointilhismo", &step_slider, step_slider_max, alterarSliderPointilhismo);
+    createTrackbar("Step", "pointilhismo", &step_slider, step_slider_max,
+        alterarSliderPointilhismo);
 
-    createTrackbar(
-    "Jitter", "pointilhismo", &jitter_slider, jitter_slider_max, alterarSliderPointilhismo);
+    createTrackbar("Jitter", "pointilhismo", &jitter_slider, jitter_slider_max,
+        alterarSliderPointilhismo);
 
-    createTrackbar(
-    "Raio", "pointilhismo", &raio_slider, raio_slider_max, alterarSliderPointilhismo);
+    createTrackbar("Raio", "pointilhismo", &raio_slider, raio_slider_max,                 
+        alterarSliderPointilhismo);
 
-    /* aplica o efeito do pointilhismo. */
 
     alterarSliderPointilhismo(0, 0);
     alterarSliderCanny(threshold_slider, 0);
