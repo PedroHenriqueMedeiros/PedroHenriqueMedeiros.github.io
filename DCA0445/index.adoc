@@ -13,7 +13,7 @@ Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gm
 :figure-caption: Figura 
 :table-caption: Tabela
 :stem:
-:numbered:
+//:numbered:
 :source-highlighter: pygments
 :icons: font
 :linkattrs:
@@ -438,7 +438,7 @@ video::1ziU0PYewVU[youtube, width=640, height=480, options="loop"]
 === Seção 8.2 - Exercício 1 
 
 ****
-* Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.
+Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.
 ****
 
 A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/exemplos/dft.cpp[exemplos/dft.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito do filtro __homomórfico__ foi desenvolvido:
@@ -451,3 +451,111 @@ include::{sourcedir}/homomorfico/homomorfico.cpp[]
 ----
 
 A ideia desse programa foi de abrir uma figura mal iluminada, a qual foi obtida através de modificações fietas no programa gimp para deixar uma parte da figura um pouco mais escura e a outra mais clara e então efetuar a aplicação da filtragem homomórfica.
+
+
+== Canny e a arte com pontilhismo
+
+=== Seção 11.1 - Exercício 1
+
+****
+Utilizando os programas link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/canny.cpp[exemplos/canny.cpp, window="_blank"] e link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pontilhismo.cpp[exemplos/pontilhismo.cpp, window="_blank"] como referência, implemente um programa cannypoints.cpp. A idéia é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. A forma como a informação de borda será usada é livre. Entretanto, são apresentadas algumas sugestões de técnicas que poderiam ser utilizadas:
+
+* Desenhar pontos grandes na imagem pontilhista básica;
+
+* Usar a posição dos pixels de borda encontrados pelo algoritmo de Canny para desenhar pontos nos respectivos locais na imagem gerada.
+
+* Experimente ir aumentando os limiares do algoritmo de Canny e, para cada novo par de limiares, desenhar círculos cada vez menores nas posições encontradas. A Figura Pontilhismo aplicado à imagem Lena foi desenvolvida usando essa técnica.
+
+* Escolha uma imagem de seu gosto e aplique a técnica que você desenvolveu.
+
+* Descreva no seu relatório detalhes do procedimento usado para criar sua técnica pontilhista.
+
+[[img-lenna-pontilhismo]] 
+.Figura lenna-pontilhismo.png
+image::lenna-pontilhismo.png[Lenna Pontilhismo] 
+
+****
+
+Combinando as funcionalidades fornecidas nos programas link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/canny.cpp[exemplos/canny.cpp, window="_blank"] e link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pontilhismo.cpp[exemplos/pontilhismo.cpp, window="_blank"], o seguinte programa abaixo foi desenvolvido:
+
+.cannypoints.cpp
+[[cannypoints]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/pontilhismo/cannypoints.cpp[]
+----
+
+A ideia do programa acima é gerar o efeito de pontilhismo em uma imagem fornecida pelo usuário, com a opção de configurar vários parâmetros em tempo real para se obter o melhor resultado desejado. Para obter isso, é necessário realizar algumas etapas sugeridas pelo enunciado desta questão.
+
+Inicialmente, a imagem original é lida no formato colorido e, em seguida, é feita uma cópia dela, mas em escala de cinza (linha 177), para facilitar o algortimo de detecção de bordad de Canny a ser aplicado posteriormente. Após isso, são criadas 3 janelas: 
+
+* "canny" - Janela onde o usuário definirá o limiar inferior do algortimo de Canny.
+* "pontilhismo" - Janela onde o usuário definirá parâmetros do efeito de desenhar desenhar círculos (a forma como o pontilhismo é aplicado).
+* "resultado" - Janela onde o usuário vê o resultado final, a partir da combinação das configurações das duas outras janelas.
+
+Após isso, são configurados os _sliders_ nas janelas em questão (da linha 188 à 198), o que finaliza a inicialização do programa. O primeiro _slider_ é responsável pelo limiar do algoritmo de Canny, enquanto os outros 3 são responsáveis pelo efeito de desenho dos círculos.
+
+A função *alterarSliderCanny*, que é chamada toda vez que o limiar de Canny é alterado, faz a detecção de bordas da imagem original que foi convertida em escala de cinza. Após isso, o efeito do pontilhismo é aplicado na borda da imagem que já passara pelo efeito de pontilhismo definido na janela pontilhismo (essa imagem com efeito de pontilhismo está como colorida). É importante ressaltar que, seguindo a sugestão do enunciado, o tamanho do circulo a ser colocado na borda vai diminuindo conforme o limiar do algoritmo vai aumentando. Isso é feito pela função *mudar_raio_borda*, que sempre é chamada quando há alteração de limiar (linha 60). Ao fim, a imagem resultante é exibida novamente na janela "resultado".
+
+Por fim, a função *alterarSliderPointilhismo* é invocada quando há alteração em alguns dos parâmetros do efeito de pontilhismo. Com os valores de *step*, *jitter* e *raio* definidos, alguns píxels da imagem original são substituídos por círculos em uma ordem aleatória para melhorar o efeito. Com isso, a imagem resultante precisa ser recalculada e isso é feito através da função *alterarSliderCanny*, que é forçadamente chamada ao fim (linha 152).
+
+
+====
+
+.Exemplo de execução 1
+* Comando: ./cannypoints pontilhismo-lara.jpg
+* Foto de entrada: 
+
+[[img-pontilhismo-lara]] 
+.Figura pontilhismo-lara.jpg
+image::pontilhismo-lara.jpg[Lara] 
+
+* Janela de configuração do efeito de pontilhismo
+
+[[img-pontilhismo-parametros-lara]] 
+.Figura pontilhismo-parametros-lara.png
+image::pontilhismo-parametros-lara.png[Parâmetros Lara] 
+
+* Janela de configuração do limiar do algortimo de Canny
+
+[[img-pontilhismo-canny-lara]] 
+.Figura pontilhismo-canny-lara.png
+image::pontilhismo-canny-lara.png[Canny Lara] 
+
+* Janela com o resultado final
+
+[[img-pontilhismo-resultado-lara]] 
+.Figura pontilhismo-resultado-lara.png
+image::pontilhismo-resultado-lara.png[Resultado Lara] 
+
+
+.Exemplo de execução 2
+* Comando: ./cannypoints pontilhismo-gow.png
+* Foto de entrada: 
+
+[[img-pontilhismo-gow]] 
+.Figura pontilhismo-gow.jpg
+image::pontilhismo-gow.jpg[GOW] 
+
+* Janela de configuração do efeito de pontilhismo
+
+[[img-pontilhismo-parametros-gow]] 
+.Figura pontilhismo-parametros-gow.png
+image::pontilhismo-parametros-gow.png[Parâmetros GOW] 
+
+* Janela de configuração do limiar do algortimo de Canny
+
+[[img-pontilhismo-canny-gow]] 
+.Figura pontilhismo-canny-gow.png
+image::pontilhismo-canny-gow.png[Canny GOW] 
+
+* Janela com o resultado final
+
+[[img-pontilhismo-resultado-gow]] 
+.Figura pontilhismo-resultado-gow.png
+image::pontilhismo-resultado-gow.png[Resultado GOW] 
+
+====
+
+
+

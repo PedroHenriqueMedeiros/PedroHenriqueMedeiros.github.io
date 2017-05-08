@@ -14,7 +14,7 @@ Mat imageGray, imageColor, border, points, resultado;
 int threshold_slider = 10;
 int threshold_slider_max = 200;
 
-/* Sliders usado para configurar o efeito de pointilhismo. */
+/* Sliders usado para configurar o efeito de pontilhismo. */
 int step_slider = 1;
 int step_slider_max = 10;
 
@@ -26,7 +26,7 @@ int raio_slider_max = 10;
 
 int raio_borda = 4;
 
-/* Altera o raio do pointilhismo na borda da imagem de acordo com o limiar
+/* Altera o raio do pontilhismo na borda da imagem de acordo com o limiar
  * do algoritmo de Canny. */
 void mudar_raio_borda()
 {
@@ -59,7 +59,7 @@ void alterarSliderCanny(int, void*)
     
     mudar_raio_borda();
 
-    /* Recria o efeito o pointilhismo, modificando as bordas. */
+    /* Recria o efeito o pontilhismo, modificando as bordas. */
     for (int i = 0; i < border.rows; i++)
     {
         for (int j = 0; j < border.cols; j++)
@@ -86,7 +86,7 @@ void alterarSliderCanny(int, void*)
     imshow("resultado", resultado);
 }
 
-/* Função chamada quando algum parâmetro do efeito de pointilhismo é alterado.
+/* Função chamada quando algum parâmetro do efeito de pontilhismo é alterado.
  * Ao fim, o resultado final é gerado novamente através da chamada da função
  * alterarSliderCanny. */
 void alterarSliderPointilhismo(int, void*)
@@ -148,7 +148,7 @@ void alterarSliderPointilhismo(int, void*)
         }
     }
 
-    imshow("pointilhismo", points);
+    imshow("pontilhismo", points);
     alterarSliderCanny(0, 0);
 }
 
@@ -180,7 +180,7 @@ int main(int argc, char** argv)
     border = imageGray.clone();
 
     namedWindow("canny", 1);
-    namedWindow("pointilhismo", 1);
+    namedWindow("pontilhismo", 1);
     namedWindow("resultado", 1);
 
     Canny(imageGray, border, threshold_slider, 3 * threshold_slider);
@@ -188,13 +188,13 @@ int main(int argc, char** argv)
     createTrackbar("Treshold inferior", "canny", &threshold_slider, 
         threshold_slider_max, alterarSliderCanny);
 
-    createTrackbar("Step", "pointilhismo", &step_slider, step_slider_max,
+    createTrackbar("Step", "pontilhismo", &step_slider, step_slider_max,
         alterarSliderPointilhismo);
 
-    createTrackbar("Jitter", "pointilhismo", &jitter_slider, jitter_slider_max,
+    createTrackbar("Jitter", "pontilhismo", &jitter_slider, jitter_slider_max,
         alterarSliderPointilhismo);
 
-    createTrackbar("Raio", "pointilhismo", &raio_slider, raio_slider_max,                 
+    createTrackbar("Raio", "pontilhismo", &raio_slider, raio_slider_max,                 
         alterarSliderPointilhismo);
 
 
