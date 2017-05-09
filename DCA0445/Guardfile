@@ -4,7 +4,7 @@ require 'date'
 input = "index.adoc"
 output = "index.html"
 backend = "html5"
-theme = "readthedocs.css"
+theme = "colony.css"
 
 guard 'shell' do
   watch(input) {|m|
