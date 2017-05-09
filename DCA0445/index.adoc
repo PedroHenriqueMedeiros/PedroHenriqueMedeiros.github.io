@@ -470,8 +470,8 @@ Um fato importante a ser mencionado é que após o processamento no domínio da 
 
 ====
 
-.Exemplo de execução
-* Comando: ./homomorfico cat.jpg
+.Exemplo de execução 1
+* Comando: ./homomorfico tunel.png
 * Foto de entrada: 
 
 [[img-tunel]] 
@@ -488,7 +488,28 @@ image::homomorfico-filtro.png[Filtro Homomórfico]
 
 [[img-homomorfico-tunel]] 
 .Figura homomorfico-tunnel.png
-image::homomorfico-tunnel.png[Túnel homomórfico] 
+image::homomorfico-tunnel.png[Túnel homomórfico]
+
+
+.Exemplo de execução 2
+* Comando: ./homomorfico rua.jpg
+* Foto de entrada: 
+
+[[img-rua]] 
+.Figura rua.jpg
+image::rua.jpg[Rua] 
+
+* Filtro passa altas homomórfico (como ficou o filtro para a configuração do resultado abaixo):
+
+[[img-homomorfico-filtro2]] 
+.Figura homomorfico-filtro2.png
+image::homomorfico-filtro2.png[Filtro Homomórfico] 
+
+* Resultado:
+
+[[img-homomorfico-tunel]] 
+.Figura homomorfico-rua.png
+image::homomorfico-rua.png[Rua homomórfico]  
 
 ====
 
