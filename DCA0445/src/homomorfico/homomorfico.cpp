@@ -22,31 +22,52 @@ float C = 0.2;
 int dft_M;
 int dft_N;
 
-void exibirEspectro(Mat& complexI);
+/* Exibe o espectro da uma imagem complexa. */
+void exibirEspectro(Mat& complexI)
+{
+    Mat espectro;
+    Mat planos[2];
+    
+    deslocaDFT(complexI);
+    
+    split(complexI, planos);
+    
+    magnitude(planos[0], planos[1], espectro);
+    Mat magI = planos[0];
+    
+    magI += Scalar::all(1);                    
+    log(magI, magI);
+    
+    normalize(magI, magI, 0, 1, CV_MINMAX); 
+                                            
+
+    imshow("spectrum magnitude", magI);   
+
+}
 
 /* Troca os quadrantes da imagem da DFT. */
 void deslocaDFT(Mat& image)
 {
   Mat tmp, A, B, C, D;
 
-  // se a imagem tiver tamanho impar, recorta a regiao para
-  // evitar cópias de tamanho desigual
+  /* Se a imagem tiver tamanho impar, recorta a regiao para
+   * evitar cópias de tamanho desigual. */
   image = image(Rect(0, 0, image.cols & -2, image.rows & -2));
   int cx = image.cols/2;
   int cy = image.rows/2;
 
-  // reorganiza os quadrantes da transformada
-  // A B   ->  D C
-  // C D       B A
+  /* reorganiza os quadrantes da transformada
+   * A B   ->  D C
+   * C D       B A */
   A = image(Rect(0, 0, cx, cy));
   B = image(Rect(cx, 0, cx, cy));
   C = image(Rect(0, cy, cx, cy));
   D = image(Rect(cx, cy, cx, cy));
 
-  // A <-> D
+  /* A <-> D */
   A.copyTo(tmp);  D.copyTo(A);  tmp.copyTo(D);
 
-  // C <-> B
+  /* C <-> B */
   C.copyTo(tmp);  B.copyTo(C);  tmp.copyTo(B);
 }
 
@@ -56,12 +77,12 @@ void aplicarFiltroHomomorfico()
     Mat filter, complexImageTmp, imagemFinal;
     Mat planos[2];
 	
-    // Construção do filtro com base nos parâmetros
+    /* Construção do filtro com base nos parâmetros. */
     
     Mat Du = Mat(complexImage.size(), CV_32FC1, Scalar(0));
     Mat Du2, expoente, resultExp, Hu;
     
-    // definição de Du.
+    /* Definição de Du. */
     for(int u = 0; u < dft_M; u++)
     {
 		for(int v = 0; v < dft_N; v++)
@@ -73,6 +94,8 @@ void aplicarFiltroHomomorfico()
 		}
 	}
     
+    /* Operações matemáticas para definidor o filtro homomórfico Hu. */
+    
 	multiply(Du, Du, Du2);
     Du2 = Du2 / (D0 * D0);
 	expoente = -1.0 * C * Du2;
@@ -83,7 +106,7 @@ void aplicarFiltroHomomorfico()
     Mat comps[]= {Hu, Hu};
 	merge(comps, 2, filter);
    
-    // aplica o filtro frequencial
+    /* Aplica o filtro frequencial. */
     mulSpectrums(complexImage, filter, complexImageTmp, 0);
     
     deslocaDFT(filter);
@@ -91,16 +114,20 @@ void aplicarFiltroHomomorfico()
     
     deslocaDFT(complexImageTmp);
  
-	// calcula a DFT inversa
+	/* Calcula a DFT inversa. */
     idft(complexImageTmp, complexImageTmp);
     
+    /* Separa os planos real (0) e complexo (1). */
     split(complexImageTmp, planos);
     
+    /* Aqui é necessário normalizar os valores do plano real, pois eles ainda 
+     * serão submetidos a uma operação de exponenciação e altos valores gerariam
+     * uma falha de representação. */
     normalize(planos[0], planos[0], 0, 1, CV_MINMAX);	
     
     exp(planos[0], planos[0]);
  
-    // normaliza a parte real para exibicao
+    /* Normaliza novamente para poder exibir o resultado final. */
     normalize(planos[0], imagemFinal, 0, 1, CV_MINMAX);	
     
     imshow("resultado", imagemFinal);
@@ -177,11 +204,11 @@ int main(int argc, char* argv[])
     }
        
     
-  dft_M = getOptimalDFTSize(imagem.rows);
-  dft_N = getOptimalDFTSize(imagem.cols);
+    dft_M = getOptimalDFTSize(imagem.rows);
+    dft_N = getOptimalDFTSize(imagem.cols);
 
-  // realiza o padding da imagem
-  copyMakeBorder(imagem, padded, 0,
+    /* Realiza o padding da imagem. */
+    copyMakeBorder(imagem, padded, 0,
                  dft_M - imagem.rows, 0,
                  dft_N - imagem.cols,
                  BORDER_CONSTANT, Scalar::all(0));
@@ -194,12 +221,12 @@ int main(int argc, char* argv[])
     
     log(complexImage + 1, complexImage);
     
-    // calcula o dft
+    /* Calcula o DFT. */
     dft(complexImage, complexImage);
     
     deslocaDFT(complexImage);
     
-    /* Cria as barras de rolagem. */
+    /* Cria as barras de rolagem com todos os parâmetros. */
     createTrackbar("GamaH", "resultado",
         &sliderGamaH,
         GAMA_MAX,
@@ -237,24 +264,4 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-void exibirEspectro(Mat& complexI)
-{
-    Mat espectro;
-    Mat planos[2];
-    
-    deslocaDFT(complexI);
-    
-    split(complexI, planos);
-    
-    magnitude(planos[0], planos[1], espectro);
-    Mat magI = planos[0];
-    
-    magI += Scalar::all(1);                    // switch to logarithmic scale
-    log(magI, magI);
-    
-    normalize(magI, magI, 0, 1, CV_MINMAX); // Transform the matrix with float values into a
-                                            // viewable image form (float between values 0 and 1).
 
-    imshow("spectrum magnitude", magI);   
-
-}

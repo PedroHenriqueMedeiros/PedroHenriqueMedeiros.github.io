@@ -438,7 +438,7 @@ video::1ziU0PYewVU[youtube, width=640, height=480, options="loop"]
 === Seção 8.2 - Exercício 1 
 
 ****
-Utilizando o programa exemplos/dft.cpp como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.
+* Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/exemplos/dft.cpp[exemplos/dft.cpp, window="_blank"] como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.
 ****
 
 A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/exemplos/dft.cpp[exemplos/dft.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito do filtro __homomórfico__ foi desenvolvido:
@@ -450,8 +450,47 @@ A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exempl
 include::{sourcedir}/homomorfico/homomorfico.cpp[]
 ----
 
-A ideia desse programa foi de abrir uma figura mal iluminada, a qual foi obtida através de modificações fietas no programa gimp para deixar uma parte da figura um pouco mais escura e a outra mais clara e então efetuar a aplicação da filtragem homomórfica.
+A ideia desse programa é realizar o tratamento de uma figura mal iluminada, com o objetivo de prover uma melhor distribuição da iluminação. Essa melhora é obtida após a aplicação de um filtro chamado de "homomórfico". A filtragem homomórfica baseia-se na ideia de poder melhorar a aparência de uma imagem com base no modelo de reflectância e iluminação. No domínio da frequência, é possível obter um controle simultâneo da compressão da faixa de intensidade e do contraste. 
 
+Primeiramente, uma imagem pode ser descrita como uma função stem:[f(x,y) = i(x,y)r(x,y)], em que stem:[i(x,y)] é a iluminância e stem:[r(x,y)] a reflectância. Dessa forma, ao aplicar a transformada de Fourier, tem-se o seguinte problema: stem:[F{f(x,y)}\neF{i(x,y)}F{r(x,y)}]. A solução para este problema é considerar a seguinte função stem:[z(x,y)=ln{f(x,y)}], em que o valor de stem:[z(x,y)] vai ser igual a stem:[ln{i(x,y)} + ln{r(x,y)}].
+
+A aplicação da transformada de Fourier no logaritmo acima gera o seguinte resultado: stem:[F{z(x,y)} = F{ln{i(x,y)}} + F{ln{r(x,y)}}], que pode ser visto na forma stem:[Z(u,v) = F_{i}(u,v) + F_{r}(u,v)]. É neste resultado que se pode aplicar um filtro homomórfico do formato stem:[H(u,v)], o que gera a fórmula definitiva abaixo: stem:[S(u,v) = H(u,v)Z(u,v)], sendo stem:[H(u,v) = (\gamma_{H} - \gamma_{L})(1-e^{-c(\frac{(D^{2}(u,v))}{(D_{0})^2})}) + \gamma_{L}].  O termo c controla a inclinação da função à medida que existe a transição entre stem:[\gamma_{H}] e stem:[\gamma_{L}], o termo stem:[D_0] simboliza o raio do círculo do filtro passa alta, o termo stem:[D(u,v)] simboliza a distância entre um ponto stem:[(u,v)] no domínio da frequência e o centro do retângulo de frequência(nesse caso o ponto central da imagem) e por fim os termos stem:[\gamma_{H}] e stem:[\gamma_{L}] controlam a contribuição de de baixas frequências(iluminação) e de altas frequências(refletância).
+
+Por fim, quando se aplica a transformada inversa de Fourier a imagem resultante representada pela função stem:[s(x,y)] tem de ser submetida a operação exponencial na base e, pois na função original stem:[z(x,y)] aplicou-se a operação logaritmo natural. Dessa forma, a função que define a nova imagem vai ser do tipo: stem:[g(x,y) = e^{s(x,y)}].
+
+Após essa explicação introdutória sobre a filtragem homomórfica, o realiza todos os passos necessários: 
+
+. Aplica a função logaritmo neperiano em todos os pixels da imagem com a adição do número 1 em cada número para não haver erros ao aplicar a operação logaritmo no número 0 (linha 223).
+. Depois aplica-se a transformada de Fourier e faz o deslocamento das regiões, para facilitar a filtragem no domínio da frequência (linha 226 à 228).
+. Em seguida, a janela com o resultado é exibida com vários parâmetros para que o usuário possa realizar a configuração desejada (linha 230 à 253).
+. Finalmente, para cada parâmetro alterado, a função *aplicarFiltroHomomorfico* é chamada, de modo que o filtro é recriado com os novos parâmetros e um novo resultado final é gerado (linha 75 à 134).
+
+Um fato importante a ser mencionado é que após o processamento no domínio da frequência, a imagem resultante após a transformação inversa de Fourier pode conter valores com altissimo módulo em ponto flutuante. Conforme explicado acima, é necessário aplicar a operação de exponenciação na base _e_ em todos os píxels nesta etapa mas, dependendo do valor do píxeç, pode ser que o resultado não possa ser representado nem em float nem em double. Então, para evitar esse problema, é realizada uma normalização intermediária antes desses píxels passarem pela operação de exponenciação (linha 126 à linha 128). Ao fim de todo o processo, ainda é necessária uma última normalização para que o resultado possa ser exibido corretamente na tela.
+
+
+====
+
+.Exemplo de execução
+* Comando: ./homomorfico cat.jpg
+* Foto de entrada: 
+
+[[img-tunel]] 
+.Figura tunel.png
+image::tunel.png[Túnel] 
+
+* Filtro passa altas homomórfico (como ficou o filtro para a configuração do resultado abaixo):
+
+[[img-homomorfico-filtro]] 
+.Figura homomorfico-filtro.png
+image::homomorfico-filtro.png[Filtro Homomórfico] 
+
+* Resultado:
+
+[[img-homomorfico-tunel]] 
+.Figura homomorfico-tunnel.png
+image::homomorfico-tunnel.png[Túnel homomórfico] 
+
+====
 
 == Canny e a arte com pontilhismo
 
