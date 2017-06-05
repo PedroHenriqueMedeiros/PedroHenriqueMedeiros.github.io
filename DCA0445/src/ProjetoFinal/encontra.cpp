@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <cmath>
-#include <algorithm>
+#include <iomanip>
 #include "opencv2/legacy/legacy.hpp"
 
 using namespace std;
@@ -17,6 +17,7 @@ struct Circulo {
     float raio;
 };
 
+void detectaMoedas(Mat &imagem);
 void removeMoedasBorda(Mat &imagem);
 void removeBuracos(Mat &imagem);
 
@@ -28,6 +29,7 @@ int main(int argc, char** argv)
     vector<vector<Point> > contornos;
     vector<Vec4i> hierarquia;
     vector<Circulo> circulos;
+    stringstream saida;
     
      /* Verifica o número de argumentos.  */
     if (argc != 2)
@@ -53,7 +55,8 @@ int main(int argc, char** argv)
      * e colorida. A em escala de cinza será usada na detecção de bordas. */
     cvtColor(imagemColorida, imagemCinza, CV_BGR2GRAY);
     imagemBinaria = Mat(imagemCinza.size(), imagemCinza.type());
-    imagemDelimitada = Mat::zeros(imagemColorida.size(), CV_8UC1);
+    
+    imagemDelimitada = imagemColorida.clone();
     
     /* Usando threshold fixo. */
     //threshold(imagemCinza, imagemBinaria, 0, 255, THRESH_BINARY_INV|THRESH_OTSU);
@@ -79,7 +82,7 @@ int main(int argc, char** argv)
     /* Desenha os contornos detectado pela função anterior. */
     for(uint i = 0; i < contornos.size(); i++ )
     {
-        Scalar color = Scalar(63, 63, 63);
+        Scalar color = Scalar(0, 255, 255);
         drawContours(imagemDelimitada, contornos, i, color, 2, 8, hierarquia, 0, Point() );
     }
           
@@ -128,43 +131,64 @@ int main(int argc, char** argv)
            moedas.push_back(moeda);
            
            // Desenha o retângulo e o círculo delimitador.
-           circle(imagemDelimitada, centro, raio, Scalar(191, 191, 191));
-           rectangle(imagemDelimitada, ret, Scalar(255, 255, 255));
+           circle(imagemDelimitada, centro, raio, Scalar(0, 0, 255), 2);
+           rectangle(imagemDelimitada, ret, Scalar(255, 0, 0), 2);
            
         }
      }
      
-     /* Exibindo moedas identificadas e calculando os momentos invariantes. */
+     
+     /* Exibie resultado da delimitação. */
+    imshow("delimitada", imagemDelimitada);
+     
+     /* Exibe as moedas identificadas. */
+     for( int i = 0; i < (int) moedas.size(); i++)
+     {
+            string titulo = "Moeda " + to_string(i);
+            imshow(titulo, moedas[i]);
+            waitKey(100);
+      }
+     
+     
+     /* Calculando os momentos invariantes e associando-os aos valores. */
      for( int i = 0; i < (int) moedas.size(); i++)
      {
         Mat moedaCinza;
         double momentos[7];
+        unsigned int valor;
         
         cvtColor(moedas[i], moedaCinza,CV_RGB2GRAY);
         Moments momento = moments(moedaCinza, false);
         HuMoments(momento, momentos);
-         
-         
-         string titulo = "Moeda " + to_string(i);
-         imshow(titulo, moedas[i]);
-         cout << "--------------------------" << endl;
-         cout << "Momentos invariantes da moeda " << i << ": " << endl;
-         cout << "hu[0] = " << momentos[0] << endl;
-         cout << "hu[1] = " << momentos[1] << endl;
-         cout << "hu[2] = " << momentos[2] << endl;
-         cout << "hu[3] = " << momentos[3] << endl;
-         cout << "hu[4] = " << momentos[4] << endl;
-         cout << "hu[5] = " << momentos[5] << endl;
-         cout << "hu[6] = " << momentos[6] << endl;
-         cout << "--------------------------" << endl;
-         
+        
+        /* Salvando resultado em arquivo. */
+        cout << "Digite o valor da moeda " << i << ": ";
+        cin >> valor;
+        
+        /* Armazena o valor da moeda e seus momentos invariantes. */
+        
+        saida << valor << ",";
+        
+        for(int j = 0; j < 7; j++)
+        {    
+            saida << scientific << setprecision(7) << momentos[j];
+            if (j < 6)
+            {
+                saida << ",";
+            }
+        }
+        
+        saida << endl;
+        
      }
-
      
-    imshow("binaria", imagemBinaria);
-    imshow("delimitada", imagemDelimitada);
-    
-    waitKey(0);
+     /* Exibe o resultado final. */
+     
+    cout << endl << "Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
+    cout << "valor,monento0,momento1,momento2,momento3,momento4,momento5,momento6" << endl;
+    cout << saida.str() << endl;
+
+
     return(0);
 }
 
