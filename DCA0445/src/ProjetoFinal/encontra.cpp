@@ -8,65 +8,17 @@ using namespace std;
 using namespace cv;
 
 #define PONTOS_CIRCULO 50
-#define LIMIAR_RELACAO_AREAS = 0.85
+#define LIMIAR_RELACAO_AREAS 0.85
+#define LIMIAR_RAIO 10
+
 
 struct Circulo {
     Point2f centro;
     float raio;
 };
 
-void removeMoedasBorda(Mat &imagem)
-{
-    Point p;
-    
-    for (int i = 0; i <= imagem.rows; i += imagem.rows - 1)
-    {
-        for (int j = 0; j < imagem.cols; j++)
-        {
-            if (imagem.at<uchar>(i, j) == 255)
-            {
-                p.x = j;
-                p.y = i;
-                floodFill(imagem, p, 0);
-            }
-        }
-    }
-    
-    for (int j = 0; j < imagem.cols; j += imagem.cols - 1)
-    {
-        for (int i = 0; i < imagem.rows; i++)
-        {
-            if (imagem.at<uchar>(i, j) == 255)
-            {
-                p.x = j;
-                p.y = i;
-                floodFill(imagem, p, 0);
-            }
-        }
-    }
-}
-
-void removeBolhas(Mat &imagem)
-{
-    /* Altera a cor de fundo padrão para uma nova cor. */
-    floodFill(imagem, Point(0,0), 127);
-    
-    /* Remove todas as bolhas. */
-    for (int i = 0; i < imagem.rows; i++)
-    {
-        for (int j = 0; j < imagem.cols; j++)
-        {
-            if (imagem.at<uchar>(i, j) == 0)
-            {
-                floodFill(imagem, Point(j,i), 255);
-            }
-        }
-    }
-    
-    /* Retorna a cor de fundo par aa original. */
-    floodFill(imagem, Point(0,0), 0);
-}
-
+void removeMoedasBorda(Mat &imagem);
+void removeBuracos(Mat &imagem);
 
 int main(int argc, char** argv) 
 {
@@ -102,27 +54,27 @@ int main(int argc, char** argv)
     cvtColor(imagemColorida, imagemCinza, CV_BGR2GRAY);
     imagemBinaria = Mat(imagemCinza.size(), imagemCinza.type());
     imagemDelimitada = Mat::zeros(imagemColorida.size(), CV_8UC1);
-    threshold(imagemCinza, imagemBinaria, 0, 255, THRESH_BINARY|THRESH_OTSU);
     
-    /* Obtém o negativo da imagem binária (função findCountours precisa que o 
-     * fundo seja preto). */
-    bitwise_not(imagemBinaria, imagemBinaria); 
-        
+    /* Usando threshold fixo. */
+    //threshold(imagemCinza, imagemBinaria, 0, 255, THRESH_BINARY_INV|THRESH_OTSU);
+    
+    /* Usando threshold adaptativo (resultado melhor). */
+    //adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 7, 5);
+    adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 7, 5);
+    
     /* Remove moedas da borda. */
     removeMoedasBorda(imagemBinaria);
-    
+
     /* Faz o fechameto da imagem binária. */
     dilate(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), 8, 1, 1);
     erode(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), 8, 1, 1); 
         
-    /* Remove as bolhas. */
-    removeBolhas(imagemBinaria);
+    /* Remove buracos dentro das moedas (só a borda interessa). */
+    removeBuracos(imagemBinaria);
     
     /* Encontra contornos iniciais para o algoritmo de active contours. */
     imagemBinariaClone = imagemBinaria.clone();
     findContours(imagemBinariaClone, contornos, hierarquia, RETR_TREE, CV_CHAIN_APPROX_NONE);
-    
-
       
     /* Desenha os contornos detectado pela função anterior. */
     for(uint i = 0; i < contornos.size(); i++ )
@@ -150,7 +102,7 @@ int main(int argc, char** argv)
         double areaCirculo = M_PI * raio * raio;
         double relacaoAreas = areaContorno/areaCirculo;
 
-        if(areaCirculo > 10 && raio > 10 && relacaoAreas > LIMIAR_RELACAO_AREAS)
+        if(raio > LIMIAR_RAIO && relacaoAreas > LIMIAR_RELACAO_AREAS)
         {
             
             Rect ret = boundingRect(contornos[i]);
@@ -211,10 +163,62 @@ int main(int argc, char** argv)
      
     imshow("binaria", imagemBinaria);
     imshow("delimitada", imagemDelimitada);
-    imwrite("sylvia.jpg", imagemDelimitada);
     
     waitKey(0);
     return(0);
+}
+
+
+void removeMoedasBorda(Mat &imagem)
+{
+    Point p;
+    
+    for (int i = 0; i <= imagem.rows; i += imagem.rows - 1)
+    {
+        for (int j = 0; j < imagem.cols; j++)
+        {
+            if (imagem.at<uchar>(i, j) == 255)
+            {
+                p.x = j;
+                p.y = i;
+                floodFill(imagem, p, 0);
+            }
+        }
+    }
+    
+    for (int j = 0; j < imagem.cols; j += imagem.cols - 1)
+    {
+        for (int i = 0; i < imagem.rows; i++)
+        {
+            if (imagem.at<uchar>(i, j) == 255)
+            {
+                p.x = j;
+                p.y = i;
+                floodFill(imagem, p, 0);
+            }
+        }
+    }
+}
+
+void removeBuracos(Mat &imagem)
+{
+    /* Altera a cor de fundo padrão para uma nova cor. */
+    floodFill(imagem, Point(0,0), 127);
+    
+    /* Remove todas as bolhas. */
+    for (int i = 0; i < imagem.rows; i++)
+    {
+        for (int j = 0; j < imagem.cols; j++)
+        {
+            if (imagem.at<uchar>(i, j) == 0)
+            {
+                floodFill(imagem, Point(j,i), 255);
+            }
+        }
+    }
+    
+    /* Retorna a cor de fundo par aa original. */
+    floodFill(imagem, Point(0,0), 0);
 }
 
 
