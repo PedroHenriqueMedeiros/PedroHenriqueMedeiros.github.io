@@ -1,2 +1,3 @@
-Rows: 693
-Mindist: 200
+Rows: 693  Mindist: 300
+
+
