@@ -8,7 +8,7 @@ using namespace std;
 using namespace cv;
 
 #define PONTOS_CIRCULO 50
-#define LIMIAR_RELACAO_AREAS 0.85
+#define LIMIAR_RELACAO_AREAS 0.70
 #define LIMIAR_RAIO 10
 
 
