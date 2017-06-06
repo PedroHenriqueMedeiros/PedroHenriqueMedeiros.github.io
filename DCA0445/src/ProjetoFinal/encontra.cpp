@@ -10,25 +10,49 @@ using namespace cv;
 #define PONTOS_CIRCULO 50
 #define LIMIAR_RELACAO_AREAS 0.70
 #define LIMIAR_RAIO 10
+#define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
+#define RESULTADO_SEPARADO false
 
-
+/* Estrutura que define um círculo, que contornará a moeda. */
 struct Circulo {
     Point2f centro;
     float raio;
 };
 
-vector<Mat> detectaMoedas(Mat &imagem, bool exibirDelimitada = true);
-vector<Mat> detectaMoedasHough(Mat &imagem, bool exibirDelimitada = true);
+/* Estrutura que representa a moeda e outras informações associadas, tais como 
+ * seu contorno e o menor retângulo que a cerca. */
+struct Moeda {
+    Mat imagem;
+    double raio;
+    Point2f centro;
+    Rect retangulo;
+    vector<vector<Point> > contornos;
+    vector<Vec4i> hierarquia;
+};
+
+/* Função que detecta moedas em uma imagem, utilizando um determinado nível na
+ * operação morfológica do fechamento. */
+vector<Moeda> detectaMoedas(Mat &imagem, int fechamento);
+
+/* Função que desenha na imagem ou individualmente as moedas localizadas. */
+void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas);
+
+/* Função que remova moedas da borda da imagem. */
 void removeMoedasBorda(Mat &imagem);
+
+/* Função que remove buracos dentro da moeda durante a sua segmentação. */
 void removeBuracos(Mat &imagem);
 
+
+/* Função main. */
 int main(int argc, char** argv) 
 {
     Mat imagemColorida;
-    vector<Mat> moedas;
+    vector<Moeda> moedas, moedasMax;
     stringstream saida;
+    int fechamento = 1;
     
-     /* Verifica o número de argumentos.  */
+    /* Verifica o número de argumentos.  */
     if (argc != 2)
     {
         cout << "A lista de argumentos deve ser: "
@@ -44,34 +68,48 @@ int main(int argc, char** argv)
         cout << "A imagem não pode ser aberta." << endl;
         return -2;
     }
-    
-    //moedas = detectaMoedas(imagemColorida);
-    
-    moedas = detectaMoedasHough(imagemColorida);
 
-     /* Exibe as moedas identificadas. */
-    for( int i = 0; i < (int) moedas.size(); i++)
-    {
-        string titulo = "Moeda " + to_string(i);
-        imshow(titulo, moedas[i]);
-        waitKey(100);
+    cout << "[1] Realizando deteção pelo algoritmo padrão." << endl;
+   
+    moedas = detectaMoedas(imagemColorida, fechamento);
+    moedasMax = moedas;
+    
+    /* Tenta encontrar mais moedas e só para as tentativas se o resultado piorar. */
+    while(fechamento <= MAX_FECHAMENTO && moedas.size() >= moedasMax.size())
+    {   
+        moedas = detectaMoedas(imagemColorida, fechamento);
+        cout << "[1.1] Usando fechamento de tamanho " << fechamento << endl;
+        cout << "[1.2] Foram encontradas " << moedas.size() << " moedas." << endl;
+        
+        if(moedas.size() > moedasMax.size())
+        {
+            moedasMax = moedas;
+        }
+        
+        fechamento *= 2;
+        
     }
-     
-     
+    
+    cout << "[2] Exibindo moedas encontradas. " << endl;
+    
+    exibirMoedas(imagemColorida, moedasMax);
+    
+    cout << "[3] Calculando momentos invariantes. " << endl;
+
     /* Calculando os momentos invariantes e associando-os aos valores. */
-    for( int i = 0; i < (int) moedas.size(); i++)
+    for( int i = 0; i < (int) moedasMax.size(); i++)
     {
         Mat moedaCinza;
         double momentos[7];
         unsigned int valor;
 
-        cvtColor(moedas[i], moedaCinza,CV_RGB2GRAY);
+        cvtColor(moedasMax[i].imagem, moedaCinza,CV_RGB2GRAY);
         Moments momento = moments(moedaCinza, false);
         HuMoments(momento, momentos);
 
         /* Salvando resultado em arquivo. */
-        cout << "Digite o valor da moeda " << i << ": ";
-        cin >> valor;
+        cout << "[3.1] Digite o valor da moeda " << i << ": ";
+        cin >> valor; 
 
         /* Armazena o valor da moeda e seus momentos invariantes. */
 
@@ -92,11 +130,11 @@ int main(int argc, char** argv)
      
      /* Exibe o resultado final. */
      
-    cout << endl << "Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
+    cout << "[4] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
     cout << "valor,monento0,momento1,momento2,momento3,momento4,momento5,momento6" << endl;
     cout << saida.str() << endl;
 
-
+    cin.get();
     return(0);
 }
 
@@ -153,14 +191,16 @@ void removeBuracos(Mat &imagem)
     floodFill(imagem, Point(0,0), 0);
 }
 
-vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
+vector<Moeda> detectaMoedas(Mat &imagem,  int fechamento)
 {
 
-    Mat imagemCinza, imagemBinaria, imagemBinariaClone, imagemDelimitada;
-    vector<Mat> moedas;
+    Mat imagemColorida, imagemCinza, imagemBinaria, imagemBinariaClone, imagemDelimitada;
+    vector<Moeda> moedas;
     vector<vector<Point> > contornos;
     vector<Vec4i> hierarquia;
     vector<Circulo> circulos;
+    
+    imagemColorida = imagem.clone();
 
      /* Suaviza a imagem lida. */
     blur(imagemColorida, imagemColorida, Size(3, 3));
@@ -169,7 +209,6 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
      * e colorida. A em escala de cinza será usada na detecção de bordas. */
     cvtColor(imagemColorida, imagemCinza, CV_BGR2GRAY);
     imagemBinaria = Mat(imagemCinza.size(), imagemCinza.type());
-    
     imagemDelimitada = imagemColorida.clone();
     
     /* Usando threshold fixo. */
@@ -183,8 +222,8 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
     removeMoedasBorda(imagemBinaria);
 
     /* Faz o fechameto da imagem binária. */
-    dilate(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), 8, 1, 1);
-    erode(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), 8, 1, 1); 
+    dilate(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), fechamento, 1, 1);
+    erode(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), fechamento, 1, 1); 
         
     /* Remove buracos dentro das moedas (só a borda interessa). */
     removeBuracos(imagemBinaria);
@@ -192,13 +231,6 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
     /* Encontra contornos iniciais para o algoritmo de active contours. */
     imagemBinariaClone = imagemBinaria.clone();
     findContours(imagemBinariaClone, contornos, hierarquia, RETR_TREE, CV_CHAIN_APPROX_NONE);
-      
-    /* Desenha os contornos detectado pela função anterior. */
-    for(uint i = 0; i < contornos.size(); i++ )
-    {
-        Scalar color = Scalar(0, 255, 255);
-        drawContours(imagemDelimitada, contornos, i, color, 2, 8, hierarquia, 0, Point() );
-    }
           
     circulos = vector<Circulo>(contornos.size());
       
@@ -240,56 +272,94 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
                 }
             }
             
+
             /* Cria as moedas identificadas. */
-           Mat moeda(imagemColorida, ret);
-           moedas.push_back(moeda);
-           
-           // Desenha o retângulo e o círculo delimitador.
-           circle(imagemDelimitada, centro, raio, Scalar(0, 0, 255), 2);
-           rectangle(imagemDelimitada, ret, Scalar(255, 0, 0), 2);
-           
+            Moeda moeda;
+            moeda.raio = raio;
+            moeda.centro = centro;
+            moeda.retangulo = ret;
+            moeda.imagem = Mat(imagemColorida, ret);
+            moeda.contornos.push_back(contornos[i]);
+            moeda.hierarquia = hierarquia;
+            moedas.push_back(moeda);
+            
         }
     }
      
      
-    /* Exibe resultado da delimitação. */
-    if(exibirDelimitada)
-    {
-        imshow("delimitada", imagemDelimitada);
-    }
+    /* Exibe resultado da imagem segmentada. */
+    
+    imshow("binaria", imagemBinaria);
+    waitKey(500);
      
     return moedas;
 }
 
-
-vector<Mat> detectaMoedasHough(Mat &imagemColorida, bool exibirDelimitada)
+void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas)
 {
-    Mat imagemCinza, imagemDelimitada;
-    vector<Vec3f> circulos;
-    vector<Mat> moedas;
+    Mat imagemDelimitada = imagem.clone();
     
-    cvtColor(imagemColorida, imagemCinza, CV_BGR2GRAY);
-    imagemDelimitada = imagemColorida.clone();
-
-    HoughCircles(imagemCinza, circulos, CV_HOUGH_GRADIENT, 1, imagemCinza.rows/8, 50, 400, 0, 0);
-
-    for(int i = 0; i < (int) circulos.size(); i++ )
+    if(RESULTADO_SEPARADO)
     {
-        Point centro(cvRound(circulos[i][0]), cvRound(circulos[i][1]));
-        int raio = cvRound(circulos[i][2]);
-        circle(imagemDelimitada, centro, 3, Scalar(0,0,255), -1, 8, 0 );
-        circle(imagemDelimitada, centro, raio, Scalar(255,0,0), 3, 8, 0 );
-    } 
-    
-    /* Exibe resultado da delimitação. */
-    if(exibirDelimitada)
+        for(int i = 0; i < (int) moedas.size(); i++)
+        {
+            imshow("Moeda " + to_string(i), moedas[i].imagem);
+        }
+    }
+    else
     {
+        for(int i = 0; i < (int) moedas.size(); i++)
+        {
+            /* Desenha o retângulo e o círculo delimitador. */
+            circle(imagemDelimitada, moedas[i].centro, moedas[i].raio, Scalar(0, 0, 255), 2);
+            rectangle(imagemDelimitada, moedas[i].retangulo, Scalar(255, 0, 0), 2);
+            putText(imagemDelimitada, "Moeda" + to_string(i), Point(moedas[i].retangulo.x-5, moedas[i].retangulo.y-5), FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 0), 1);
+            drawContours(imagemDelimitada, moedas[i].contornos, 0, Scalar(0,255,255), 2);
+        }
+        
         imshow("delimitada", imagemDelimitada);
     }
-
-    imshow("delimitada", imagemDelimitada);
-    waitKey(0);
     
+    waitKey(500);
+
+}
+
+/*
+vector<Mat> detectaMoedasHough(vector<Mat> moedas)
+{
+    
+    for(int i = 0; i < (int) moedas.size(); i++)
+    {
+        vector<Vec3f> circulos;
+        cvtColor(moedas[i], moedas[i], CV_BGR2GRAY);
+        
+        int a = 50;
+        int b = 50;
+        
+        while(circulos.size() != 1 && a < 800)
+        {
+            while(circulos.size() != 1 && b < 800)
+            {
+                HoughCircles(moedas[i], circulos, CV_HOUGH_GRADIENT, 1, moedas[i].rows/2, a, b, 0.9*(moedas[i].rows/2.0), moedas[i].rows);
+                b += 50;
+            }
+            
+            b = 0;
+            a += 50;
+        }
+        
+        for(int j = 0; j < (int) circulos.size(); j++)
+        {
+            Point centro(cvRound(circulos[j][0]), cvRound(circulos[j][1]));
+            int raio = cvRound(circulos[j][2]);
+            circle(moedas[i], centro, 3, Scalar(0,0,255), -1, 8, 0 );
+            circle(moedas[i], centro, raio, Scalar(255,0,0), 3, 8, 0 );
+            imshow("moeda" + to_string(i), moedas[i]);
+            
+        } 
+
+    }
+
     return moedas;
 }
-     
+*/
