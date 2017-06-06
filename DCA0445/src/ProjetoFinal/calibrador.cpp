@@ -2,7 +2,6 @@
 #include <vector>
 #include <cmath>
 #include <iomanip>
-#include "opencv2/legacy/legacy.hpp"
 
 using namespace std;
 using namespace cv;
@@ -22,17 +21,51 @@ struct Circulo {
 /* Estrutura que representa a moeda e outras informações associadas, tais como 
  * seu contorno e o menor retângulo que a cerca. */
 struct Moeda {
+
     Mat imagem;
+    int valor = 0;
     double raio;
+    double momentos[7];
     Point2f centro;
     Rect retangulo;
     vector<vector<Point> > contornos;
     vector<Vec4i> hierarquia;
+    
+    /* Calcula os momentos invariantes quando a moeda é criada. */
+    Moeda(Mat _imagem) 
+    {
+        Mat moedaCinza;
+        imagem = _imagem.clone();
+        
+        /* Calcula os momentos invariantes. */
+        cvtColor(imagem, moedaCinza, CV_RGB2GRAY);
+        Moments momento = moments(moedaCinza, false);
+        HuMoments(momento, momentos);
+    }
+    
+    void imprimirMomentos()
+    {
+        stringstream saida;
+        saida << valor << " = {";
+        for(int j = 0; j < 7; j++)
+        {    
+            saida << scientific << setprecision(7) << momentos[j];
+            if (j < 6)
+            {
+                saida << ", ";
+            }
+        }
+        saida << "};";
+        cout << saida.str() << endl;
+    }
 };
+
+/* Detecta a quantidade máxima de moedas utilizando a função detectarMoedas. */
+vector<Moeda> detectarTodasMoedas(Mat &imagem);
 
 /* Função que detecta moedas em uma imagem, utilizando um determinado nível na
  * operação morfológica do fechamento. */
-vector<Moeda> detectaMoedas(Mat &imagem, int fechamento);
+vector<Moeda> detectarMoedas(Mat &imagem, int fechamento);
 
 /* Função que desenha na imagem ou individualmente as moedas localizadas. */
 void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas);
@@ -48,9 +81,7 @@ void removeBuracos(Mat &imagem);
 int main(int argc, char** argv) 
 {
     Mat imagemColorida;
-    vector<Moeda> moedas, moedasMax;
-    stringstream saida;
-    int fechamento = 1;
+    vector<Moeda> moedas;
     
     /* Verifica o número de argumentos.  */
     if (argc != 2)
@@ -69,72 +100,29 @@ int main(int argc, char** argv)
         return -2;
     }
 
-    cout << "[1] Realizando deteção pelo algoritmo padrão." << endl;
-   
-    moedas = detectaMoedas(imagemColorida, fechamento);
-    moedasMax = moedas;
-    
-    /* Tenta encontrar mais moedas e só para as tentativas se o resultado piorar. */
-    while(fechamento <= MAX_FECHAMENTO && moedas.size() >= moedasMax.size())
-    {   
-        moedas = detectaMoedas(imagemColorida, fechamento);
-        cout << "[1.1] Usando fechamento de tamanho " << fechamento << endl;
-        cout << "[1.2] Foram encontradas " << moedas.size() << " moedas." << endl;
-        
-        if(moedas.size() > moedasMax.size())
-        {
-            moedasMax = moedas;
-        }
-        
-        fechamento *= 2;
-        
-    }
-    
-    cout << "[2] Exibindo moedas encontradas. " << endl;
-    
-    exibirMoedas(imagemColorida, moedasMax);
-    
-    cout << "[3] Calculando momentos invariantes. " << endl;
+    cout << "[main] Realizando deteção pelo algoritmo padrão." << endl;
+    moedas = detectarTodasMoedas(imagemColorida);
 
-    /* Calculando os momentos invariantes e associando-os aos valores. */
-    for( int i = 0; i < (int) moedasMax.size(); i++)
+    cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
+    exibirMoedas(imagemColorida, moedas);
+    
+    cout << "[main] Calculando momentos invariantes. " << endl;
+
+    /* Associando um valor (financeiro) a cada moeda. */
+    for( int i = 0; i < (int) moedas.size(); i++)
     {
-        Mat moedaCinza;
-        double momentos[7];
-        unsigned int valor;
-
-        cvtColor(moedasMax[i].imagem, moedaCinza,CV_RGB2GRAY);
-        Moments momento = moments(moedaCinza, false);
-        HuMoments(momento, momentos);
-
         /* Salvando resultado em arquivo. */
-        cout << "[3.1] Digite o valor da moeda " << i << ": ";
-        cin >> valor; 
-
-        /* Armazena o valor da moeda e seus momentos invariantes. */
-
-        saida << valor << " = {";
-
-        for(int j = 0; j < 7; j++)
-        {    
-            saida << scientific << setprecision(7) << momentos[j];
-            if (j < 6)
-            {
-                saida << ", ";
-            }
-        }
-
-        saida << "};" << endl;
-        
+        cout << "[main] Digite o valor da moeda " << i << ": ";
+        cin >> moedas[i].valor; 
     }
      
-     /* Exibe o resultado final. */
-     
-    cout << "[4] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
-    cout << "valor = {monento0, momento1, momento2, momento3, momento4, momento5, momento6};" << endl;
-    cout << saida.str() << endl;
+    /* Exibe o resultado final. */
+    cout << "[main] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
+    for( int i = 0; i < (int) moedas.size(); i++)
+    {
+        moedas[i].imprimirMomentos();
+    }
 
-    cin.get();
     return(0);
 }
 
@@ -191,7 +179,7 @@ void removeBuracos(Mat &imagem)
     floodFill(imagem, Point(0,0), 0);
 }
 
-vector<Moeda> detectaMoedas(Mat &imagem,  int fechamento)
+vector<Moeda> detectarMoedas(Mat &imagem,  int fechamento)
 {
 
     Mat imagemColorida, imagemCinza, imagemBinaria, imagemBinariaClone, imagemDelimitada;
@@ -274,11 +262,10 @@ vector<Moeda> detectaMoedas(Mat &imagem,  int fechamento)
             
 
             /* Cria as moedas identificadas. */
-            Moeda moeda;
+            Moeda moeda(Mat(imagemColorida, ret));
             moeda.raio = raio;
             moeda.centro = centro;
             moeda.retangulo = ret;
-            moeda.imagem = Mat(imagemColorida, ret);
             moeda.contornos.push_back(contornos[i]);
             moeda.hierarquia = hierarquia;
             moedas.push_back(moeda);
@@ -324,8 +311,38 @@ void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas)
 
 }
 
+
+vector<Moeda> detectarTodasMoedas(Mat &imagem)
+{
+    vector<Moeda> moedas, moedasMax;
+    int fechamento = 1;
+    
+    moedas = detectarMoedas(imagem, fechamento);
+    moedasMax = moedas;
+
+    /* Tenta encontrar mais moedas e só para as tentativas se o resultado piorar. */
+    while(fechamento <= MAX_FECHAMENTO && moedas.size() >= moedasMax.size())
+    {   
+        moedas = detectarMoedas(imagem, fechamento);
+        cout << "[detectar] Usando fechamento de tamanho " << fechamento << endl;
+        cout << "[detectar] Foram encontradas " << moedas.size() << " moedas." << endl;
+        
+        if(moedas.size() > moedasMax.size())
+        {
+            moedasMax = moedas;
+        }
+        
+        fechamento *= 2;
+        
+    }
+    
+    return moedasMax;
+}
+
+
+
 /*
-vector<Mat> detectaMoedasHough(vector<Mat> moedas)
+vector<Mat> detectarMoedasHough(vector<Mat> moedas)
 {
     
     for(int i = 0; i < (int) moedas.size(); i++)
