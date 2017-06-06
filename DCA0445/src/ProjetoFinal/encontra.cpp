@@ -18,6 +18,7 @@ struct Circulo {
 };
 
 vector<Mat> detectaMoedas(Mat &imagem, bool exibirDelimitada = true);
+vector<Mat> detectaMoedasHough(Mat &imagem, bool exibirDelimitada = true);
 void removeMoedasBorda(Mat &imagem);
 void removeBuracos(Mat &imagem);
 
@@ -44,7 +45,9 @@ int main(int argc, char** argv)
         return -2;
     }
     
-    moedas = detectaMoedas(imagemColorida);
+    //moedas = detectaMoedas(imagemColorida);
+    
+    moedas = detectaMoedasHough(imagemColorida);
 
      /* Exibe as moedas identificadas. */
     for( int i = 0; i < (int) moedas.size(); i++)
@@ -206,7 +209,7 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
             minEnclosingCircle(contornos[i], circulos[i].centro, circulos[i].raio); 
         }
     }
-     
+      
     
     for( int i = 0; i < (int) contornos.size(); i++)
     { 
@@ -250,7 +253,6 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
      
      
     /* Exibe resultado da delimitação. */
-     
     if(exibirDelimitada)
     {
         imshow("delimitada", imagemDelimitada);
@@ -260,3 +262,34 @@ vector<Mat> detectaMoedas(Mat &imagemColorida, bool exibirDelimitada)
 }
 
 
+vector<Mat> detectaMoedasHough(Mat &imagemColorida, bool exibirDelimitada)
+{
+    Mat imagemCinza, imagemDelimitada;
+    vector<Vec3f> circulos;
+    vector<Mat> moedas;
+    
+    cvtColor(imagemColorida, imagemCinza, CV_BGR2GRAY);
+    imagemDelimitada = imagemColorida.clone();
+
+    HoughCircles(imagemCinza, circulos, CV_HOUGH_GRADIENT, 1, imagemCinza.rows/8, 50, 400, 0, 0);
+
+    for(int i = 0; i < (int) circulos.size(); i++ )
+    {
+        Point centro(cvRound(circulos[i][0]), cvRound(circulos[i][1]));
+        int raio = cvRound(circulos[i][2]);
+        circle(imagemDelimitada, centro, 3, Scalar(0,0,255), -1, 8, 0 );
+        circle(imagemDelimitada, centro, raio, Scalar(255,0,0), 3, 8, 0 );
+    } 
+    
+    /* Exibe resultado da delimitação. */
+    if(exibirDelimitada)
+    {
+        imshow("delimitada", imagemDelimitada);
+    }
+
+    imshow("delimitada", imagemDelimitada);
+    waitKey(0);
+    
+    return moedas;
+}
+     
