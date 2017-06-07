@@ -12,6 +12,18 @@ using namespace cv;
 #define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
 #define RESULTADO_SEPARADO false
 
+/* Momentos invariantes das moedas. */
+
+const double M10_FACE[] = {2.1019523e-03, 2.9816274e-10, 5.0870460e-14, 5.3015279e-12, -1.0026189e-25, -2.4454690e-17, -2.7513525e-24};
+const double M10_NUMERO[] = {1.9651189e-03, 2.6737620e-10, 2.7988117e-14, 7.6505705e-12, 2.7016187e-24, -4.3791137e-17, 2.2878504e-24};
+const double M25_FACE[] = {1.5547655e-03, 5.1980888e-10, 2.3829745e-13, 1.2255122e-12, -5.3338618e-25, -5.9654341e-18, 3.9255943e-25};
+const double M25_NUMERO[] = {1.5408531e-03, 4.3643024e-10, 2.3095962e-13, 1.8859005e-12, 1.0816177e-24, 3.4267008e-17, 6.1583207e-25};
+const double M50_FACE[] = {1.3130799e-03, 6.4635126e-11, 2.6672046e-13, 2.4723820e-12, -1.8914621e-24, -1.0215285e-17, -6.7326112e-25};
+const double M50_NUMERO[] = {1.0930251e-03, 7.6355478e-10, 7.6292901e-14, 8.5886917e-13, 1.4098157e-25, -1.4186269e-17, -1.6869967e-25};
+const double M100_FACE[] = {9.6195651e-04, 4.5638742e-10, 6.9091900e-14, 5.1158373e-13, 9.3537883e-26, -8.9703140e-18, -2.2392455e-26};
+const double M100_NUMERO[] = {9.8289248e-04, 9.0282975e-10, 2.0202395e-14, 9.2678703e-13, 1.3063057e-26, 2.7778257e-17, -1.2614061e-25};
+
+
 /* Estrutura que define um círculo, que contornará a moeda. */
 struct Circulo {
     Point2f centro;
@@ -47,10 +59,10 @@ struct Moeda {
     {
         stringstream saida;
         saida << valor << " = {";
-        for(int j = 0; j < 7; j++)
+        for(int i = 0; i < 7; i++)
         {    
-            saida << scientific << setprecision(7) << momentos[j];
-            if (j < 6)
+            saida << scientific << setprecision(7) << momentos[i];
+            if (i < 6)
             {
                 saida << ", ";
             }
@@ -61,11 +73,11 @@ struct Moeda {
 };
 
 /* Detecta a quantidade máxima de moedas utilizando a função detectarMoedas. */
-vector<Moeda> detectarTodasMoedas(Mat &imagem);
+vector<Moeda> detectarTodasMoedas(Mat imagem);
 
 /* Função que detecta moedas em uma imagem, utilizando um determinado nível na
  * operação morfológica do fechamento. */
-vector<Moeda> detectarMoedas(Mat &imagem, int fechamento);
+vector<Moeda> detectarMoedas(Mat imagem, int fechamento);
 
 /* Função que desenha na imagem ou individualmente as moedas localizadas. */
 void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas);
@@ -106,8 +118,8 @@ int main(int argc, char** argv)
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
     exibirMoedas(imagemColorida, moedas);
     
-    cout << "[main] Calculando momentos invariantes. " << endl;
 
+    cout << "[main] Associando valor às moedas." << endl;
     /* Associando um valor (financeiro) a cada moeda. */
     for( int i = 0; i < (int) moedas.size(); i++)
     {
@@ -115,7 +127,7 @@ int main(int argc, char** argv)
         cout << "[main] Digite o valor da moeda " << i << ": ";
         cin >> moedas[i].valor; 
     }
-     
+    
     /* Exibe o resultado final. */
     cout << "[main] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
     for( int i = 0; i < (int) moedas.size(); i++)
@@ -139,6 +151,9 @@ void removeMoedasBorda(Mat &imagem)
             {
                 p.x = j;
                 p.y = i;
+                
+                cout << "primeiro " << p << endl;
+                
                 floodFill(imagem, p, 0);
             }
         }
@@ -152,6 +167,9 @@ void removeMoedasBorda(Mat &imagem)
             {
                 p.x = j;
                 p.y = i;
+                
+                cout << "segundo " << p << endl;
+                
                 floodFill(imagem, p, 0);
             }
         }
@@ -179,7 +197,7 @@ void removeBuracos(Mat &imagem)
     floodFill(imagem, Point(0,0), 0);
 }
 
-vector<Moeda> detectarMoedas(Mat &imagem,  int fechamento)
+vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
 {
 
     Mat imagemColorida, imagemCinza, imagemBinaria, imagemBinariaClone, imagemDelimitada;
@@ -249,7 +267,7 @@ vector<Moeda> detectarMoedas(Mat &imagem,  int fechamento)
             {
                 for (int n = ret.x; n < ret.x + ret.width; n++)
                 {
-                    // Muda o fundo para branco, caso o ponto esteja fora do círculo.
+                    // Muda o fundo para branco, caso o ponto esteia fora do círculo.
                     if(pow(m - centro.y, 2) + pow(n - centro.x, 2) > pow(raio, 2))
                     {
                          imagemColorida.at<Vec3b>(m,n)[0] = 255; 
@@ -312,7 +330,7 @@ void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas)
 }
 
 
-vector<Moeda> detectarTodasMoedas(Mat &imagem)
+vector<Moeda> detectarTodasMoedas(Mat imagem)
 {
     vector<Moeda> moedas, moedasMax;
     int fechamento = 1;
@@ -365,10 +383,10 @@ vector<Mat> detectarMoedasHough(vector<Mat> moedas)
             a += 50;
         }
         
-        for(int j = 0; j < (int) circulos.size(); j++)
+        for(int i = 0; i < (int) circulos.size(); i++)
         {
-            Point centro(cvRound(circulos[j][0]), cvRound(circulos[j][1]));
-            int raio = cvRound(circulos[j][2]);
+            Point centro(cvRound(circulos[i][0]), cvRound(circulos[i][1]));
+            int raio = cvRound(circulos[i][2]);
             circle(moedas[i], centro, 3, Scalar(0,0,255), -1, 8, 0 );
             circle(moedas[i], centro, raio, Scalar(255,0,0), 3, 8, 0 );
             imshow("moeda" + to_string(i), moedas[i]);
