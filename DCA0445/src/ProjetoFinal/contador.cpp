@@ -131,8 +131,9 @@ int main(int argc, char** argv)
     cout << "[main] Realizando a contagem do dinheiro." << endl;
     dinheiro = contarDinheiro(moedas);
     
-    cout << "[main] O dinheiro total contado foi de " << dinheiro << " centavos." << endl;  
-
+    cout << "[main] O dinheiro total contado foi de " << dinheiro << " reais." << endl;  
+    
+    waitKey(0);
     return(0);
 }
 
@@ -149,9 +150,7 @@ void removeMoedasBorda(Mat &imagem)
             {
                 p.x = j;
                 p.y = i;
-                
-                cout << "primeiro " << p << endl;
-                
+             
                 floodFill(imagem, p, 0);
             }
         }
@@ -165,8 +164,6 @@ void removeMoedasBorda(Mat &imagem)
             {
                 p.x = j;
                 p.y = i;
-                
-                cout << "segundo " << p << endl;
                 
                 floodFill(imagem, p, 0);
             }
@@ -366,22 +363,39 @@ double calcularValor(Moeda moeda)
     double erro25f = 0.0, erro25n = 0.0;
     double erro50f = 0.0, erro50n = 0.0;;
     double erro100f = 0.0, erro100n = 0.0;
-    
     double *m = moeda.momentos;
+    double valor = -1.0;
     
     for(int i = 0; i < 7; i++)
     {
-        erro10f += fabs((m[i] - M10_FACE[i])/m[i]);
-        erro10n += fabs((m[i] - M10_NUMERO[i])/m[i]);
+        erro10f += fabs((m[i] - M10_FACE[i])/M10_FACE[i]);
+        erro10n += fabs((m[i] - M10_NUMERO[i])/M10_NUMERO[i]);
         
-        erro25f += fabs((m[i] - M25_FACE[i])/m[i]);
-        erro25n += fabs((m[i] - M25_NUMERO[i])/m[i]);
+        erro25f += fabs((m[i] - M25_FACE[i])/M25_FACE[i]);
+        erro25n += fabs((m[i] - M25_NUMERO[i])/M25_NUMERO[i]);
         
-        erro50f += fabs((m[i] - M50_FACE[i])/m[i]);
-        erro50n += fabs((m[i] - M50_NUMERO[i])/m[i]);
+        erro50f += fabs((m[i] - M50_FACE[i])/M50_FACE[i]);
+        erro50n += fabs((m[i] - M50_NUMERO[i])/M50_NUMERO[i]);
         
-        erro100f += fabs((m[i] - M100_FACE[i])/m[i]);
-        erro100n += fabs((m[i] - M100_NUMERO[i])/m[i]);
+        erro100f += fabs((m[i] - M100_FACE[i])/M100_FACE[i]);
+        erro100n += fabs((m[i] - M100_NUMERO[i])/M100_NUMERO[i]);
+    }
+    
+    if (erro10f < 0.01 || erro10n < 0.01)
+    {
+        valor = 0.10;
+    }
+    else if (erro25f < 0.01 || erro25n < 0.01)
+    {
+        valor = 0.25;
+    }
+    else if (erro50f < 0.01 || erro50n < 0.01)
+    {
+        valor = 0.50;
+    }
+    else if (erro100f < 0.01 || erro100n < 0.01)
+    {
+        valor = 1.0;
     }
     
     cout << "erro 10f = " << erro10f << endl;
@@ -396,7 +410,9 @@ double calcularValor(Moeda moeda)
     cout << "erro 100f = " << erro100f << endl;
     cout << "erro 100n = " << erro100n << endl;
     
-    return erro100f;
+    cout << "-------------------" << endl;
+    
+    return valor;
 
 }
 

@@ -151,9 +151,7 @@ void removeMoedasBorda(Mat &imagem)
             {
                 p.x = j;
                 p.y = i;
-                
-                cout << "primeiro " << p << endl;
-                
+                              
                 floodFill(imagem, p, 0);
             }
         }
@@ -166,10 +164,7 @@ void removeMoedasBorda(Mat &imagem)
             if (imagem.at<uchar>(i, j) == 255)
             {
                 p.x = j;
-                p.y = i;
-                
-                cout << "segundo " << p << endl;
-                
+                p.y = i;      
                 floodFill(imagem, p, 0);
             }
         }
