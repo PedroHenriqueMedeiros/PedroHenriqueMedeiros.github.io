@@ -366,6 +366,31 @@ double calcularValor(Moeda moeda)
     double *m = moeda.momentos;
     double valor = -1.0;
     
+    for(int i = 0; i < 1; i++)
+    {
+        erro10f += m[i] - M10_FACE[i];
+        erro25f += m[i] - M25_FACE[i];
+        erro50f += m[i] - M50_FACE[i];
+        erro100f += m[i] - M100_FACE[i];
+        
+        erro10n += m[i] - M10_NUMERO[i];
+        erro25n += m[i] - M25_NUMERO[i];
+        erro50n += m[i] - M50_NUMERO[i];
+        erro100n += m[i] - M100_NUMERO[i];
+    }
+    
+    cout << "erro10f = " << erro10f << endl;
+    cout << "erro25f = " << erro25f  << endl;
+    cout << "erro50f = " << erro50f  << endl;
+    cout << "erro100f = " << erro100f  << endl;
+    
+    cout << "erro10n = " << erro10n << endl;
+    cout << "erro25n = " << erro25n  << endl;
+    cout << "erro50n = " << erro50n  << endl;
+    cout << "erro100n = " << erro100n  << endl;
+    
+    
+    /*
     for(int i = 0; i < 7; i++)
     {
         erro10f += fabs((m[i] - M10_FACE[i])/M10_FACE[i]);
@@ -409,6 +434,8 @@ double calcularValor(Moeda moeda)
     
     cout << "erro 100f = " << erro100f << endl;
     cout << "erro 100n = " << erro100n << endl;
+    * 
+    * */
     
     cout << "-------------------" << endl;
     
@@ -423,6 +450,9 @@ double contarDinheiro(vector<Moeda> &moedas)
     
     for(int i = 0; i < (int) moedas.size(); i++)
     {
+        cout << "Contando valor na moeda " << i;
+        imshow("finalMoeda" + to_string(i+100), moedas[i].imagem);
+        
         dinheiro += calcularValor(moedas[i]);
     }
     

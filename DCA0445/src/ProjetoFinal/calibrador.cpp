@@ -1,16 +1,21 @@
 #include <opencv2/opencv.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+#include <opencv2/nonfree/nonfree.hpp>
+#include <opencv2/ocl/ocl.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
 #include <cmath>
 #include <iomanip>
 
 using namespace std;
 using namespace cv;
+using namespace cv::ocl;
 
 #define PONTOS_CIRCULO 50
 #define LIMIAR_RELACAO_AREAS 0.70
 #define LIMIAR_RAIO 10
 #define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
-#define RESULTADO_SEPARADO false
+#define RESULTADO_SEPARADO true
 
 /* Momentos invariantes das moedas. */
 
@@ -47,10 +52,15 @@ struct Moeda {
     Moeda(Mat _imagem) 
     {
         Mat moedaCinza;
+        Mat canny;
         imagem = _imagem.clone();
         
         /* Calcula os momentos invariantes. */
         cvtColor(imagem, moedaCinza, CV_RGB2GRAY);
+        Canny(imagem, canny, 20, 60, 3);
+        
+        SIFT s;
+        
         Moments momento = moments(moedaCinza, false);
         HuMoments(momento, momentos);
     }
@@ -257,7 +267,7 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
             
             Rect ret = boundingRect(contornos[i]);
             
-            /* Calcula o negativo da região retangular formada pelos dois pontos. */
+            /* Mantém apenas os píxels da moeda e apaga os externos. */
             for (int m = ret.y; m < ret.y + ret.height; m++)
             {
                 for (int n = ret.x; n < ret.x + ret.width; n++)
@@ -289,8 +299,8 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
      
     /* Exibe resultado da imagem segmentada. */
     
-    imshow("binaria", imagemBinaria);
-    waitKey(500);
+    //imshow("binaria", imagemBinaria);
+    //waitKey(500);
      
     return moedas;
 }
