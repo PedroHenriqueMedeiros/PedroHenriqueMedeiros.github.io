@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <opencv2/nonfree/features2d.hpp> 
 
 const double THRESHOLD = 400;
@@ -47,11 +46,37 @@ int main(int argc, const char* argv[])
     cout << "Quantidade de matches = " << matches.size() << endl;
     
     float distanciaAcumulada = 0;
-    for(int i = 0; i < matches.size(); i++)
+    for(int i = 0; i < (int) matches.size(); i++)
     {
         distanciaAcumulada += matches[i].distance;
     }
     cout << "Distância acumulada = " << distanciaAcumulada << endl;
+    
+    FileStorage fsWrite("1real-face.descriptors", FileStorage::WRITE);
+    fsWrite << "descriptors" << descriptors1;
+    fsWrite.release();
+    
+    // Lendo os descriptors e testando novamente.
+    Mat descriptors3;
+    
+    FileStorage fsRead("1real-face.descriptors", FileStorage::READ);
+    fsRead["descriptors"] >>  descriptors3;
+    
+    
+    vector<DMatch> matches2;
+    matcher.match(descriptors3, descriptors2, matches2);
+    
+    cout << "Quantidade de matches = " << matches2.size() << endl;
+    
+    float distanciaAcumulada2 = 0;
+    for(int i = 0; i < (int) matches2.size(); i++)
+    {
+        distanciaAcumulada2 += matches2[i].distance;
+    }
+    cout << "Distância acumulada = " << distanciaAcumulada2 << endl;
+    
+    
+
 
     return 0;
 }
