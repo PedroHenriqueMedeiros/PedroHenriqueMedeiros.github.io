@@ -12,20 +12,35 @@ using namespace cv;
 #define LIMIAR_RELACAO_AREAS 0.70
 #define LIMIAR_RAIO 10
 #define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
-#define RESULTADO_SEPARADO false
+#define RESULTADO_SEPARADO true
 
 
 /* Momentos invariantes das moedas. */
 
-const double M10_FACE[] = {2.1019523e-03, 2.9816274e-10, 5.0870460e-14, 5.3015279e-12, -1.0026189e-25, -2.4454690e-17, -2.7513525e-24};
-const double M10_NUMERO[] = {1.9651189e-03, 2.6737620e-10, 2.7988117e-14, 7.6505705e-12, 2.7016187e-24, -4.3791137e-17, 2.2878504e-24};
-const double M25_FACE[] = {1.5547655e-03, 5.1980888e-10, 2.3829745e-13, 1.2255122e-12, -5.3338618e-25, -5.9654341e-18, 3.9255943e-25};
-const double M25_NUMERO[] = {1.5408531e-03, 4.3643024e-10, 2.3095962e-13, 1.8859005e-12, 1.0816177e-24, 3.4267008e-17, 6.1583207e-25};
-const double M50_FACE[] = {1.3130799e-03, 6.4635126e-11, 2.6672046e-13, 2.4723820e-12, -1.8914621e-24, -1.0215285e-17, -6.7326112e-25};
-const double M50_NUMERO[] = {1.0930251e-03, 7.6355478e-10, 7.6292901e-14, 8.5886917e-13, 1.4098157e-25, -1.4186269e-17, -1.6869967e-25};
-const double M100_FACE[] = {9.6195651e-04, 4.5638742e-10, 6.9091900e-14, 5.1158373e-13, 9.3537883e-26, -8.9703140e-18, -2.2392455e-26};
-const double M100_NUMERO[] = {9.8289248e-04, 9.0282975e-10, 2.0202395e-14, 9.2678703e-13, 1.3063057e-26, 2.7778257e-17, -1.2614061e-25};
-
+const double M1001H[] = {2.0047524e-03, 7.6195900e-09, 6.6652229e-12, 3.6035503e-11, -2.8540688e-22, 2.7119486e-15, -4.8003802e-22};
+const double M1001S[] = {2.0047524e-03, 7.6195900e-09, 6.6652229e-12, 3.6035503e-11, -2.8540688e-22, 2.7119486e-15, -4.8003802e-22};
+const double M1001V[] = {2.0047524e-03, 7.6195900e-09, 6.6652229e-12, 3.6035503e-11, -2.8540688e-22, 2.7119486e-15, -4.8003802e-22};
+const double M1002H[] = {1.8209878e-03, 5.7594182e-09, 9.6894857e-12, 3.4945343e-12, -2.0186826e-23, -2.5762759e-16, 2.4465278e-24};
+const double M1002S[] = {1.8209878e-03, 5.7594182e-09, 9.6894857e-12, 3.4945343e-12, -2.0186826e-23, -2.5762759e-16, 2.4465278e-24};
+const double M1002V[] = {1.8209878e-03, 5.7594182e-09, 9.6894857e-12, 3.4945343e-12, -2.0186826e-23, -2.5762759e-16, 2.4465278e-24};
+const double M501H[] = {1.8995101e-03, 3.5026479e-09, 9.9531483e-13, 5.4271398e-12, -8.6628792e-24, 2.9890887e-16, 9.1681920e-24};
+const double M501S[] = {1.8995101e-03, 3.5026479e-09, 9.9531483e-13, 5.4271398e-12, -8.6628792e-24, 2.9890887e-16, 9.1681920e-24};
+const double M501V[] = {1.8995101e-03, 3.5026479e-09, 9.9531483e-13, 5.4271398e-12, -8.6628792e-24, 2.9890887e-16, 9.1681920e-24};
+const double M502H[] = {1.8440455e-03, 3.4546870e-09, 1.8010588e-12, 9.3299591e-12, -8.5691110e-24, -5.4746165e-16, 3.7273452e-23};
+const double M502S[] = {1.8440455e-03, 3.4546870e-09, 1.8010588e-12, 9.3299591e-12, -8.5691110e-24, -5.4746165e-16, 3.7273452e-23};
+const double M502V[] = {1.8440455e-03, 3.4546870e-09, 1.8010588e-12, 9.3299591e-12, -8.5691110e-24, -5.4746165e-16, 3.7273452e-23};
+const double M251H[] = {1.7283154e-03, 2.9919907e-09, 7.3535902e-12, 5.9363725e-13, -8.5496023e-25, 2.0423030e-20, 8.9856571e-25};
+const double M251S[] = {1.7283154e-03, 2.9919907e-09, 7.3535902e-12, 5.9363725e-13, -8.5496023e-25, 2.0423030e-20, 8.9856571e-25};
+const double M251V[] = {1.7283154e-03, 2.9919907e-09, 7.3535902e-12, 5.9363725e-13, -8.5496023e-25, 2.0423030e-20, 8.9856571e-25};
+const double M252H[] = {1.6736123e-03, 1.3628862e-09, 1.4371021e-12, 1.5141660e-11, -7.0630446e-23, 4.2231771e-16, -5.2690557e-25};
+const double M252S[] = {1.6736123e-03, 1.3628862e-09, 1.4371021e-12, 1.5141660e-11, -7.0630446e-23, 4.2231771e-16, -5.2690557e-25};
+const double M252V[] = {1.6736123e-03, 1.3628862e-09, 1.4371021e-12, 1.5141660e-11, -7.0630446e-23, 4.2231771e-16, -5.2690557e-25};
+const double M101H[] = {1.9511730e-03, 2.5675459e-09, 3.7804369e-14, 3.6840869e-11, 5.1570068e-24, 1.8436298e-15, -4.3170697e-23};
+const double M101S[] = {1.9511730e-03, 2.5675459e-09, 3.7804369e-14, 3.6840869e-11, 5.1570068e-24, 1.8436298e-15, -4.3170697e-23};
+const double M101V[] = {1.9511730e-03, 2.5675459e-09, 3.7804369e-14, 3.6840869e-11, 5.1570068e-24, 1.8436298e-15, -4.3170697e-23};
+const double M102H[] = {1.7295513e-03, 1.5927668e-09, 5.9847518e-13, 1.3172711e-11, 3.4195390e-23, 3.8134996e-16, 1.4093610e-23};
+const double M102S[] = {1.7295513e-03, 1.5927668e-09, 5.9847518e-13, 1.3172711e-11, 3.4195390e-23, 3.8134996e-16, 1.4093610e-23};
+const double M102V[] = {1.7295513e-03, 1.5927668e-09, 5.9847518e-13, 1.3172711e-11, 3.4195390e-23, 3.8134996e-16, 1.4093610e-23};
 
 /* Estrutura que define um círculo, que contornará a moeda. */
 struct Circulo {
@@ -97,6 +112,32 @@ double contarDinheiro(vector<Moeda> &moedas);
 /* Calcula o valor com momento invariante mais similar. */
 double calcularValor(Moeda moeda);
 
+struct MomentosInvariantes
+{
+    double h[7];
+    double s[7];
+    double v[7];
+};
+
+MomentosInvariantes calcularMomentosInvariantes(Mat &imagem)
+{
+    Mat hsv;
+    vector<Mat> planos;
+    MomentosInvariantes mi;
+    
+    cvtColor(imagem, hsv, CV_BGR2HSV);
+    split(hsv, planos);
+    
+    Moments momentoH = moments(planos[0], false);
+    Moments momentoS = moments(planos[1], false);
+    Moments momentoV = moments(planos[2], false);
+    
+    HuMoments(momentoH, mi.h);
+    HuMoments(momentoS, mi.s);
+    HuMoments(momentoV, mi.v);
+
+    return mi;
+}
 
 /* Função main. */
 int main(int argc, char** argv) 
@@ -104,6 +145,7 @@ int main(int argc, char** argv)
     Mat imagemColorida;
     vector<Moeda> moedas;
     double dinheiro;
+    vector<Mat> moedasPreparadas;
     
     /* Verifica o número de argumentos.  */
     if (argc != 2)
@@ -128,7 +170,9 @@ int main(int argc, char** argv)
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
     exibirMoedas(imagemColorida, moedas);
     
-    cout << "[main] Realizando a contagem do dinheiro." << endl;
+    //cout << "[main] Realizando a contagem do dinheiro." << endl;
+    
+    
     dinheiro = contarDinheiro(moedas);
     
     cout << "[main] O dinheiro total contado foi de " << dinheiro << " reais." << endl;  
@@ -359,25 +403,44 @@ vector<Moeda> detectarTodasMoedas(Mat &imagem)
 double calcularValor(Moeda moeda)
 {
     
+    Mat moedaPreparada = moeda.imagem.clone();
+    
+    /* Redimensiona e equaliza as moedas. */
+    Mat ycrcb, resultado;
+    cvtColor(moedaPreparada, ycrcb, CV_BGR2YCrCb);
+    vector<Mat> channels;
+    split(ycrcb, channels);
+    equalizeHist(channels[0], channels[0]);
+    merge(channels, resultado);
+    cvtColor(resultado, resultado, CV_YCrCb2BGR);
+    resize(resultado, resultado, Size(400, 400), 0, 0, INTER_LINEAR);
+    
+    MomentosInvariantes mi = calcularMomentosInvariantes(resultado);
+    
     double erro10f = 0.0, erro10n = 0.0;
     double erro25f = 0.0, erro25n = 0.0;
     double erro50f = 0.0, erro50n = 0.0;;
     double erro100f = 0.0, erro100n = 0.0;
-    double *m = moeda.momentos;
+
     double valor = -1.0;
     
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 7; i++)
     {
-        erro10f += m[i] - M10_FACE[i];
-        erro25f += m[i] - M25_FACE[i];
-        erro50f += m[i] - M50_FACE[i];
-        erro100f += m[i] - M100_FACE[i];
+        erro10f += pow((mi.h[i] - M101H[i])/mi.h[i],2) + pow((mi.s[i] - M101S[i])/mi.s[i],2) + pow((mi.v[i] - M101V[i])/mi.v[i],2);
+        erro10n += pow((mi.h[i] - M102H[i])/mi.h[i],2) + pow((mi.s[i] - M102S[i])/mi.s[i],2) + pow((mi.v[i] - M102V[i])/mi.v[i],2);
         
-        erro10n += m[i] - M10_NUMERO[i];
-        erro25n += m[i] - M25_NUMERO[i];
-        erro50n += m[i] - M50_NUMERO[i];
-        erro100n += m[i] - M100_NUMERO[i];
+        erro25f += pow((mi.h[i] - M251H[i])/mi.h[i],2) + pow((mi.s[i] - M251S[i])/mi.s[i],2) + pow((mi.v[i] - M251V[i])/mi.v[i],2);
+        erro25n += pow((mi.h[i] - M252H[i])/mi.h[i],2) + pow((mi.s[i] - M252S[i])/mi.s[i],2) + pow((mi.v[i] - M252V[i])/mi.v[i],2);
+        
+        erro50f += pow((mi.h[i] - M501H[i])/mi.h[i],2) + pow((mi.s[i] - M501S[i])/mi.s[i],2) + pow((mi.v[i] - M501V[i])/mi.v[i],2);
+        erro50n += pow((mi.h[i] - M502H[i])/mi.h[i],2) + pow((mi.s[i] - M502S[i])/mi.s[i],2) + pow((mi.v[i] - M502V[i])/mi.v[i],2);
+        
+        erro100f += pow((mi.h[i] - M1001H[i])/mi.h[i],2) + pow((mi.s[i] - M1001S[i])/mi.s[i],2) + pow((mi.v[i] - M1001V[i])/mi.v[i],2);
+        erro100n += pow((mi.h[i] - M1002H[i])/mi.h[i],2) + pow((mi.s[i] - M1002S[i]/mi.s[i]),2) + pow((mi.v[i] - M1002V[i])/mi.v[i],2);
+        
     }
+    
+    cout << endl;
     
     cout << "erro10f = " << erro10f << endl;
     cout << "erro25f = " << erro25f  << endl;
@@ -451,7 +514,7 @@ double contarDinheiro(vector<Moeda> &moedas)
     for(int i = 0; i < (int) moedas.size(); i++)
     {
         cout << "Contando valor na moeda " << i;
-        imshow("finalMoeda" + to_string(i+100), moedas[i].imagem);
+        //imshow("finalMoeda" + to_string(i+100), moedas[i].imagem);
         
         dinheiro += calcularValor(moedas[i]);
     }

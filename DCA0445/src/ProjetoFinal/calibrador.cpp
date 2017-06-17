@@ -1,15 +1,10 @@
 #include <opencv2/opencv.hpp>
-#include <opencv2/nonfree/features2d.hpp>
-#include <opencv2/nonfree/nonfree.hpp>
-#include <opencv2/ocl/ocl.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
 #include <cmath>
 #include <iomanip>
 
 using namespace std;
 using namespace cv;
-using namespace cv::ocl;
 
 #define PONTOS_CIRCULO 50
 #define LIMIAR_RELACAO_AREAS 0.70
@@ -42,7 +37,6 @@ struct Moeda {
     Mat imagem;
     int valor = 0;
     double raio;
-    double momentos[7];
     Point2f centro;
     Rect retangulo;
     vector<vector<Point> > contornos;
@@ -52,33 +46,7 @@ struct Moeda {
     Moeda(Mat _imagem) 
     {
         Mat moedaCinza;
-        Mat canny;
         imagem = _imagem.clone();
-        
-        /* Calcula os momentos invariantes. */
-        cvtColor(imagem, moedaCinza, CV_RGB2GRAY);
-        Canny(imagem, canny, 20, 60, 3);
-        
-        SIFT s;
-        
-        Moments momento = moments(moedaCinza, false);
-        HuMoments(momento, momentos);
-    }
-    
-    void imprimirMomentos()
-    {
-        stringstream saida;
-        saida << valor << " = {";
-        for(int i = 0; i < 7; i++)
-        {    
-            saida << scientific << setprecision(7) << momentos[i];
-            if (i < 6)
-            {
-                saida << ", ";
-            }
-        }
-        saida << "};";
-        cout << saida.str() << endl;
     }
 };
 
@@ -98,12 +66,78 @@ void removeMoedasBorda(Mat &imagem);
 /* Função que remove buracos dentro da moeda durante a sua segmentação. */
 void removeBuracos(Mat &imagem);
 
+struct MomentosInvariantes
+{
+    double h[7];
+    double s[7];
+    double v[7];
+};
+
+MomentosInvariantes calcularMomentosInvariantes(Mat _imagem)
+{
+    Mat cinza, binaria;
+    vector<Mat> planos;
+    MomentosInvariantes mi;
+    
+    //cvtColor(_imagem, hsv, CV_BGR2HSV);
+    //split(hsv, planos);
+    
+    cvtColor(_imagem, cinza, CV_BGR2GRAY);
+    adaptiveThreshold(cinza, binaria, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 7, 5);
+    
+    Moments momentoH = moments(binaria, false);
+    Moments momentoS = moments(binaria, false);
+    Moments momentoV = moments(binaria, false);
+    
+    HuMoments(momentoH, mi.h);
+    HuMoments(momentoS, mi.s);
+    HuMoments(momentoV, mi.v);
+
+    return mi;
+}
+
+string prepararSaida(MomentosInvariantes &mi, int valor)
+{
+    stringstream saida;
+    saida << "const double M" << valor << "H[] = {";
+    for(int j = 0; j < 7; j++)
+    {    
+        saida << scientific << setprecision(7) << mi.h[j];
+        if (j < 6)
+        {
+            saida << ", ";
+        }
+    }
+    saida << "};" << endl;
+    saida << "const double M" << valor << "S[] = {";
+    for(int j = 0; j < 7; j++)
+    {    
+        saida << scientific << setprecision(7) << mi.s[j];
+        if (j < 6)
+        {
+            saida << ", ";
+        }
+    }
+    saida << "};" << endl;
+    saida << "const double M" << valor << "V[] = {";
+    for(int j = 0; j < 7; j++)
+    {    
+        saida << scientific << setprecision(7) << mi.v[j];
+        if (j < 6)
+        {
+            saida << ", ";
+        }
+    }
+    saida << "};" << endl;    
+    return saida.str();
+}
 
 /* Função main. */
 int main(int argc, char** argv) 
 {
     Mat imagemColorida;
     vector<Moeda> moedas;
+    vector<Mat> moedasPreparadas;
     
     /* Verifica o número de argumentos.  */
     if (argc != 2)
@@ -124,26 +158,57 @@ int main(int argc, char** argv)
 
     cout << "[main] Realizando deteção pelo algoritmo padrão." << endl;
     moedas = detectarTodasMoedas(imagemColorida);
+    
+    /* Redimensiona e equaliza as moedas. */
+    for(int i = 0; i < (int) moedas.size(); i++)
+    { 
+        Mat ycrcb, resultado;
+        cvtColor(moedas[i].imagem, ycrcb, CV_BGR2YCrCb);
+        vector<Mat> channels;
+        split(ycrcb, channels);
+        equalizeHist(channels[0], channels[0]);
+        merge(channels, resultado);
+        cvtColor(resultado, resultado, CV_YCrCb2BGR);
+        resize(resultado, resultado, Size(400, 400), 0, 0, INTER_LINEAR);
+        moedasPreparadas.push_back(resultado);
+    }
 
+    string bloco = "";
+    
+    for(int i = 0; i < (int) moedasPreparadas.size(); i++)
+    {   
+        int valor;
+        MomentosInvariantes mi = calcularMomentosInvariantes(moedasPreparadas[i]);
+        imshow("temp", moedasPreparadas[i]);
+        waitKey(100);
+        
+        cout << "Digite um valor para esta moeda: ";
+        cin >> valor;
+        
+        bloco += prepararSaida(mi, valor);
+    }
+    
+    cout << bloco << endl;
+    /*
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
     exibirMoedas(imagemColorida, moedas);
     
-
     cout << "[main] Associando valor às moedas." << endl;
-    /* Associando um valor (financeiro) a cada moeda. */
-    for( int i = 0; i < (int) moedas.size(); i++)
+    // Associando um valor (financeiro) a cada moeda. 
+    for( int i = 0; i < (int) moedasPreparadas.size(); i++)
     {
-        /* Salvando resultado em arquivo. */
+        // Salvando resultado em arquivo.
         cout << "[main] Digite o valor da moeda " << i << ": ";
         cin >> moedas[i].valor; 
     }
     
-    /* Exibe o resultado final. */
+    // Exibe o resultado final.
     cout << "[main] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
     for( int i = 0; i < (int) moedas.size(); i++)
     {
         moedas[i].imprimirMomentos();
     }
+    */
 
     return(0);
 }
@@ -283,7 +348,6 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
                 }
             }
             
-
             /* Cria as moedas identificadas. */
             Moeda moeda(Mat(imagemColorida, ret));
             moeda.raio = raio;

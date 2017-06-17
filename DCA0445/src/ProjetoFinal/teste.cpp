@@ -10,12 +10,19 @@ using namespace cv;
 
 int main(int argc, const char* argv[])
 {
-    Mat input = cv::imread("1real-face.jpg", 0); //Load as grayscale
+    Mat input = cv::imread("p1.jpg", 0); //Load as grayscale
     Mat image = cv::imread("t1.jpg", 0); //Load as grayscale
     
-    SiftFeatureDetector detector;
+    equalizeHist(input, input);
+    resize(input, input, Size(2000, 2000), 0, 0, INTER_LINEAR);
+    
+    equalizeHist(image, image);
+    resize(image, image, Size(2000, 2000), 0, 0, INTER_LINEAR);
+    
+    SiftFeatureDetector detector(20000);
     SiftDescriptorExtractor extractor;
     BFMatcher matcher(NORM_L2, false);
+    
     
     std::vector<cv::KeyPoint> keypoints1, keypoints2;
     
