@@ -10,14 +10,14 @@ using namespace cv;
 
 int main(int argc, const char* argv[])
 {
-    Mat input = cv::imread("1real-face.jpg", 0); //Load as grayscale
-    Mat image = cv::imread("t1.jpg", 0); //Load as grayscale
+    Mat input = imread("1real-face.jpg", 0); //Load as grayscale
+    Mat image = imread("t1.jpg", 0); //Load as grayscale
     
     SiftFeatureDetector detector;
     SiftDescriptorExtractor extractor;
     BFMatcher matcher(NORM_L2, false);
     
-    std::vector<cv::KeyPoint> keypoints1, keypoints2;
+    vector<cv::KeyPoint> keypoints1, keypoints2;
     
     detector.detect(input, keypoints1);
     detector.detect(image, keypoints2);
@@ -49,6 +49,10 @@ int main(int argc, const char* argv[])
     for(int i = 0; i < (int) matches.size(); i++)
     {
         distanciaAcumulada += matches[i].distance;
+        cout << matches[i].imgIdx << endl;
+        cout << matches[i].trainIdx << endl;
+        cout << matches[i].distance << endl;
+        cout << "-------------------" << endl;
     }
     cout << "Distância acumulada = " << distanciaAcumulada << endl;
     

@@ -17,6 +17,13 @@ using namespace cv::ocl;
 #define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
 #define RESULTADO_SEPARADO true
 
+
+#define REL_10 0.7407
+#define REL_25 0.9259
+#define REL_50 0.8519
+#define REL_1 1.0000
+
+
 /* Momentos invariantes das moedas. */
 
 const double M10_FACE[] = {2.1019523e-03, 2.9816274e-10, 5.0870460e-14, 5.3015279e-12, -1.0026189e-25, -2.4454690e-17, -2.7513525e-24};
@@ -128,22 +135,170 @@ int main(int argc, char** argv)
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
     exibirMoedas(imagemColorida, moedas);
     
+    int histSize = 256;
+    float range[] = { 0, 256 } ;
+    const float* histRange = { range };
+    bool uniform = true; bool accumulate = false;
 
+    Mat moedaCinza;
+    Mat moedaHist;
+    int indiceModelo = -1;
+    
+    /* Procura pelo modelo de moeda com base em seu histograma. */
+    for(int i = 0; i < (int) moedas.size(); i++)
+    {
+        //cvtColor(moedas[i].imagem, moedaCinza, CV_BGR2GRAY); 
+        //calcHist(&moedaCinza, 1, 0, Mat(), moedaHist, 1, &histSize, &histRange, uniform, accumulate );
+        
+        Mat fullImageHSV;
+        
+        cvtColor(moedas[i].imagem, fullImageHSV, CV_BGR2HLS);
+        
+        vector<Mat> bgr_planes;
+        split(fullImageHSV, bgr_planes );
+        moedaCinza = bgr_planes[2];
+        calcHist(&moedaCinza, 1, 0, Mat(), moedaHist, 1, &histSize, &histRange, uniform, accumulate );
+        
+        
+        cout << "tamanho do hist " << moedaHist.cols << "  " << moedaHist.rows << ", " << endl;
+        
+                for(int j = 0; j < histSize; j++)
+        {
+            float pixel = moedaHist.at<float>(i, j);
+            cout << "pos = " << j << " valor = " << pixel << endl;
+        }
+        
+        
+        // Draw the histograms for B, G and R
+          int hist_w = 512; int hist_h = 400;
+          int bin_w = cvRound( (double) hist_w/histSize );
+
+          Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0));
+
+          /// Normalize the result to [ 0, histImage.rows ]
+          normalize(moedaHist, moedaHist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
+                
+
+          
+          /// Draw for each channel
+          for( int i = 1; i < histSize; i++ )
+          {
+              line( histImage, Point( bin_w*(i-1), hist_h - cvRound(moedaHist.at<float>(i-1)) ) ,
+                               Point( bin_w*(i), hist_h - cvRound(moedaHist.at<float>(i)) ),
+                               Scalar( 255, 0, 0), 2, 8, 0  );
+          }
+          
+          imshow("hm" + to_string(i), histImage );
+        
+        
+        /*
+        
+        
+        float picoZeros = moedaHist.at<float>(0, 0);
+        for(int j = 1; j <  moedaHist.rows; j++)
+        {
+            if(moedaHist.at<float>(j, 0) > picoZeros)
+            {
+               indiceModelo = i;
+               break; 
+            }
+        }
+        
+        if(indiceModelo != -1)
+        {
+            break;
+        }
+        * 
+        * */
+        
+    }
+    
+    /* Calcula a area do modelo. */
+    float raioModelo = moedas[indiceModelo].imagem.rows/2;
+    
+    cout << "O modelo é a moeda de indice " << indiceModelo << endl;
+    cout << "Raio do modelo = " << raioModelo << endl;
+    
+    for(int i = 0; i < (int) moedas.size(); i++)
+    {
+        if(i != indiceModelo)
+        {
+            float raio = moedas[i].imagem.rows/2;
+            float rel = raio/raioModelo;
+            
+            cout << "i = " << i << " rel = " << rel << endl;
+            
+        }
+    }
+    
+    
+
+        
+        /*
+        cout << "tamanho do hist " << moedaHist.cols << "  " << moedaHist.rows << ", " << endl;
+        
+                for(int j = 0; j < histSize; j++)
+        {
+            float pixel = moedaHist.at<float>(i, j);
+            cout << "pos = " << j << " valor = " << pixel << endl;
+        }
+        
+        
+        // Draw the histograms for B, G and R
+          int hist_w = 512; int hist_h = 400;
+          int bin_w = cvRound( (double) hist_w/histSize );
+
+          Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0));
+
+          /// Normalize the result to [ 0, histImage.rows ]
+          normalize(moedaHist, moedaHist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
+                
+
+          
+          /// Draw for each channel
+          for( int i = 1; i < histSize; i++ )
+          {
+              line( histImage, Point( bin_w*(i-1), hist_h - cvRound(moedaHist.at<float>(i-1)) ) ,
+                               Point( bin_w*(i), hist_h - cvRound(moedaHist.at<float>(i)) ),
+                               Scalar( 255, 0, 0), 2, 8, 0  );
+          }
+          
+          imshow("calcHist Demo", histImage );
+
+        
+        
+        
+    }
+    
+    //for(int i = 0; i < moedas[0].imagem.cols; i++)
+    //{
+    //    cout << moedas[0].imagem.at<Vec3b>(moedas[0].imagem.rows/2, i) << endl;
+    //}
+    */
+    
+    waitKey(0);
+    
+
+
+    /*
+    
     cout << "[main] Associando valor às moedas." << endl;
-    /* Associando um valor (financeiro) a cada moeda. */
+    // Associando um valor (financeiro) a cada moeda. 
     for( int i = 0; i < (int) moedas.size(); i++)
     {
-        /* Salvando resultado em arquivo. */
+        // Salvando resultado em arquivo.
         cout << "[main] Digite o valor da moeda " << i << ": ";
         cin >> moedas[i].valor; 
     }
     
-    /* Exibe o resultado final. */
+    // Exibe o resultado final. 
     cout << "[main] Resultado final (valor da moeda seguido dos momentos invariantes): " << endl << endl;
     for( int i = 0; i < (int) moedas.size(); i++)
     {
         moedas[i].imprimirMomentos();
     }
+    
+    */
 
     return(0);
 }
@@ -275,9 +430,9 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
                     // Muda o fundo para branco, caso o ponto esteia fora do círculo.
                     if(pow(m - centro.y, 2) + pow(n - centro.x, 2) > pow(raio, 2))
                     {
-                         imagemColorida.at<Vec3b>(m,n)[0] = 255; 
-                         imagemColorida.at<Vec3b>(m,n)[1] = 255;
-                         imagemColorida.at<Vec3b>(m,n)[2] = 255;
+                         imagemColorida.at<Vec3b>(m,n)[0] = 0; 
+                         imagemColorida.at<Vec3b>(m,n)[1] = 0;
+                         imagemColorida.at<Vec3b>(m,n)[2] = 0;
                     }
                      
                 }
