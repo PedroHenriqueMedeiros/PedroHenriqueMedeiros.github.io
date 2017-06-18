@@ -59,14 +59,23 @@ int main()
 	/* Lê todas as amostras. */
 	for(int i = 0; i < NUM_AMOSTRAS; i++)
 	{
-		moedas10f[i] = imread("10f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas10n[i] = imread("10n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas25f[i] = imread("25f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas25n[i] = imread("25n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas50f[i] = imread("50f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas50n[i] = imread("50n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas100f[i] = imread("100f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
-		moedas100n[i] = imread("100n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
+		moedas10f[i] = imread("10f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas10n[i] = imread("10n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas25f[i] = imread("25f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas25n[i] = imread("25n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas50f[i] = imread("50f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas50n[i] = imread("50n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas100f[i] = imread("100f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas100n[i] = imread("100n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		
+		equalizeHist(moedas10f[i], moedas10f[i]);
+		equalizeHist(moedas10n[i], moedas10n[i]);
+		equalizeHist(moedas25f[i], moedas25f[i]);
+		equalizeHist(moedas25n[i], moedas25n[i]);
+		equalizeHist(moedas50f[i], moedas50f[i]);
+		equalizeHist(moedas50n[i], moedas50n[i]);
+		equalizeHist(moedas100f[i], moedas100f[i]);
+		equalizeHist(moedas100n[i], moedas100n[i]);
 	}
 	
 	// Calcula descritores para as imagens de amostra. 

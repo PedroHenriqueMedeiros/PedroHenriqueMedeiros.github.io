@@ -46,7 +46,9 @@ int main()
 {
 	initModule_nonfree();
 	
-	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_COLOR);
+	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+	equalizeHist(imagem, imagem);
+	
 	Mat descritor = gerarDescritor(imagem);
 	
     Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, 1, CV_32FC1);
