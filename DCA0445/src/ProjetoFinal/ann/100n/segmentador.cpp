@@ -112,16 +112,16 @@ int main(int argc, char** argv)
     }
 
     cout << "[main] Realizando deteção pelo algoritmo padrão." << endl;
-    moedas = detectarTodasMoedas(imagemColorida, true);
+    moedas = detectarTodasMoedas(imagemColorida, false);
     
     if(moedas.size() < 1)
     {
-		moedas = detectarTodasMoedas(imagemColorida, false);
+		moedas = detectarTodasMoedas(imagemColorida, true);
 	}
 	
 	Mat saida = moedas[0].imagem.clone();
 	resize(saida, saida, Size(400, 400), 0, 0, INTER_LINEAR);
-	imwrite("teste.jpg", saida);
+	imwrite(argv[1], saida);
 
     return(0);
 }
