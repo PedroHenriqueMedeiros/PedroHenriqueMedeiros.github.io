@@ -8,7 +8,7 @@ using namespace cv;
 using namespace std;
 
 #define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 5
+#define NUM_AMOSTRAS 20
 
 
 int main()

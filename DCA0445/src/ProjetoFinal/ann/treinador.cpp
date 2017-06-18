@@ -15,7 +15,7 @@ using namespace std;
 #define MOMENTUM 0.1f
 
 #define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 5
+#define NUM_AMOSTRAS 20
 
 // Rótulos da classificação
 
