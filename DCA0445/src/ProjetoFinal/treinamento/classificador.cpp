@@ -72,14 +72,30 @@ int main()
     saidas.at<float>(7,0) = 10001; 
     
 	
-	Mat saidasMLP(8, 1, CV_32FC1);
+	Mat saidasMLP(4, 1, CV_32FC1);
 	
 	CvANN_MLP mlp;
 	mlp.load("pesos.yml", "mlp");
 	
-	mlp.predict(entradas, saidasMLP);
+	Mat t1(4, 2, CV_32FC1);
+    
+    t1.at<float>(0,0) = 0;
+    t1.at<float>(0,1) = 0;
+    t1.at<float>(1,0) = 0;
+    t1.at<float>(1,1) = 1;
+    t1.at<float>(2,0) = 1;
+    t1.at<float>(2,1) = 0;
+    t1.at<float>(3,0) = 1;
+    t1.at<float>(3,1) = 1;
+    
 	
-	for(int i = 0; i < 8; i++)
+	mlp.predict(t1, saidasMLP);
+	
+	
+	
+	
+	
+	for(int i = 0; i < saidasMLP.rows; i++)
 	{
 		cout << saidasMLP.at<float>(i, 0) << endl;
 	}
