@@ -24,9 +24,9 @@ Mat gerarDescritor(const Mat &imagem)
     //create a nearest neighbor matcher
     Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
     //create Sift feature point extracter
-    Ptr<FeatureDetector> detector(new SiftFeatureDetector());
+    Ptr<FeatureDetector> detector(new SurfFeatureDetector());
     //create Sift descriptor extractor
-    Ptr<DescriptorExtractor> extractor(new SiftDescriptorExtractor);    
+    Ptr<DescriptorExtractor> extractor(new SurfDescriptorExtractor);    
     //create BoF (or BoW) descriptor extractor
     BOWImgDescriptorExtractor bowDE(extractor,matcher);
     //Set the dictionary with the vocabulary we created in the first step

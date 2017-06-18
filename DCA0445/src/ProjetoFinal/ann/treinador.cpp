@@ -15,7 +15,7 @@ using namespace std;
 #define MOMENTUM 0.1f
 
 #define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 20
+#define NUM_AMOSTRAS 60
 
 // Rótulos da classificação
 
@@ -29,24 +29,6 @@ using namespace std;
 #define M100n_VALOR 1.00
 
 #define TAM_DICIONARIO 800
-
-
-vector<KeyPoint> detectKeyPoints(const Mat &image) 
-{
-    auto featureDetector = FeatureDetector::create("SIFT");
-    vector<KeyPoint> keyPoints;
-    featureDetector->detect(image, keyPoints);
-    return keyPoints;
-}
-
-Mat computeDescriptors(const Mat &image, vector<KeyPoint> &keyPoints)
-{
-    auto featureExtractor = DescriptorExtractor::create("SIFT");
-    Mat descriptors;
-    featureExtractor->compute(image, keyPoints, descriptors);
-    return descriptors;
-}
-
 
 vector<float> mat2vec(Mat &mat)
 {
@@ -68,7 +50,7 @@ void treinar(const Mat &entradas, const Mat& saidas) {
 	// Definição das camadas.
     Mat camadas = cv::Mat(3, 1, CV_32SC1);
     camadas.row(0) = Scalar(entradas.cols);
-    camadas.row(1) = Scalar(3);
+    camadas.row(1) = Scalar(10);
     camadas.row(2) = Scalar(saidas.cols);
 
 	// Definição dos parâmetros;

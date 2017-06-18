@@ -8,7 +8,7 @@ using namespace cv;
 using namespace std;
 
 #define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 20
+#define NUM_AMOSTRAS 60
 
 #define TAM_DICIONARIO 800
 #define NUM_MAX_ITER 200
@@ -17,7 +17,7 @@ using namespace std;
 
 vector<KeyPoint> detectKeyPoints(const Mat &image) 
 {
-    auto featureDetector = FeatureDetector::create("SIFT");
+    auto featureDetector = FeatureDetector::create("SURF");
     vector<KeyPoint> keyPoints;
     featureDetector->detect(image, keyPoints);
     return keyPoints;
@@ -25,7 +25,7 @@ vector<KeyPoint> detectKeyPoints(const Mat &image)
 
 Mat computeDescriptors(const Mat &image, vector<KeyPoint> &keyPoints)
 {
-    auto featureExtractor = DescriptorExtractor::create("SIFT");
+    auto featureExtractor = DescriptorExtractor::create("SURF");
     Mat descriptors;
     featureExtractor->compute(image, keyPoints, descriptors);
     return descriptors;
