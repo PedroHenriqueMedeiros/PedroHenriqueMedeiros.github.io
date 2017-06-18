@@ -17,18 +17,6 @@ using namespace cv::ocl;
 #define MAX_FECHAMENTO 32 // Cresce a partir de 1 em potências de 2.
 #define RESULTADO_SEPARADO true
 
-/* Momentos invariantes das moedas. */
-
-const double M10_FACE[] = {2.1019523e-03, 2.9816274e-10, 5.0870460e-14, 5.3015279e-12, -1.0026189e-25, -2.4454690e-17, -2.7513525e-24};
-const double M10_NUMERO[] = {1.9651189e-03, 2.6737620e-10, 2.7988117e-14, 7.6505705e-12, 2.7016187e-24, -4.3791137e-17, 2.2878504e-24};
-const double M25_FACE[] = {1.5547655e-03, 5.1980888e-10, 2.3829745e-13, 1.2255122e-12, -5.3338618e-25, -5.9654341e-18, 3.9255943e-25};
-const double M25_NUMERO[] = {1.5408531e-03, 4.3643024e-10, 2.3095962e-13, 1.8859005e-12, 1.0816177e-24, 3.4267008e-17, 6.1583207e-25};
-const double M50_FACE[] = {1.3130799e-03, 6.4635126e-11, 2.6672046e-13, 2.4723820e-12, -1.8914621e-24, -1.0215285e-17, -6.7326112e-25};
-const double M50_NUMERO[] = {1.0930251e-03, 7.6355478e-10, 7.6292901e-14, 8.5886917e-13, 1.4098157e-25, -1.4186269e-17, -1.6869967e-25};
-const double M100_FACE[] = {9.6195651e-04, 4.5638742e-10, 6.9091900e-14, 5.1158373e-13, 9.3537883e-26, -8.9703140e-18, -2.2392455e-26};
-const double M100_NUMERO[] = {9.8289248e-04, 9.0282975e-10, 2.0202395e-14, 9.2678703e-13, 1.3063057e-26, 2.7778257e-17, -1.2614061e-25};
-
-
 /* Estrutura que define um círculo, que contornará a moeda. */
 struct Circulo {
     Point2f centro;
@@ -99,6 +87,91 @@ void removeMoedasBorda(Mat &imagem);
 void removeBuracos(Mat &imagem);
 
 
+
+/**
+ * Extract local features for an image
+ */
+ 
+Mat getDescriptors(const Mat& imagem)
+{
+	Mat src = imagem;
+	Mat ycrcb, resultado;
+	cvtColor(src, ycrcb, CV_BGR2YCrCb);
+	vector<Mat> channels;
+	split(ycrcb, channels);
+	equalizeHist(channels[0], channels[0]);
+	merge(channels, resultado);
+	cvtColor(resultado, src, CV_YCrCb2BGR);
+	resize(src, src, Size(100, 100), 0, 0, INTER_LINEAR);
+	
+	return src;
+	
+	/*
+
+	Mat dst(src.size(), src.type()); // yes, you need to preallocate here
+
+	IplImage ipsrc = src; // new header, points to the same pixels
+	IplImage ipdst = dst;
+
+	// CV_WARP_INVERSE_MAP
+	cvLogPolar( &ipsrc, &ipdst, cvPoint2D32f(src.cols/2, src.rows/2), 50, CV_INTER_CUBIC);	
+	
+	return dst;
+	* 
+	* */
+}
+
+void mlp(cv::Mat& trainingData, cv::Mat& trainingClasses) {
+
+
+	// Cria a MLP.
+
+    Mat layers = cv::Mat(3, 1, CV_32SC1);
+    layers.row(0) = Scalar(10000);
+    layers.row(1) = Scalar(10);
+    layers.row(2) = Scalar(1);
+
+    CvANN_MLP mlp;
+    CvANN_MLP_TrainParams params;
+    CvTermCriteria criteria;
+    criteria.max_iter = 1000;
+    criteria.epsilon = 0.00001f;
+    criteria.type = CV_TERMCRIT_ITER | CV_TERMCRIT_EPS;
+    params.train_method = CvANN_MLP_TrainParams::BACKPROP;
+    params.bp_dw_scale = 0.05f;
+    params.bp_moment_scale = 0.05f;
+    params.term_crit = criteria;
+
+    mlp.create(layers);
+
+    // Realiza o treinamento.
+    mlp.train(trainingData, trainingClasses, cv::Mat(), cv::Mat(), params);
+    Mat response(1, 1, CV_32FC1);
+    
+    
+    FileStorage fs("./treinamento/mlp.yml", FileStorage::WRITE); // or xml
+	mlp.write(*fs, "mlp"); 
+    
+    //mlp.predict(sample, response);
+
+}
+
+
+
+vector<float> mat2vec(Mat &mat)
+{
+	std::vector<float> array;
+	if (mat.isContinuous()) {
+	  array.assign((float*)mat.datastart, (float*)mat.dataend);
+	} else {
+	  for (int i = 0; i < mat.rows; ++i) {
+		array.insert(array.end(), (float*)mat.ptr<uchar>(i), (float*)mat.ptr<uchar>(i)+mat.cols);
+	  }
+	}
+	
+	return array;
+}
+
 /* Função main. */
 int main(int argc, char** argv) 
 {
@@ -124,10 +197,56 @@ int main(int argc, char** argv)
 
     cout << "[main] Realizando deteção pelo algoritmo padrão." << endl;
     moedas = detectarTodasMoedas(imagemColorida);
+    
+	// Definindo conjunto treinamento.
+    Mat trainingData(8, 10000, CV_32FC1);
+    Mat trainingClasses(8, 1, CV_32FC1);
+    
+    Mat m10f = imread("./treinamento/10f.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v10f = mat2vec(m10f);
+    Mat m10n = imread("./treinamento/10n.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v10n = mat2vec(m10n);
+    Mat m25f = imread("./treinamento/25f.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v25f = mat2vec(m25f);
+    Mat m25n = imread("./treinamento/25n.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v25n = mat2vec(m25n);
+    Mat m50f = imread("./treinamento/50f.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v50f = mat2vec(m50f);
+    Mat m50n = imread("./treinamento/50n.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v50n = mat2vec(m50n);
+    Mat m100f = imread("./treinamento/100f.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v100f = mat2vec(m100f);
+    Mat m100n = imread("./treinamento/100n.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+    vector<float> v100n = mat2vec(m100n);
+    
+    for(int i = 0; i < 10000; i++)
+    {
+		trainingData.at<float>(0, i) = v10f[i];
+		trainingData.at<float>(1, i) = v10n[i];
+		trainingData.at<float>(2, i) = v25f[i];
+		trainingData.at<float>(3, i) = v25n[i];
+		trainingData.at<float>(4, i) = v50f[i];
+		trainingData.at<float>(5, i) = v50n[i];
+		trainingData.at<float>(6, i) = v100f[i];
+		trainingData.at<float>(7, i) = v100n[i];
+		
+	}
+    
+    trainingClasses.at<float>(0,0) = 9;
+    trainingClasses.at<float>(1,0) = 11;
+    trainingClasses.at<float>(2,0) = 99;
+    trainingClasses.at<float>(3,0) = 101;
+    trainingClasses.at<float>(4,0) = 999;
+    trainingClasses.at<float>(5,0) = 1001;
+    trainingClasses.at<float>(6,0) = 9999;
+    trainingClasses.at<float>(7,0) = 10001; 
+    
+    
+    mlp(trainingData, trainingClasses);
+
 
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
-    exibirMoedas(imagemColorida, moedas);
-    
+    exibirMoedas(imagemColorida, moedas);   
 
     cout << "[main] Associando valor às moedas." << endl;
     /* Associando um valor (financeiro) a cada moeda. */
@@ -275,9 +394,9 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
                     // Muda o fundo para branco, caso o ponto esteia fora do círculo.
                     if(pow(m - centro.y, 2) + pow(n - centro.x, 2) > pow(raio, 2))
                     {
-                         imagemColorida.at<Vec3b>(m,n)[0] = 255; 
-                         imagemColorida.at<Vec3b>(m,n)[1] = 255;
-                         imagemColorida.at<Vec3b>(m,n)[2] = 255;
+                         imagemColorida.at<Vec3b>(m,n)[0] = 0; 
+                         imagemColorida.at<Vec3b>(m,n)[1] = 0;
+                         imagemColorida.at<Vec3b>(m,n)[2] = 0;
                     }
                      
                 }

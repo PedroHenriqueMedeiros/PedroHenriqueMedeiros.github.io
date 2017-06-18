@@ -11,13 +11,18 @@ using namespace cv;
 int main(int argc, const char* argv[])
 {
     Mat input = cv::imread("1real-face.jpg", 0); //Load as grayscale
-    Mat image = cv::imread("t1.jpg", 0); //Load as grayscale
+    Mat image = cv::imread("t7.jpg", 0); //Load as grayscale
     
-    SiftFeatureDetector detector;
+
+    
+    SiftFeatureDetector detector(1000);
     SiftDescriptorExtractor extractor;
-    BFMatcher matcher(NORM_L2, false);
+    BFMatcher matcher(NORM_L2, true);
     
-    std::vector<cv::KeyPoint> keypoints1, keypoints2;
+    
+    
+    
+    std::vector<cv::KeyPoint> keypoints1,keypoints2;
     
     detector.detect(input, keypoints1);
     detector.detect(image, keypoints2);
@@ -28,9 +33,19 @@ int main(int argc, const char* argv[])
     extractor.compute(input, keypoints1, descriptors1);
     extractor.compute(input, keypoints2, descriptors2);
     
+    cout << "1 = " << descriptors1.rows << ", " << descriptors1.cols << endl;
+    cout << "2 = " << descriptors2.rows << ", " << descriptors2.cols << endl;
+    
+    //Mat result = descriptors1 - descriptors2;
+    
+    //cout << result;
+    //
+
     
     vector<DMatch> matches;
     matcher.match(descriptors1, descriptors2, matches);
+    
+    cout << "Number of matches: " << matches.size() << endl;
 
 
     // Add results to image and save.
