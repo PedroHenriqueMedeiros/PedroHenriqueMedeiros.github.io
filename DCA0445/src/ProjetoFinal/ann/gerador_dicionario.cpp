@@ -2,43 +2,18 @@
 #include <vector>
 #include <opencv2/nonfree/features2d.hpp> 
 #include <opencv2/nonfree/nonfree.hpp>
-
-#include "boost/filesystem.hpp"   
 #include <iostream>          
     
-namespace fs = boost::filesystem;
-       
 using namespace cv;
 using namespace std;
-
-// Parâmetros da MLP
-
-#define NUM_MAX_ITER 1000
-#define EPSILON 1e-10f
-#define LEARNING_RATE 0.1f
-#define MOMENTUM 0.1f
 
 #define TIPOS_MOEDAS 8
 #define NUM_AMOSTRAS 5
 
-
-vector<string> getFilesInDirectory(const string& directory)
-{
-  std::vector<std::string> files;
-  fs::path root(directory);
-  fs::directory_iterator it_end;
-  for (fs::directory_iterator it(root); it != it_end; ++it)
-  {
-      if (fs::is_regular_file(it->path()))
-      {
-          files.push_back(it->path().string());
-      }
-  }
-  return files;
-}
-
-
-
+#define TAM_DICIONARIO 800
+#define NUM_MAX_ITER 200
+#define ERRO_MAX 1e-5
+#define NOVAS_TENTATIVAS 1
 
 vector<KeyPoint> detectKeyPoints(const Mat &image) 
 {
@@ -54,60 +29,6 @@ Mat computeDescriptors(const Mat &image, vector<KeyPoint> &keyPoints)
     Mat descriptors;
     featureExtractor->compute(image, keyPoints, descriptors);
     return descriptors;
-}
-
-
-vector<float> mat2vec(Mat &mat)
-{
-	vector<float> array;
-	if (mat.isContinuous()) {
-	  array.assign((float*)mat.datastart, (float*)mat.dataend);
-	} else {
-	  for (int i = 0; i < mat.rows; ++i) {
-		array.insert(array.end(), (float*)mat.ptr<uchar>(i), (float*)mat.ptr<uchar>(i)+mat.cols);
-	  }
-	}
-	
-	return array;
-}
-
-void treinar(const Mat &entradas, const Mat& saidas) {
-
-	
-	// Definição das camadas.
-    Mat camadas = cv::Mat(3, 1, CV_32SC1);
-    camadas.row(0) = Scalar(entradas.cols);
-    camadas.row(1) = Scalar(10);
-    camadas.row(2) = Scalar(saidas.cols);
-
-	// Definição dos parâmetros;
-    CvANN_MLP_TrainParams params;
-    CvTermCriteria criteria;
-    criteria.max_iter = NUM_MAX_ITER;
-    criteria.epsilon = EPSILON;
-    criteria.type = CV_TERMCRIT_ITER | CV_TERMCRIT_EPS;
-    params.train_method = CvANN_MLP_TrainParams::BACKPROP;
-    params.bp_dw_scale = LEARNING_RATE;
-    params.bp_moment_scale = MOMENTUM;
-    params.term_crit = criteria;
-	
-	
-	CvANN_MLP mlp;
-    mlp.create(camadas, CvANN_MLP::SIGMOID_SYM);
-
-    // Realiza o treinamento.
-    int numIteracoes = mlp.train(entradas, saidas, cv::Mat(), cv::Mat(), params);
-    
-    cout << "[info] Treinamento concluído após " << numIteracoes << " iterações." << endl;
-    
-    
-    // Salva o resultado.
-    
-    FileStorage fs("pesos.yml", FileStorage::WRITE); // or xml
-	mlp.write(*fs, "mlp"); 
-    
-    //mlp.predict(sample, response);
-
 }
 
 int main()
@@ -132,10 +53,8 @@ int main()
 	vector<Mat> dMoedas50n(NUM_AMOSTRAS, Mat());
 	vector<Mat> dMoedas100f(NUM_AMOSTRAS, Mat());
 	vector<Mat> dMoedas100n(NUM_AMOSTRAS, Mat());
-	
-	vector<Mat> todosDescritores;
-	
-	Mat featuresUnclustered;
+		
+	Mat todosDescritores;
 	
 	/* Lê todas as amostras. */
 	for(int i = 0; i < NUM_AMOSTRAS; i++)
@@ -173,46 +92,27 @@ int main()
 		dMoedas100f[i] = computeDescriptors(moedas100f[i], kp100f);
 		dMoedas100n[i] = computeDescriptors(moedas100n[i], kp100n);
 		
-		featuresUnclustered.push_back(dMoedas10f[i]);
-		featuresUnclustered.push_back(dMoedas10n[i]);
-		featuresUnclustered.push_back(dMoedas25f[i]);
-		featuresUnclustered.push_back(dMoedas25n[i]);
-		featuresUnclustered.push_back(dMoedas50f[i]);
-		featuresUnclustered.push_back(dMoedas50n[i]);
-		featuresUnclustered.push_back(dMoedas100f[i]);
-		featuresUnclustered.push_back(dMoedas100n[i]);
+		todosDescritores.push_back(dMoedas10f[i]);
+		todosDescritores.push_back(dMoedas10n[i]);
+		todosDescritores.push_back(dMoedas25f[i]);
+		todosDescritores.push_back(dMoedas25n[i]);
+		todosDescritores.push_back(dMoedas50f[i]);
+		todosDescritores.push_back(dMoedas50n[i]);
+		todosDescritores.push_back(dMoedas100f[i]);
+		todosDescritores.push_back(dMoedas100n[i]);
 		
 	}
 	
-	for(int i = 0; i < NUM_AMOSTRAS; i++)
-	{
-		cout << dMoedas10f[i].size() << endl;
-		cout << dMoedas10n[i].size() << endl;
-		cout << dMoedas25f[i].size() << endl;
-		cout << dMoedas25n[i].size() << endl;
-		cout << dMoedas50f[i].size() << endl;
-		cout << dMoedas50n[i].size() << endl;
-		cout << dMoedas100f[i].size() << endl;
-		cout << dMoedas100n[i].size() << endl;
-		cout << "----------------" << endl;
-	}
 	
-	
-	int tamDicionario = 200; // Numero de 'bags'
-	TermCriteria tc(CV_TERMCRIT_ITER, 100, 0.001);
-	int retries = 1;
-	int flags = KMEANS_PP_CENTERS;
+	TermCriteria tc(CV_TERMCRIT_ITER, NUM_MAX_ITER, ERRO_MAX);
 	
 	//Create the BoW (or BoF) trainer
-	BOWKMeansTrainer bowTrainer(tamDicionario, tc, retries, flags);
-	Mat dictionary = bowTrainer.cluster(featuresUnclustered);    
+	BOWKMeansTrainer bowTrainer(TAM_DICIONARIO, tc, NOVAS_TENTATIVAS, KMEANS_PP_CENTERS);
+	Mat dicionario = bowTrainer.cluster(todosDescritores);  
+	
+	// Salva o dicionário.  
 	FileStorage fs("dicionario.yml", FileStorage::WRITE);
-	fs << "vocabulary" << dictionary;
+	fs << "vocabulary" << dicionario;
 	fs.release();
-	
-	
-	
-	
-     
-	
+		
 }

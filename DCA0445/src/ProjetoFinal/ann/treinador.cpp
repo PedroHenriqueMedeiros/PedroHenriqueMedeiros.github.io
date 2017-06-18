@@ -28,6 +28,8 @@ using namespace std;
 #define M100f_VALOR 0.75
 #define M100n_VALOR 1.00
 
+#define TAM_DICIONARIO 800
+
 
 vector<KeyPoint> detectKeyPoints(const Mat &image) 
 {
@@ -104,7 +106,7 @@ int main()
 	initModule_nonfree();
 	
 	// Definindo conjunto treinamento.
-    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, 200, CV_32FC1);
+    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, TAM_DICIONARIO, CV_32FC1);
     Mat saidas(TIPOS_MOEDAS * NUM_AMOSTRAS, 1, CV_32FC1);
     
     vector<Mat> dMoedas10f(NUM_AMOSTRAS, Mat());

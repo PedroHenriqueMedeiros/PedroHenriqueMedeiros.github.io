@@ -12,6 +12,8 @@ using namespace std;
 #define TIPOS_MOEDAS 8
 #define NUM_AMOSTRAS 5
 
+#define TAM_DICIONARIO 800
+
 Mat gerarDescritor(const Mat &imagem)
 {
 	Mat dicionario; 
