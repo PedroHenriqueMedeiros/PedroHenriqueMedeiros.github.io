@@ -3,6 +3,11 @@
 #include <opencv2/nonfree/features2d.hpp> 
 #include <opencv2/nonfree/nonfree.hpp>
 
+#include "boost/filesystem.hpp"   
+#include <iostream>          
+    
+namespace fs = boost::filesystem;
+       
 using namespace cv;
 using namespace std;
 
@@ -12,6 +17,27 @@ using namespace std;
 #define EPSILON 1e-10f
 #define LEARNING_RATE 0.1f
 #define MOMENTUM 0.1f
+
+#define NUM_AMOSTRAS 5
+
+
+vector<string> getFilesInDirectory(const string& directory)
+{
+  std::vector<std::string> files;
+  fs::path root(directory);
+  fs::directory_iterator it_end;
+  for (fs::directory_iterator it(root); it != it_end; ++it)
+  {
+      if (fs::is_regular_file(it->path()))
+      {
+          files.push_back(it->path().string());
+      }
+  }
+  return files;
+}
+
+
+
 
 vector<KeyPoint> detectKeyPoints(const Mat &image) 
 {
@@ -23,7 +49,7 @@ vector<KeyPoint> detectKeyPoints(const Mat &image)
 
 Mat computeDescriptors(const Mat &image, vector<KeyPoint> &keyPoints)
 {
-    auto featureExtractor = DescriptorExtractor::create("BRIEF");
+    auto featureExtractor = DescriptorExtractor::create("SIFT");
     Mat descriptors;
     featureExtractor->compute(image, keyPoints, descriptors);
     return descriptors;
@@ -88,8 +114,10 @@ int main()
 	initModule_nonfree();
 	
 	// Definindo conjunto treinamento.
-    Mat entradas(80, 10000, CV_32FC1);
-    Mat saidas(80, 1, CV_32FC1);
+    Mat entradas(NUM_AMOSTRAS, 10000, CV_32FC1);
+    Mat saidas(NUM_AMOSTRAS, 1, CV_32FC1);
+    
+    /*
     
     Mat m10f = imread("10f.jpg", CV_LOAD_IMAGE_GRAYSCALE);
     vector<float> v10f = mat2vec(m10f);
@@ -107,6 +135,8 @@ int main()
     vector<float> v100f = mat2vec(m100f);
     Mat m100n = imread("100n.jpg", CV_LOAD_IMAGE_GRAYSCALE);
     vector<float> v100n = mat2vec(m100n);
+    * 
+    */
     
     /*
     vector<KeyPoint> keypoints = detectKeyPoints(m50n); 
@@ -155,6 +185,7 @@ int main()
 	* 
 	* */
     
+    /*
 	for(int i = 0; i < 10000; i++)
 	{
 		entradas.at<float>(0, i) = v10f[i];
@@ -193,6 +224,42 @@ int main()
 		cout << saidasMLP.at<float>(i, 0) << endl;
 	}
 	
+    */
     
+
+	vector<Mat> moedas10f(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas10n(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas25f(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas25n(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas50f(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas50n(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas100f(NUM_AMOSTRAS, Mat());
+	vector<Mat> moedas100n(NUM_AMOSTRAS, Mat());
+	
+	/* Lê todas as amostras. */
+	for(int i = 0; i < NUM_AMOSTRAS; i++)
+	{
+		moedas10f[i] = imread("10f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas10n[i] = imread("10n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas25f[i] = imread("25f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas25n[i] = imread("25n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas50f[i] = imread("50f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas50n[i] = imread("50n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas100f[i] = imread("100f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+		moedas100n[i] = imread("100n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+	}
+	
+	/* Calcula descritores para as imagens de amostra. */
+	
+	Mat t1 = moedas100f[4];
+	vector<KeyPoint> kp = detectKeyPoints(t1);
+	Mat d = computeDescriptors(t1, kp);
+	Mat t2;
+	drawKeypoints(t1, kp, t2);
+	cout << "num de kp = " << kp.size() << " e num de d = " << d.size() << endl;
+	imshow("t2", t2);
+	waitKey(0);
+	
+     
 	
 }

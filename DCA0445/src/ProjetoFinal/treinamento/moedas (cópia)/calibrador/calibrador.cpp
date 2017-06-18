@@ -141,6 +141,16 @@ int main(int argc, char** argv)
     cout << "[main] Realizando deteção pelo algoritmo padrão." << endl;
     moedas = detectarTodasMoedas(imagemColorida);
     
+    for(int i = 0; i < moedas.size(); i++)
+    {
+		Mat saida = moedas[i].imagem.clone();
+		resize(saida, saida, Size(400, 400), 0, 0, INTER_LINEAR);
+		
+		imwrite(argv[1], saida);
+		return 100;
+		
+	}
+    
 
     cout << "[main] Exibindo " << moedas.size() << " moedas encontradas. " << endl;
     exibirMoedas(imagemColorida, moedas);   
@@ -245,11 +255,12 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
     //threshold(imagemCinza, imagemBinaria, 0, 255, THRESH_BINARY_INV|THRESH_OTSU);
     
     /* Usando threshold adaptativo (resultado melhor). */
-    //adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 7, 5);
-    adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 7, 5);
+    adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 7, 5);
+    //adaptiveThreshold(imagemCinza, imagemBinaria, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY_INV, 7, 5);
     
     /* Remove moedas da borda. */
     removeMoedasBorda(imagemBinaria);
+    
 
     /* Faz o fechameto da imagem binária. */
     dilate(imagemBinaria, imagemBinaria, Mat(), Point(-1, -1), fechamento, 1, 1);
@@ -280,10 +291,10 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
         double areaContorno = contourArea(contornos[i]);
         double areaCirculo = M_PI * raio * raio;
         double relacaoAreas = areaContorno/areaCirculo;
-
+        
         if(raio > LIMIAR_RAIO && relacaoAreas > LIMIAR_RELACAO_AREAS)
         {
-            
+			            
             Rect ret = boundingRect(contornos[i]);
             
             /* Mantém apenas os píxels da moeda e apaga os externos. */
@@ -318,8 +329,8 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
      
     /* Exibe resultado da imagem segmentada. */
     
-    //imshow("binaria", imagemBinaria);
-    //waitKey(500);
+    imshow("binaria", imagemBinaria);
+    waitKey(500);
      
     return moedas;
 }
