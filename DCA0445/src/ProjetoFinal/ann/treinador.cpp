@@ -9,7 +9,7 @@ using namespace std;
 
 // Parâmetros da MLP
 
-#define NUM_MAX_ITER 10000
+#define NUM_MAX_ITER 100000
 #define EPSILON 1e-10f
 #define LEARNING_RATE 0.1f
 #define MOMENTUM 0.1f
@@ -18,15 +18,6 @@ using namespace std;
 #define NUM_AMOSTRAS 60
 
 // Rótulos da classificação
-
-#define M10f_VALOR -1.00
-#define M10n_VALOR -0.75
-#define M25f_VALOR -0.50
-#define M25n_VALOR -0.25
-#define M50f_VALOR  0.25
-#define M50n_VALOR  0.50
-#define M100f_VALOR 0.75
-#define M100n_VALOR 1.00
 
 #define TAM_DICIONARIO 800
 
@@ -50,7 +41,7 @@ void treinar(const Mat &entradas, const Mat& saidas) {
 	// Definição das camadas.
     Mat camadas = cv::Mat(3, 1, CV_32SC1);
     camadas.row(0) = Scalar(entradas.cols);
-    camadas.row(1) = Scalar(10);
+    camadas.row(1) = Scalar((entradas.cols + saidas.cols)/2);
     camadas.row(2) = Scalar(saidas.cols);
 
 	// Definição dos parâmetros;
@@ -89,7 +80,7 @@ int main()
 	
 	// Definindo conjunto treinamento.
     Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, TAM_DICIONARIO, CV_32FC1);
-    Mat saidas(TIPOS_MOEDAS * NUM_AMOSTRAS, 1, CV_32FC1);
+    Mat saidas = Mat::zeros(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
     
     vector<Mat> dMoedas10f(NUM_AMOSTRAS, Mat());
 	vector<Mat> dMoedas10n(NUM_AMOSTRAS, Mat());
@@ -136,40 +127,54 @@ int main()
     
     for(int i = 0; i < TIPOS_MOEDAS * NUM_AMOSTRAS; i += TIPOS_MOEDAS)
     {
-		dMoedas10f[i/8].row(0).copyTo(entradas.row(i));
-		dMoedas10n[i/8].row(0).copyTo(entradas.row(i+1));
-		dMoedas25f[i/8].row(0).copyTo(entradas.row(i+2));
-		dMoedas25n[i/8].row(0).copyTo(entradas.row(i+3));
-		dMoedas50f[i/8].row(0).copyTo(entradas.row(i+4));
-		dMoedas50n[i/8].row(0).copyTo(entradas.row(i+5));
-		dMoedas100f[i/8].row(0).copyTo(entradas.row(i+6));
-		dMoedas100n[i/8].row(0).copyTo(entradas.row(i+7));
-		
-		saidas.at<float>(i,0) = M10f_VALOR;
-		saidas.at<float>(i+1,0) = M10n_VALOR;
-		saidas.at<float>(i+2,0) = M25f_VALOR;
-		saidas.at<float>(i+3,0) = M25n_VALOR;
-		saidas.at<float>(i+4,0) = M50f_VALOR;
-		saidas.at<float>(i+5,0) = M50n_VALOR;
-		saidas.at<float>(i+6,0) = M100f_VALOR;
-		saidas.at<float>(i+7,0) = M100n_VALOR;
+		dMoedas10f[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i));
+		dMoedas10n[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+1));
+		dMoedas25f[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+2));
+		dMoedas25n[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+3));
+		dMoedas50f[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+4));
+		dMoedas50n[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+5));
+		dMoedas100f[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+6));
+		dMoedas100n[i/TIPOS_MOEDAS].row(0).copyTo(entradas.row(i+7));
+        
+        saidas.at<float>(i,0) = 1;
+        saidas.at<float>(i+1,1) = 1;
+        saidas.at<float>(i+2,2) = 1;
+        saidas.at<float>(i+3,3) = 1;
+        saidas.at<float>(i+4,4) = 1;
+        saidas.at<float>(i+5,5) = 1;
+        saidas.at<float>(i+6,6) = 1;
+        saidas.at<float>(i+7,7) = 1;
+  
 	}
-   
-
+    
+    for(int i = 0; i < TIPOS_MOEDAS * NUM_AMOSTRAS; i++)
+    {
+        for(int j = 0; j < TIPOS_MOEDAS; j++)
+        {
+            cout << saidas.at<float>(i,j) << ", ";
+        }
+        
+        cout << endl;
+    }
+    
     treinar(entradas, saidas);
     
-    Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, 1, CV_32FC1);
+    Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, 8, CV_32FC1);
 	
 	CvANN_MLP mlp;
 	mlp.load("pesos.yml", "mlp");
 	
 	mlp.predict(entradas, saidasMLP);
 
+
 	for(int i = 0; i < saidasMLP.rows; i++)
 	{
-		cout << saidasMLP.at<float>(i, 0) << endl;
+        for(int j = 0; j < TIPOS_MOEDAS; j++)
+        {
+            cout << saidasMLP.at<float>(i, j) << " ";
+        }
+        cout << endl <<  "-----------------" << endl;
 	}
-	
 
     
     return 0;

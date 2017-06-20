@@ -10,7 +10,7 @@ using namespace std;
 // Parâmetros da MLP
 
 #define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 20
+#define NUM_AMOSTRAS 60
 
 #define TAM_DICIONARIO 800
 
@@ -51,16 +51,20 @@ int main()
 	
 	Mat descritor = gerarDescritor(imagem);
 	
-    Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, 1, CV_32FC1);
+    Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
 	
 	CvANN_MLP mlp;
 	mlp.load("pesos.yml", "mlp");
 	
 	mlp.predict(descritor, saidasMLP);
 
-	for(int i = 0; i < saidasMLP.rows; i++)
+    for(int i = 0; i < saidasMLP.rows; i++)
 	{
-		cout << saidasMLP.at<float>(i, 0) << endl;
+        for(int j = 0; j < TIPOS_MOEDAS; j++)
+        {
+            cout << saidasMLP.at<float>(i, j) << " ";
+        }
+        cout << endl <<  "-----------------" << endl;
 	}
 	
 
