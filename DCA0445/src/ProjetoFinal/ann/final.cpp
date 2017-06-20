@@ -13,12 +13,11 @@ using namespace std;
 // Parâmetros da MLP
 
 #define NUM_MAX_ITER 100000
-#define EPSILON 1e-10f
+#define EPSILON 1e-6f
 #define LEARNING_RATE 0.1f
-#define MOMENTUM 0.1f
+#define MOMENTUM 0.7f
 
-#define TIPOS_MOEDAS 8
-#define NUM_AMOSTRAS 60
+#define NUM_MI 3
 
 void treinar(const Mat &entradas, const Mat& saidas) {
 
@@ -52,7 +51,7 @@ void treinar(const Mat &entradas, const Mat& saidas) {
     
     // Salva o resultado.
     
-    FileStorage fs("pesos.yml", FileStorage::WRITE); // or xml
+    FileStorage fs("mlp.yml", FileStorage::WRITE); // or xml
 	mlp.write(*fs, "mlp"); 
     
     //mlp.predict(sample, response);
@@ -64,7 +63,7 @@ int main()
 	initModule_nonfree();
     
     // Definindo conjunto treinamento.
-    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, 7, CV_32FC1);
+    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, NUM_MI, CV_32FC1);
     Mat saidas = Mat::zeros(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
     
 	vector<Mat> moedas10f(NUM_AMOSTRAS, Mat());
@@ -76,16 +75,14 @@ int main()
 	vector<Mat> moedas100f(NUM_AMOSTRAS, Mat());
 	vector<Mat> moedas100n(NUM_AMOSTRAS, Mat());
 	
-	vector<Mat> dMoedas10f(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas10n(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas25f(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas25n(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas50f(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas50n(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas100f(NUM_AMOSTRAS, Mat());
-	vector<Mat> dMoedas100n(NUM_AMOSTRAS, Mat());
-		
-	Mat todosDescritores;
+	vector<vector<double> > dMoedas10f(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas10n(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas25f(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas25n(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas50f(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas50n(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas100f(NUM_AMOSTRAS, vector<double>(7));
+	vector<vector<double> > dMoedas100n(NUM_AMOSTRAS, vector<double>(7));
 	
 	/* Lê todas as amostras. */
 	for(int i = 0; i < NUM_AMOSTRAS; i++)
@@ -138,11 +135,67 @@ int main()
         HuMoments(mom50n, mi50n);
         HuMoments(mom100f, mi100f);
         HuMoments(mom100n, mi100n);
-		
+        
+        for(int j = 0; j < NUM_MI; j++)
+        {
+            dMoedas10f[i][j] = mi10f[j];
+            dMoedas10n[i][j] = mi10n[j];
+            dMoedas25f[i][j] = mi25f[j];
+            dMoedas25n[i][j] = mi25n[j];
+            dMoedas50f[i][j] = mi50f[j];
+            dMoedas50n[i][j] = mi50n[j];
+            dMoedas100f[i][j] = mi100f[j];
+            dMoedas100n[i][j] = mi100n[j];
+            
+        }
+        
 	}
     
-
+    
+    for(int i = 0; i < TIPOS_MOEDAS * NUM_AMOSTRAS; i += TIPOS_MOEDAS)
+    {
+        for(int j = 0; j < NUM_MI; j++)
+        {
+            entradas.at<float>(i,j) = dMoedas10f[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+1,j) = dMoedas10n[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+2,j) = dMoedas25f[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+3,j) = dMoedas25n[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+4,j) = dMoedas50f[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+5,j) = dMoedas50n[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+6,j) = dMoedas100f[i/TIPOS_MOEDAS][j];
+            entradas.at<float>(i+7,j) = dMoedas100n[i/TIPOS_MOEDAS][j];
+        }
+        
+        saidas.at<float>(i,0) = 1;
+        saidas.at<float>(i+1,1) = 1;
+        saidas.at<float>(i+2,2) = 1;
+        saidas.at<float>(i+3,3) = 1;
+        saidas.at<float>(i+4,4) = 1;
+        saidas.at<float>(i+5,5) = 1;
+        saidas.at<float>(i+6,6) = 1;
+        saidas.at<float>(i+7,7) = 1;
+    }
+    
+    
+    treinar(entradas, saidas);
+    
+    /*
+	Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
 	
+	CvANN_MLP mlp;
+	mlp.load("pesos.yml", "mlp");
+	
+	mlp.predict(entradas, saidasMLP);
+
+	for(int i = 0; i < saidasMLP.rows; i++)
+	{
+        for(int j = 0; j < TIPOS_MOEDAS; j++)
+        {
+            cout << saidasMLP.at<float>(i, j) << endl;
+        }
+        cout <<  "----------------------------------------" << endl;
+    }
+    * */
 	
 	
 		

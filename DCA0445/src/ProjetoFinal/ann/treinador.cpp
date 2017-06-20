@@ -17,10 +17,6 @@ using namespace std;
 #define TIPOS_MOEDAS 8
 #define NUM_AMOSTRAS 60
 
-// Rótulos da classificação
-
-#define TAM_DICIONARIO 800
-
 vector<float> mat2vec(Mat &mat)
 {
 	vector<float> array;

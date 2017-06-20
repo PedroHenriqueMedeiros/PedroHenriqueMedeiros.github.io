@@ -12,66 +12,44 @@ using namespace std;
 #define TIPOS_MOEDAS 8
 #define NUM_AMOSTRAS 60
 
-#define TAM_DICIONARIO 800
-
-Mat gerarDescritor(const Mat &imagem)
-{
-	Mat dicionario; 
-    FileStorage fs("dicionario.yml", FileStorage::READ);
-    fs["vocabulary"] >> dicionario;
-    fs.release();    
-    
-    //create a nearest neighbor matcher
-    Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
-    //create Sift feature point extracter
-    Ptr<FeatureDetector> detector(new SurfFeatureDetector());
-    //create Sift descriptor extractor
-    Ptr<DescriptorExtractor> extractor(new SurfDescriptorExtractor);    
-    //create BoF (or BoW) descriptor extractor
-    BOWImgDescriptorExtractor bowDE(extractor,matcher);
-    //Set the dictionary with the vocabulary we created in the first step
-    bowDE.setVocabulary(dicionario);
-    
-    vector<KeyPoint> kp;
-    Mat bd;
-    
-    detector->detect(imagem, kp);
-	bowDE.compute(imagem, kp, bd);
-	
-	return bd;
- 
-}
+#define NUM_MI 3
 
 int main()
 {
 	initModule_nonfree();
+    
+    Mat entrada(1, NUM_MI, CV_32FC1);
+    Mat saida(1, TIPOS_MOEDAS, CV_32FC1);
 	
 	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-	equalizeHist(imagem, imagem);
-	
-	Mat descritor = gerarDescritor(imagem);
-	
-    Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
+    resize(imagem, imagem, Size(400, 400));
+    equalizeHist(imagem, imagem);
+    
+    double momentos[7];
+    Moments m = moments(imagem, false);
+	HuMoments(m, momentos);
+    
+    for(int i = 0; i < NUM_MI; i++)
+    {
+        entrada.at<float>(0, i) = momentos[i];
+    }
+
 	
 	CvANN_MLP mlp;
-	mlp.load("pesos.yml", "mlp");
-	
-	mlp.predict(descritor, saidasMLP);
+	mlp.load("mlp.yml", "mlp");
+    
 
-    for(int i = 0; i < saidasMLP.rows; i++)
-	{
-        for(int j = 0; j < TIPOS_MOEDAS; j++)
-        {
-            cout << saidasMLP.at<float>(i, j) << " ";
-        }
-        cout << endl <<  "-----------------" << endl;
-	}
-	
+	mlp.predict(entrada, saida);
 
+    cout << "10f = " << saida.at<float>(0, 0) << endl;
+    cout << "10n = " << saida.at<float>(0, 1) << endl;
+    cout << "25f = " << saida.at<float>(0, 2) << endl;
+    cout << "25n = " << saida.at<float>(0, 3) << endl;
+    cout << "50f = " << saida.at<float>(0, 4) << endl;
+    cout << "50n = " << saida.at<float>(0, 5) << endl;
+    cout << "100f = " << saida.at<float>(0, 6) << endl;
+    cout << "100n = " << saida.at<float>(0, 7) << endl;
     
     return 0;
-    
-
-	
 	
 }
