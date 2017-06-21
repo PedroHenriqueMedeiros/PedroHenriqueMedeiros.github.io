@@ -13,7 +13,7 @@ using namespace std;
 // Parâmetros da MLP
 
 #define MLP_MAX_ITER 10000
-#define EPSILON 1e-10
+#define EPSILON 1e-6
 #define LEARNING_RATE 0.1
 #define MOMENTUM 0.1
 
@@ -28,6 +28,8 @@ using namespace std;
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
 
+// Momentos invariantes
+#define NUM_MOMENTOS 3
 
 vector<float> mat2vec(const Mat &mat)
 {
@@ -48,11 +50,10 @@ void treinar(const Mat &entradas, const Mat& saidas) {
 
 	
 	// Definição das camadas.
-    Mat camadas = cv::Mat(4, 1, CV_32SC1);
+    Mat camadas = cv::Mat(3, 1, CV_32SC1);
     camadas.row(0) = Scalar(entradas.cols);
-    camadas.row(1) = Scalar(64);
-    camadas.row(2) = Scalar(64);
-    camadas.row(3) = Scalar(saidas.cols);
+    camadas.row(1) = Scalar(32);
+    camadas.row(2) = Scalar(saidas.cols);
 
 	// Definição dos parâmetros;
     CvANN_MLP_TrainParams params;
@@ -145,7 +146,7 @@ int main()
 	initModule_nonfree();
     
     // Definindo conjunto treinamento.
-    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
+    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS, CV_32FC1);
     Mat saidas = -1*Mat::ones(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
     
 	vector<Mat> moedas25(NUM_AMOSTRAS, Mat());
@@ -158,9 +159,9 @@ int main()
     
     for(int i = 0; i < NUM_AMOSTRAS; i++)
     {
-        descMoedas25[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
-        descMoedas50[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
-        descMoedas100[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
+        descMoedas25[i] = Mat(1, NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS, CV_32FC1);
+        descMoedas50[i] = Mat(1, NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS, CV_32FC1);
+        descMoedas100[i] = Mat(1, NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS, CV_32FC1);
     }
 	
 	/* Lê todas as amostras. */
@@ -173,6 +174,21 @@ int main()
         equalizarHistograma(moedas25[i]);
         equalizarHistograma(moedas50[i]);
         equalizarHistograma(moedas100[i]);
+        
+        Mat moeda25cinza, moeda50cinza, moeda100cinza;
+        cvtColor(moedas25[i], moeda25cinza, CV_BGR2GRAY);
+        cvtColor(moedas50[i], moeda50cinza, CV_BGR2GRAY);
+        cvtColor(moedas100[i], moeda100cinza, CV_BGR2GRAY);
+        
+        Moments moments25 = moments(moeda25cinza, false);
+        Moments moments50 = moments(moeda50cinza, false);
+        Moments moments100 = moments(moeda100cinza, false);
+        
+        double hu25[7], hu50[7], hu100[7];
+        
+        HuMoments(moments25, hu25);
+        HuMoments(moments50, hu50);
+        HuMoments(moments100, hu100);
 
 		//reduzirCores(moedas100[i]);
 		
@@ -204,13 +220,21 @@ int main()
 		descMoedas50[i].at<float>(0,129) = moedas50[i].cols;		
 		descMoedas100[i].at<float>(0,128) = moedas100[i].rows;
 		descMoedas100[i].at<float>(0,129) = moedas100[i].cols;
-	}	    
+        
+        
+        for(int j = NUM_NIVEIS_MATIZ + 2; j < NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS; j++)
+        {
+            descMoedas25[i].at<float>(0,j) = hu25[j-130];
+			descMoedas50[i].at<float>(0,j) = hu50[j-130];
+			descMoedas100[i].at<float>(0,j) = hu100[j-130];
+        }
+	}	 
     
     for(int i = 0; i < TIPOS_MOEDAS * NUM_AMOSTRAS; i += TIPOS_MOEDAS)
     {
 		int k = i/TIPOS_MOEDAS;
 		
-        for(int j = 0; j < NUM_NIVEIS_MATIZ + 2; j++)
+        for(int j = 0; j < NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS; j++)
         {
             entradas.at<float>(i,j) = descMoedas25[k].at<float>(0, j);
             entradas.at<float>(i+1,j) = descMoedas50[k].at<float>(0, j);
@@ -222,8 +246,9 @@ int main()
         saidas.at<float>(i+2,2) = 1;
     }
 
-    
+
     treinar(entradas, saidas);
+    
     
 	Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
 	

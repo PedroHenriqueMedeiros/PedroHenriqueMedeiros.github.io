@@ -18,6 +18,9 @@ using namespace std;
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
 
+// Momentos invariantes
+#define NUM_MOMENTOS 3
+
 void equalizarHistograma(Mat& imagem)
 {
     if(imagem.channels() >= 3)
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
 {
 	initModule_nonfree();
     
-    Mat entrada(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
+    Mat entrada(1, NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS, CV_32FC1);
     Mat saida(1, TIPOS_MOEDAS, CV_32FC1);
 	
     Mat imagem;
@@ -56,8 +59,15 @@ int main(int argc, char** argv)
 
     /* Checa se a imagem pode ser aberta. */
     imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
-    
     equalizarHistograma(imagem);
+    
+    Mat moedaCinza;;
+    cvtColor(imagem, moedaCinza, CV_BGR2GRAY);
+    
+    Moments m = moments(moedaCinza, false);
+    double hu[7];
+    HuMoments(m, hu);
+    
     cvtColor(imagem, imagem, CV_BGR2HSV);
     
     int histSize[] = {NUM_NIVEIS_MATIZ};
@@ -75,6 +85,11 @@ int main(int argc, char** argv)
     
     entrada.at<float>(0,128) = imagem.rows;
     entrada.at<float>(0,129) = imagem.cols;
+    
+    for(int i = NUM_NIVEIS_MATIZ + 2; i < NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS; i++)
+    {
+        entrada.at<float>(0,i) = hu[i-130];
+    }
     
     
 	CvANN_MLP mlp;
