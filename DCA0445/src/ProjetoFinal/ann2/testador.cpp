@@ -18,46 +18,62 @@ using namespace std;
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
 
-vector<float> mat2vec(const Mat &mat)
+void equalizarHistograma(Mat& imagem)
 {
-    vector<float> array;
-    if (mat.isContinuous()) {
-      array.assign(mat.datastart, mat.dataend);
-    } else {
-      for (int i = 0; i < mat.rows; ++i) {
-        array.insert(array.end(), mat.ptr<uchar>(i), mat.ptr<uchar>(i)+mat.cols);
-      }
+    if(imagem.channels() >= 3)
+    {
+        Mat ycrcb;
+
+        cvtColor(imagem, ycrcb, CV_BGR2YCrCb);
+
+        vector<Mat> channels;
+        split(ycrcb, channels);
+
+        equalizeHist(channels[0], channels[0]);
+
+        merge(channels, ycrcb);
+
+        cvtColor(ycrcb, imagem, CV_YCrCb2BGR);
     }
-    
-    return array;
 }
 
 int main()
 {
 	initModule_nonfree();
     
-    Mat entrada(1, 256, CV_32FC1);
+    Mat entrada(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
     Mat saida(1, TIPOS_MOEDAS, CV_32FC1);
 	
-	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-	
+	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_COLOR);
+    equalizarHistograma(imagem);
+    cvtColor(imagem, imagem, CV_BGR2HSV);
     
-
-	
+    int histSize[] = {NUM_NIVEIS_MATIZ};
+    float hranges[] = {0, 180}; // hue varies from 0 to 179, see cvtColor
+    const float* ranges[] = {hranges};
+    int channels[] = {0};
+    
+    Mat hist;
+    calcHist(&imagem, 1, channels, Mat(), hist, 1, histSize, ranges, HIST_UNIFORME, HIST_ACUMULADO);
+    
+    for(int i = 0; i < NUM_NIVEIS_MATIZ; i++)
+    {
+        entrada.at<float>(0,i) = hist.at<float>(i,0);
+    }
+    
+    entrada.at<float>(0,128) = imagem.rows;
+    entrada.at<float>(0,129) = imagem.cols;
+    
+    
 	CvANN_MLP mlp;
 	mlp.load("mlp.yml", "mlp");
     
 
 	mlp.predict(entrada, saida);
 
-    cout << "10f = " << saida.at<float>(0, 0) << endl;
-    cout << "10n = " << saida.at<float>(0, 1) << endl;
-    cout << "25f = " << saida.at<float>(0, 2) << endl;
-    cout << "25n = " << saida.at<float>(0, 3) << endl;
-    cout << "50f = " << saida.at<float>(0, 4) << endl;
-    cout << "50n = " << saida.at<float>(0, 5) << endl;
-    cout << "100f = " << saida.at<float>(0, 6) << endl;
-    cout << "100n = " << saida.at<float>(0, 7) << endl;
+    cout << "25 = " << saida.at<float>(0, 0) << endl;
+    cout << "50 = " << saida.at<float>(0, 1) << endl;
+    cout << "100 = " << saida.at<float>(0, 2) << endl;
     
     return 0;
 	

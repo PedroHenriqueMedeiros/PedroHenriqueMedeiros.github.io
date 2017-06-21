@@ -324,8 +324,8 @@ vector<Moeda> detectarMoedas(Mat imagem,  int fechamento)
      
     /* Exibe resultado da imagem segmentada. */
     
-    //imshow("binaria", imagemBinaria);
-    //waitKey(500);
+    imshow("binaria", imagemBinaria);
+    waitKey(500);
      
     return moedas;
 }
@@ -353,6 +353,7 @@ void exibirMoedas(const Mat &imagem, const vector<Moeda> &moedas)
         }
         
         imshow("delimitada", imagemDelimitada);
+        imwrite("delimitada.jpg", imagemDelimitada);
     }
     
     waitKey(500);

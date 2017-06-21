@@ -25,7 +25,6 @@ using namespace std;
 
 // Parâmetros do histograma
 #define NUM_NIVEIS_MATIZ 128
-#define NUM_NIVEIS_SATURACAO 128
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
 
@@ -119,21 +118,49 @@ void reduzirCores(Mat &imagem)
 	
 }
 
+
+void equalizarHistograma(Mat& imagem)
+{
+    if(imagem.channels() >= 3)
+    {
+        Mat ycrcb;
+
+        cvtColor(imagem, ycrcb, CV_BGR2YCrCb);
+
+        vector<Mat> channels;
+        split(ycrcb, channels);
+
+        equalizeHist(channels[0], channels[0]);
+
+        merge(channels, ycrcb);
+
+        cvtColor(ycrcb, imagem, CV_YCrCb2BGR);
+    }
+}
+
+
 int main()
 {
 	initModule_nonfree();
     
     // Definindo conjunto treinamento.
     Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, 130, CV_32FC1);
-    Mat saidas = Mat::zeros(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
+    Mat saidas = -1*Mat::ones(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
     
 	vector<Mat> moedas25(NUM_AMOSTRAS, Mat());
 	vector<Mat> moedas50(NUM_AMOSTRAS, Mat());
 	vector<Mat> moedas100(NUM_AMOSTRAS, Mat());
 
-	vector<Mat> descMoedas25(NUM_AMOSTRAS, Mat(1, 128, CV_32FC1));
-	vector<Mat> descMoedas50(NUM_AMOSTRAS, Mat(1, 128, CV_32FC1));
-	vector<Mat> descMoedas100(NUM_AMOSTRAS, Mat(1, 128, CV_32FC1));
+	vector<Mat> descMoedas25(NUM_AMOSTRAS, Mat());
+	vector<Mat> descMoedas50(NUM_AMOSTRAS, Mat());
+	vector<Mat> descMoedas100(NUM_AMOSTRAS, Mat());
+    
+    for(int i = 0; i < NUM_AMOSTRAS; i++)
+    {
+        descMoedas25[i] = Mat(1, 130, CV_32FC1);
+        descMoedas50[i] = Mat(1, 130, CV_32FC1);
+        descMoedas100[i] = Mat(1, 130, CV_32FC1);
+    }
 	
 	/* Lê todas as amostras. */
 	for(int i = 0; i < NUM_AMOSTRAS; i++)
@@ -141,40 +168,17 @@ int main()
 		moedas25[i] = imread("25/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
 		moedas50[i] = imread("50/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
 		moedas100[i] = imread("100/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_COLOR);
+        
+        equalizarHistograma(moedas25[i]);
+        equalizarHistograma(moedas50[i]);
+        equalizarHistograma(moedas100[i]);
 
 		//reduzirCores(moedas100[i]);
 		
 		cvtColor(moedas25[i], moedas25[i], CV_BGR2HSV);
 		cvtColor(moedas50[i], moedas50[i], CV_BGR2HSV);
 		cvtColor(moedas100[i], moedas100[i], CV_BGR2HSV);
-	
-		/*
-		// Quantize the hue to 30 levels
-		// and the saturation to 32 levels
-		int hbins = 30, sbins = 32;
-		int histSize[] = {hbins, sbins};
-		
-		// hue varies from 0 to 179, see cvtColor
-		float hranges[] = { 0, 180 };
-		// saturation varies from 0 (black-gray-white) to
-		// 255 (pure spectrum color)
-		float sranges[] = { 0, 256 };
-		const float* ranges[] = { hranges, sranges };
-		MatND hist;
-		vector<uchar> histograma;
-		
-		// we compute the histogram from the 0-th and 1-st channels
-		int channels[] = {0, 1};
-
-		calcHist(&moedas100[i], 1, channels, Mat(), 
-		hist, 2, histSize, ranges,
-		true, // the histogram is uniform
-		false );
-		double maxVal =0;
-		minMaxLoc(hist, 0, &maxVal, 0, 0);
-		* 
-		*/
-		
+        
 		int histSize[] = {NUM_NIVEIS_MATIZ};
 		float hranges[] = {0, 180}; // hue varies from 0 to 179, see cvtColor
 		const float* ranges[] = {hranges};
@@ -185,9 +189,8 @@ int main()
 		calcHist(&moedas25[i], 1, channels, Mat(), hist25, 1, histSize, ranges, HIST_UNIFORME, HIST_ACUMULADO);
 		calcHist(&moedas50[i], 1, channels, Mat(), hist50, 1, histSize, ranges, HIST_UNIFORME, HIST_ACUMULADO);
 		calcHist(&moedas100[i], 1, channels, Mat(), hist100, 1, histSize, ranges, HIST_UNIFORME, HIST_ACUMULADO);
-		
-		
-		for(int j = 0; j < 128; j++)
+        
+		for(int j = 0; j < NUM_NIVEIS_MATIZ; j++)
 		{
 			descMoedas25[i].at<float>(0,j) = hist25.at<float>(j,0);
 			descMoedas50[i].at<float>(0,j) = hist50.at<float>(j,0);
@@ -200,15 +203,13 @@ int main()
 		descMoedas50[i].at<float>(0,129) = moedas50[i].cols;		
 		descMoedas100[i].at<float>(0,128) = moedas100[i].rows;
 		descMoedas100[i].at<float>(0,129) = moedas100[i].cols;
-
-
 	}	    
     
     for(int i = 0; i < TIPOS_MOEDAS * NUM_AMOSTRAS; i += TIPOS_MOEDAS)
     {
 		int k = i/TIPOS_MOEDAS;
 		
-        for(int j = 0; j < 130; j++)
+        for(int j = 0; j < NUM_NIVEIS_MATIZ + 2; j++)
         {
             entradas.at<float>(i,j) = descMoedas25[k].at<float>(0, j);
             entradas.at<float>(i+1,j) = descMoedas50[k].at<float>(0, j);
@@ -223,7 +224,6 @@ int main()
     
     treinar(entradas, saidas);
     
-    /*
 	Mat saidasMLP(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
 	
 	CvANN_MLP mlp;
@@ -239,8 +239,5 @@ int main()
         }
         cout <<  "----------------------------------------" << endl;
     }
-	*/
- 
-
-		
+	
 }
