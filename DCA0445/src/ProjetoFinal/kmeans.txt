@@ -1,3 +1,9 @@
+// Parâmetros do Kmeans
+#define NUM_CLUSTERS 16
+#define KMEANS_MAX_ITER 1000
+#define KMEANS_MAX_ERRO 0.0001
+#define TENTATIVAS 5
+
 void reduzirCores(Mat &imagem)
 {
 	Mat amostras(imagem.rows * imagem.cols, 3, CV_32F);
