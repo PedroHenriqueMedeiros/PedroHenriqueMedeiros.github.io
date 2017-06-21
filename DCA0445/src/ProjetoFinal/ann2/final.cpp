@@ -8,7 +8,7 @@ using namespace cv;
 using namespace std;
 
 #define TIPOS_MOEDAS 3 // 25, 50 e 1 real.
-#define NUM_AMOSTRAS 24 // 24 fotos de cada moeda.
+#define NUM_AMOSTRAS 20 // 24 fotos de cada moeda.
 
 // Parâmetros da MLP
 
@@ -48,10 +48,11 @@ void treinar(const Mat &entradas, const Mat& saidas) {
 
 	
 	// Definição das camadas.
-    Mat camadas = cv::Mat(3, 1, CV_32SC1);
+    Mat camadas = cv::Mat(4, 1, CV_32SC1);
     camadas.row(0) = Scalar(entradas.cols);
-    camadas.row(1) = Scalar(32);
-    camadas.row(2) = Scalar(saidas.cols);
+    camadas.row(1) = Scalar(64);
+    camadas.row(2) = Scalar(64);
+    camadas.row(3) = Scalar(saidas.cols);
 
 	// Definição dos parâmetros;
     CvANN_MLP_TrainParams params;
@@ -144,7 +145,7 @@ int main()
 	initModule_nonfree();
     
     // Definindo conjunto treinamento.
-    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, 130, CV_32FC1);
+    Mat entradas(TIPOS_MOEDAS * NUM_AMOSTRAS, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
     Mat saidas = -1*Mat::ones(TIPOS_MOEDAS * NUM_AMOSTRAS, TIPOS_MOEDAS, CV_32FC1);
     
 	vector<Mat> moedas25(NUM_AMOSTRAS, Mat());
@@ -157,9 +158,9 @@ int main()
     
     for(int i = 0; i < NUM_AMOSTRAS; i++)
     {
-        descMoedas25[i] = Mat(1, 130, CV_32FC1);
-        descMoedas50[i] = Mat(1, 130, CV_32FC1);
-        descMoedas100[i] = Mat(1, 130, CV_32FC1);
+        descMoedas25[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
+        descMoedas50[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
+        descMoedas100[i] = Mat(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
     }
 	
 	/* Lê todas as amostras. */

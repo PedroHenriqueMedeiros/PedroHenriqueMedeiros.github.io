@@ -10,7 +10,7 @@ using namespace std;
 // Parâmetros da MLP
 
 #define TIPOS_MOEDAS 3 // 25, 50 e 1 real.
-#define NUM_AMOSTRAS 24 // 24 fotos de cada moeda.
+#define NUM_AMOSTRAS 20 // 24 fotos de cada moeda.
 
 // Parâmetros do histograma
 #define NUM_NIVEIS_MATIZ 128
@@ -37,14 +37,26 @@ void equalizarHistograma(Mat& imagem)
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	initModule_nonfree();
     
     Mat entrada(1, NUM_NIVEIS_MATIZ + 2, CV_32FC1);
     Mat saida(1, TIPOS_MOEDAS, CV_32FC1);
 	
-	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_COLOR);
+    Mat imagem;
+    
+    /* Verifica o número de argumentos.  */
+    if (argc != 2)
+    {
+        cout << "A lista de argumentos deve ser: "
+            "./testador <imagem>"<< endl;
+        return -1;
+    }
+
+    /* Checa se a imagem pode ser aberta. */
+    imagem = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+    
     equalizarHistograma(imagem);
     cvtColor(imagem, imagem, CV_BGR2HSV);
     
