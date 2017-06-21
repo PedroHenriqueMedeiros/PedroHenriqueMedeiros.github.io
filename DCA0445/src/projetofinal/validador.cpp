@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 	mlp.predict(entrada, saida);
 
     cout <<  "----------------------------------------" << endl;
-    cout << "Moeda :" << endl;
+    cout << "Moeda:" << endl;
     cout << "(25) = " << saida.at<float>(0, 0) << endl;
     cout << "(50) = " << saida.at<float>(0, 1) << endl;
     cout << "(100) = " << saida.at<float>(0, 2) << endl;

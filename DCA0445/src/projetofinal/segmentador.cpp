@@ -15,8 +15,8 @@ using namespace cv;
 // Parâmetros de exibição.
 #define RESULTADO_SEPARADO false
 #define EXIBIR_BINARIA false
-#define SALVAR_DELIMITADA true
-#define SALVAR_MOEDAS false
+#define SALVAR_DELIMITADA false
+#define SALVAR_MOEDAS true
 
 /* Estrutura que define um círculo, que contornará a moeda. */
 struct Circulo {
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
         int i = 1;
         for(auto moeda: moedas)
         {
-            imwrite("moeda " + to_string(i++) + ".jpg", moeda.imagem);
+            imwrite("moeda" + to_string(i++) + ".jpg", moeda.imagem);
         }
     }
     
