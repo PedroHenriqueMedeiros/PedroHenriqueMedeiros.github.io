@@ -1,0 +1,9 @@
+* Tutorial de uso e configuração
+
+Importante: todos os parâmetros do tipo "define" devem conter os mesmos valores em todos os programas. 
+
+1) Primeiro é necessário usar o 'segmentador' para criar subimagens de moedas.
+2) Em seguida, as subimagens do conjunto treinamento devem ser colocadas no diretório 'treinamento' e as do conjunto de validação no diretório 'validacao'.
+3) Com os conjuntos prontos, o 'calibrador' do sistema pode ser executado para treinar a rede neural artificial.
+4) Antes de executar o 'contador', é interessante usar o 'validador' para testar amostras do conjunto treinamento.
+5) Finalmente, o 'contador' pode ser executado em uma imagem completa para realizar a contagem de dinheiro.
