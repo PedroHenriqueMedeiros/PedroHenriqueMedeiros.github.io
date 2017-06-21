@@ -13,7 +13,7 @@ using namespace std;
 // Parâmetros da MLP
 
 #define MLP_MAX_ITER 10000
-#define EPSILON 1e-6
+#define EPSILON 1e-8
 #define LEARNING_RATE 0.1
 #define MOMENTUM 0.1
 
@@ -24,26 +24,12 @@ using namespace std;
 #define TENTATIVAS 5
 
 // Parâmetros do histograma
-#define NUM_NIVEIS_MATIZ 128
+#define NUM_NIVEIS_MATIZ 32
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
 
 // Momentos invariantes
 #define NUM_MOMENTOS 3
-
-vector<float> mat2vec(const Mat &mat)
-{
-    vector<float> array;
-    if (mat.isContinuous()) {
-      array.assign(mat.datastart, mat.dataend);
-    } else {
-      for (int i = 0; i < mat.rows; ++i) {
-        array.insert(array.end(), mat.ptr<uchar>(i), mat.ptr<uchar>(i)+mat.cols);
-      }
-    }
-    
-    return array;
-}
 
 
 void treinar(const Mat &entradas, const Mat& saidas) {
@@ -84,42 +70,6 @@ void treinar(const Mat &entradas, const Mat& saidas) {
     //mlp.predict(sample, response);
 
 }
-
-void reduzirCores(Mat &imagem)
-{
-	Mat amostras(imagem.rows * imagem.cols, 3, CV_32F);
-	
-	for(int y = 0; y < imagem.rows; y++)
-	{
-		for( int x = 0; x < imagem.cols; x++)
-		{
-			for( int z = 0; z < 3; z++)
-			{
-				amostras.at<float>(y + x*imagem.rows, z) = imagem.at<Vec3b>(y,x)[z];
-			}
-		}
-	}
-	
-	Mat rotulos, centros;
-	kmeans(amostras, NUM_CLUSTERS, rotulos, TermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, KMEANS_MAX_ITER, KMEANS_MAX_ERRO), TENTATIVAS, KMEANS_PP_CENTERS, centros);
-
-	//Mat saida(imagem.size(), imagem.type());
-	for( int y = 0; y < imagem.rows; y++ )
-	{
-		for( int x = 0; x < imagem.cols; x++ )
-		{ 
-			int cluster_idx = rotulos.at<int>(y + x*imagem.rows,0);
-			imagem.at<Vec3b>(y,x)[0] = centros.at<float>(cluster_idx, 0);
-			imagem.at<Vec3b>(y,x)[1] = centros.at<float>(cluster_idx, 1);
-			imagem.at<Vec3b>(y,x)[2] = centros.at<float>(cluster_idx, 2);
-		}
-	}
-	imshow( "clustered image", imagem);
-	waitKey( 0 );
-
-	
-}
-
 
 void equalizarHistograma(Mat& imagem)
 {
@@ -214,19 +164,19 @@ int main()
 			descMoedas100[i].at<float>(0,j) = hist100.at<float>(j,0);
 		}
 		
-		descMoedas25[i].at<float>(0,128) = moedas25[i].rows;
-		descMoedas25[i].at<float>(0,129) = moedas25[i].cols;
-		descMoedas50[i].at<float>(0,128) = moedas50[i].rows;
-		descMoedas50[i].at<float>(0,129) = moedas50[i].cols;		
-		descMoedas100[i].at<float>(0,128) = moedas100[i].rows;
-		descMoedas100[i].at<float>(0,129) = moedas100[i].cols;
+		descMoedas25[i].at<float>(0,NUM_NIVEIS_MATIZ) = moedas25[i].rows;
+		descMoedas25[i].at<float>(0,NUM_NIVEIS_MATIZ+1) = moedas25[i].cols;
+		descMoedas50[i].at<float>(0,NUM_NIVEIS_MATIZ) = moedas50[i].rows;
+		descMoedas50[i].at<float>(0,NUM_NIVEIS_MATIZ+1) = moedas50[i].cols;		
+		descMoedas100[i].at<float>(0,NUM_NIVEIS_MATIZ) = moedas100[i].rows;
+		descMoedas100[i].at<float>(0,NUM_NIVEIS_MATIZ+1) = moedas100[i].cols;
         
         
         for(int j = NUM_NIVEIS_MATIZ + 2; j < NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS; j++)
         {
-            descMoedas25[i].at<float>(0,j) = hu25[j-130];
-			descMoedas50[i].at<float>(0,j) = hu50[j-130];
-			descMoedas100[i].at<float>(0,j) = hu100[j-130];
+            descMoedas25[i].at<float>(0,j) = hu25[j-NUM_NIVEIS_MATIZ + 2];
+			descMoedas50[i].at<float>(0,j) = hu50[j-NUM_NIVEIS_MATIZ + 2];
+			descMoedas100[i].at<float>(0,j) = hu100[j-NUM_NIVEIS_MATIZ + 2];
         }
 	}	 
     

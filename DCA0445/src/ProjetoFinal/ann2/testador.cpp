@@ -13,7 +13,7 @@ using namespace std;
 #define NUM_AMOSTRAS 20 // 24 fotos de cada moeda.
 
 // Parâmetros do histograma
-#define NUM_NIVEIS_MATIZ 128
+#define NUM_NIVEIS_MATIZ 32
 #define NUM_NIVEIS_SATURACAO 128
 #define HIST_UNIFORME true
 #define HIST_ACUMULADO false
@@ -83,12 +83,12 @@ int main(int argc, char** argv)
         entrada.at<float>(0,i) = hist.at<float>(i,0);
     }
     
-    entrada.at<float>(0,128) = imagem.rows;
-    entrada.at<float>(0,129) = imagem.cols;
+    entrada.at<float>(0,NUM_NIVEIS_MATIZ) = imagem.rows;
+    entrada.at<float>(0,NUM_NIVEIS_MATIZ+1) = imagem.cols;
     
     for(int i = NUM_NIVEIS_MATIZ + 2; i < NUM_NIVEIS_MATIZ + 2 + NUM_MOMENTOS; i++)
     {
-        entrada.at<float>(0,i) = hu[i-130];
+        entrada.at<float>(0,i) = hu[i-NUM_NIVEIS_MATIZ+2];
     }
     
     
