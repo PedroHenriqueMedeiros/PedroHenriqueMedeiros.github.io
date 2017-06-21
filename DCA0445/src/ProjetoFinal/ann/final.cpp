@@ -95,7 +95,20 @@ int main()
 		moedas50n[i] = imread("50n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
 		moedas100f[i] = imread("100f/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
 		moedas100n[i] = imread("100n/" + to_string(i+1) + ".jpg", CV_LOAD_IMAGE_GRAYSCALE);
+        
+        
+        resize(moedas10f[i], moedas10f[i], Size(32, 32));
+        resize(moedas10n[i], moedas10n[i], Size(32, 32));
+        resize(moedas25f[i], moedas25f[i], Size(32, 32));
+        resize(moedas25n[i], moedas25n[i], Size(32, 32));
+        resize(moedas50f[i], moedas50f[i], Size(32, 32));
+        resize(moedas50n[i], moedas50n[i], Size(32, 32));
+        resize(moedas100f[i], moedas100f[i], Size(32, 32));
+        resize(moedas100n[i], moedas100n[i], Size(32, 32));
 		
+        imshow("e1", moedas100f[i]);
+        waitKey(0);
+        
 		equalizeHist(moedas10f[i], moedas10f[i]);
 		equalizeHist(moedas10n[i], moedas10n[i]);
 		equalizeHist(moedas25f[i], moedas25f[i]);
@@ -104,6 +117,34 @@ int main()
 		equalizeHist(moedas50n[i], moedas50n[i]);
 		equalizeHist(moedas100f[i], moedas100f[i]);
 		equalizeHist(moedas100n[i], moedas100n[i]);
+        
+        imshow("e2", moedas100f[i]);
+        waitKey(0);
+        
+		blur(moedas10f[i], moedas10f[i], Size(3,3));
+		blur(moedas10n[i], moedas10n[i], Size(3,3));
+		blur(moedas25f[i], moedas25f[i], Size(3,3));
+		blur(moedas25n[i], moedas25n[i], Size(3,3));
+		blur(moedas50f[i], moedas50f[i], Size(3,3));
+		blur(moedas50n[i], moedas50n[i], Size(3,3));
+		blur(moedas100f[i], moedas100f[i], Size(3,3));
+		blur(moedas100n[i], moedas100n[i], Size(3,3));
+        
+        imshow("e3", moedas100f[i]);
+        waitKey(0);
+        
+        Canny(moedas10f[i], moedas10f[i], 20, 60, 3);
+        Canny(moedas10n[i], moedas10n[i], 20, 60, 3);
+        Canny(moedas25f[i], moedas25f[i], 20, 60, 3);
+        Canny(moedas25n[i], moedas25n[i], 20, 60, 3);
+        Canny(moedas50f[i], moedas50f[i], 20, 60, 3);
+        Canny(moedas50n[i], moedas50n[i], 20, 60, 3);
+        Canny(moedas100f[i], moedas100f[i], 20, 60, 3);
+        Canny(moedas100n[i], moedas100n[i], 20, 60, 3);
+
+        imshow("e4", moedas100f[i]);
+        waitKey(0);
+
 	}
 	
 	// Calcula descritores para as imagens de amostra. 

@@ -24,6 +24,8 @@ int main()
 	Mat imagem = imread("teste.jpg", CV_LOAD_IMAGE_GRAYSCALE);
     resize(imagem, imagem, Size(400, 400));
     equalizeHist(imagem, imagem);
+    blur(imagem, imagem, Size(3,3));
+    Canny(imagem, imagem, 100, 200, 3);
     
     double momentos[7];
     Moments m = moments(imagem, false);
