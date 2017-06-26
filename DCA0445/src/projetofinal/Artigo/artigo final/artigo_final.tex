@@ -66,7 +66,21 @@
 \documentclass[journal]{IEEEtran}
 \usepackage{blindtext}
 \usepackage{graphicx}
-
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{lmodern}
+\usepackage[pdftex]{hyperref}
+\usepackage{indentfirst}
+\usepackage{pdfpages}
+\usepackage{enumerate}
+\usepackage[pdftex]{color}
+\fontfamily{times}
+\selectfont
 % Some very useful LaTeX packages include:
 % (uncomment the ones you want to load)
 
@@ -220,8 +234,8 @@
 % http://www.ctan.org/tex-archive/macros/latex/required/tools/
 
 
-\usepackage{mdwmath}
-\usepackage{mdwtab}
+%\usepackage{mdwmath}
+%\usepackage{mdwtab}
 % Also highly recommended is Mark Wooding's extremely powerful MDW tools,
 % especially mdwmath.sty and mdwtab.sty which are used to format equations
 % and tables, respectively. The MDWtools set is already installed on most
@@ -234,7 +248,7 @@
 % quality.
 
 
-%\usepackage{eqparbox}
+\usepackage{eqparbox}
 % Also of notable interest is Scott Pakin's eqparbox package for creating
 % (automatically sized) equal width boxes - aka "natural width parboxes".
 % Available at:
@@ -245,7 +259,7 @@
 
 
 % *** SUBFIGURE PACKAGES ***
-%\usepackage[tight,footnotesize]{subfigure}
+\usepackage[tight,footnotesize]{subfigure}
 % subfigure.sty was written by Steven Douglas Cochran. This package makes it
 % easy to put subfigures in your figures. e.g., "Figure 1a and 1b". For IEEE
 % work, it is a good idea to load it with the tight package option to reduce
@@ -360,7 +374,7 @@
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
 %
-\usepackage{url}
+%\usepackage{url}
 % url.sty was written by Donald Arseneau. It provides better support for
 % handling and breaking URLs. url.sty is already installed on most LaTeX
 % systems. The latest version can be obtained at:
@@ -387,7 +401,7 @@
 %
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
-\title{NOME DO ARTIGO}
+\title{UM APLICATIVO CONTADOR DE MOEDAS UTILIZANDO OPENCV}
 %
 %
 % author names and IEEE memberships
@@ -398,10 +412,19 @@
 % a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
 % was not built to handle multiple paragraphs
 %
-
-\author{Denis Ricardo da Silva Medeiros:{ aluno do curso de engenharia de computação}\\
-        Pedro Henrique de Medeiros Leite:{ aluno do curso de engenharia elétrica}
-        % <-this % stops a space
+\author{\IEEEauthorblockN{Denis Ricardo da Silva Medeiros}
+\IEEEauthorblockA{Departamento de engenharia de computação\\
+		Universidade Federal do Rio Grande do Norte\\
+		Natal, Rio Grande do Norte (84) 3342-2231\\
+		Email: dnsricardo@gmail.com}
+	\and \\
+	\IEEEauthorblockN{Pedro Henrique de Medeiros Leite}
+	\IEEEauthorblockA{Departamento de enegenharia elétrica\\
+		Natal, Rio Grande do Norte (84) 3215-3731\\
+		Email: pedrohenriquedemedeiros@gmail.com}
+%\author{:\IEEEmembership{Aluno do curso de engenharia de computação}\\
+ %       Pedro Henrique de Medeiros Leite:\IEEEmembership{Aluno do curso de engenharia de computação}
+                % <-this % stops a space
 
 \thanks{Agradecimentos}}
 
@@ -459,7 +482,8 @@
 
 \begin{abstract}
 %\boldmath
-\blindtext[1]
+O presente artigo mostra os resultados obtidos com o desenvolvimento e testes do programa de reconhecimento de moedas com a utilização do opencv como objetivo de servir como meio de avaliação da disciplina de processamento digital de imagens, através do uso de ferramentas estudadas na disciplina como também fazer uma comparação com alguns métodos utilizados na literatura para a classificação de moedas.  
+%\blindtext[1]
 \end{abstract}
 % IEEEtran.cls defaults to using nonbold math in the Abstract.
 % This preserves the distinction between vectors and scalars. However,
@@ -470,7 +494,7 @@
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-IEEEtran, journal, \LaTeX, paper, template.
+Moedas, reconhecimento, segmentação, contagem, multilayer perceptron.
 \end{IEEEkeywords}
 
 
@@ -490,11 +514,14 @@ IEEEtran, journal, \LaTeX, paper, template.
 
 
 
-\section{Introduction}
-\blindtext
+\section{Introdução}
+No dia a dia do consumidor moedas são formas indispensáveis de se fazer pequenas compras, dar ou facilitar o troco em supermercados ou até mesmo para troca em cédulas. Dessa forma devido ao comércio estar equipado com máquinas para o pagamento ser feito em cartão de crédito, no caso de grandes compras, ou contadores de cédulas em bancos para contagem de papel moeda, o reconhecimento e contagem de moedas para fins comerciais por meio de imagens muitas vezes acaba por ser negligenciado pelas pessoas.
+
+Nesse contexto, a automatização do processo de reconhecimento e contagem de moedas a partir de fotografias tiradas de um smartphone ou imagem colhida de uma webcam é possível com a utilização de um programa utilizando opencv e uma rede neural artificial para fazer a validação das moedas fornecer uma contagem correta a partir dos processos de segmentação, treinamento, calibração, validação e contagem de moedas em uma folha de papel branca, sem sobreposição e com efeito de sombra mínimo na imagem captada.
+%\blindtext
 
 \subsection{Subsection Heading Here}
-\blindtext
+%\blindtext
 
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
