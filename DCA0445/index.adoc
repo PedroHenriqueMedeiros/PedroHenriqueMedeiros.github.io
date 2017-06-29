@@ -1,0 +1,624 @@
+= DCA0445 - Processamento Digital de Imagens
+Denis Medeiros <denis@dimap.ufrn.br>, Pedro Henrique <pedrohenriquedemedeiros@gmail.com>
+:toc:
+:toc-placement: left
+:toc-title: Sumário
+:caution-caption: Cuidado 
+:important-caption: Importante 
+:note-caption: Nota 
+:tip-caption: Dica 
+:warning-caption: Atenção 
+:appendix-caption: Apêndices 
+:example-caption: Exemplo 
+:figure-caption: Figura 
+:table-caption: Tabela
+:stem:
+//:numbered:
+:source-highlighter: pygments
+:icons: font
+:linkattrs:
+:imagesdir: ./img
+:iconsdir: ./icons
+:stylesdir: ./css
+:scriptsdir: ./js
+:sourcedir: ./src
+
+== Introdução
+
+Esta página contém uma série de exercícios sobre processamento digital de imagens implementados em C++ com a biblioteca OpenCV. Todos eles, assim como os textos introdutórios, são de crédito do professor Dr. link:http://agostinhobritojr.github.io/[Agostinho de Medeiros Brito Junior, window="_blank"], professor da Universidade Federal do Rio Grande do Norte e responsável pelo curso link:http://agostinhobritojr.github.io/tutoriais/pdi/[DCA0445 - Processamento Digital de Imagens, window="_blank"].
+
+Observação importante: vários dos exercícios foram resolvidos com as imagens sendo tratadas em escala de cinza, mas a maioria dos algoritmos usados poderiam ser aplicados em imagens coloridas sem muita dificuldade e com pouca alteração no código fonte.
+
+== Manipulando pixels em uma imagem
+
+=== Seção 3.2 - Exercício 1
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pixels.cpp[exemplos/pixels.cpp, window="_blank"] como referência, implemente um  programa regions.cpp. Esse programa deverá solicitar ao usuário as coordenadas  de dois pontos stem:[P_1] e stem:[P_2]  localizados dentro dos limites do  tamanho da imagem e exibir que lhe for fornecida. Entretanto, a região definida  pelo retângulo de vértices opostos definidos pelos pontos stem:[P_1] e stem:[P_2] será exibida com o negativo da imagem na região correspondente. 
+
+O efeito é ilustrado na figura regiões (abaixo).
+
+[[img-regioes]] 
+.Figura regioes.png
+image::regioes.png[Regiões] 
+****
+
+Para resolver o exercício acima, o seguinte programa foi desenvolvido:
+
+.regioes.cpp
+[[regioes]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/regioes/regioes.cpp[]
+----
+
+A estratégia adotada neste programa consiste em receber do usuário dois pontos, criar um retângulo a partir deles e calcular o negativo deste retângulo. Ele representará a região da foto que será negativada, logo precisará está contido dentro da matriz da imagem.
+
+As primeiras linhas do programa (linha 22 à linha 62) consiste na validação dos dados fornecidos pelo usuário, ou seja, se o usuário inseriu o número correto as coordenadas x e y de dois pontos, se a imagem é válida e se o retângulo está contido dentro da figura. 
+
+Uma vez que os dois pontos são válidos, é criado um retângulo (linha 64) e, finalmente, é relizado uma iteração sob todos aqueles pixels representados pelo retângulo dentro da própria matriz *imagem* (linha 67 à linha 73), de modo que é calculado o negativo de cada pixel subtraindo seu  valor de 255. Por fim, a imagem processada é exibida na tela.
+
+
+====
+.Exemplo de execução
+* Comando: ./regioes onca.png 20 20 200 200
+* Foto de entrada: 
+
+[[img-onca]] 
+.Figura onca.png original
+image::onca.png[Regiões] 
+
+* Foto de saída: 
+
+[[img-onca-regions]] 
+.Figura onca.png após processamento
+image::onca-regioes.png[Regiões] 
+
+====
+
+=== Seção 3.2 - Exercício 2
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pixels.cpp[exemplos/pixels.cpp, window="_blank"] como referência, implemente um programa trocaregioes.cpp. Seu programa deverá trocar os quadrantes em diagonal na imagem. Explore o uso da classe Mat e seus construtores para criar as regiões que serão trocadas. O efeito é ilustrado na Figura Troca de regiões (abaixo).
+
+[[img-regioes]] 
+.Figura trocaregioes.png
+image::trocaregioes.png[Troca Regiões] 
+****
+
+A versão modificada do programa pixels.cpp pode ser vista abaixo:
+
+.trocaregioes.cpp
+[[trocaregioes]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/trocaregioes/trocaregioes.cpp[]
+----
+
+Para atender os requisitos do problema, a ideia do programa acima foi criar 4 sub-matrizes representando cada quadrante para que depois elas pudessem ser concantenadas em uma nova matriz, de modo a representar os quadrantes trocados.
+
+A criação das submatrizes ocorrem utilizando o próprio construtor da classe *Mat* (da linha 39 à 42), que permite receber a matriz original e um retângulo representando a sub-matriz a ser extraída para criação da nova imagem. Os retângulos são montados tomando como referência o início, fim e pontos médios horizontais e verticais da imagem original.
+
+Com as submatrizes criadas, primeiro são montadas as partes superior e inferior do resultado final (linhas 48 e 53), através da função *hconcat*, que primeiro realiza o concatenamento horizontal da metade de baixo da figura original e depois o concatenamento da metade de cima da figura original. Com esses dois resultados intermediários, por fim, é realizado um concatenamento vertical (linha 58), com a função *vconcat*, que produz o resultado final.
+
+
+====
+.Exemplo de execução
+* Comando: ./trocaregioes gato.png
+* Foto de entrada: 
+
+[[img-gato]] 
+.Figura gato.png original
+image::gato.png[Troca Regioes, 400, 400] 
+
+* Foto de saída: 
+
+[[img-gato-trocaregioes]] 
+.Figura gato.png após processamento
+image::gato-trocaregioes.png[Regiões, 400, 400] 
+
+====
+
+== Preenchendo regiões
+
+=== Seção 4.2 - Exercício 1
+****
+Observando-se o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/labeling.cpp[labeling.cpp] como exemplo, é possível verificar que caso existam mais de 255 objetos na cena, o processo de rotulação poderá ficar comprometido. Identifique a situação em que isso ocorre e proponha uma solução para este problema.
+****
+
+O algoritmo padrão de labeling fornecido pelo professor contem um problema, pois utiliza a própria cor do pixel rotulado para armazenar a contagem de elementos. No caso de uma imagem em escala de cinza, em que cada pixel é representado por 1 byte, logo poder-se-ia contar apenas 256 elementos. Uma abordagem diferente seria utilizar a cor do pixel como um tipo de classificação para os objetos contados, de modo que os pixels de uma mesma categoria assumam apenas o papel de rótulo, sendo reservado um contador à parte para contar quantos elementos dessa categoria foram encontrados.
+
+=== Seção 4.2 - Exercício 2
+
+****
+Aprimore o algoritmo de contagem apresentado para identificar regiões com ou sem buracos internos que existam na cena. Assuma que objetos com mais de um buraco podem existir. Inclua suporte no seu algoritmo para não contar bolhas que tocam as bordas da imagem. Não se pode presumir, a priori, que elas tenham buracos ou não.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/labeling.cpp[labeling.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo: 
+
+.rotulacao.cpp
+[[rotulacao]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/rotulacao/rotulacao.cpp[]
+----
+
+A ideia por trás da contagem das bolhas baseiou-se no princípio de rotulação. Os rótulos foram definidos no início do programa, pois já se sabia, a princípio, quais eram as cores de fundo e dos objetos da cena (linha 4 à linha 7).
+
+Para realizar isso, foi necessário, inicialmente, remover todos os objetos presentes nas bordas da imagem, já que não é possível saber se eles continham ou não buracos iternos na região exterior à imagem (da linha 38 à linha 61). Para isso, foi utilizado um algoritmo de _flood fill_, mudando a cor do objeto encontrado para a mesma cor de fundo da cena.
+
+Uma vez que as imagens localizadas na borda foram removidas, o passo seguinte foi mudar a cor de fundo da cena através do mesmo algoritmo de _flood fill_, iniciando a partir do primeiro pixel da matriz da imagem (linha 64 à linha 66). Isso foi feito com o objetivo de fazer com que os elementos que continham buracos continuassem com tais buracos na cor de fundo antiga, já que, caso um objeto desses não fosse completamente fechado, o buraco seria preenchido pela nova cor de fundo.
+
+Por fim, foi feita uma busca na imagem por qualquer região que ainda estivesse rotulado com a cor de fundo inicial (linha 69 à 81). Tal região seria, consequentemente, um buraco dentro de um objeto. Assim, o número de bolhas seria exatamente igual ao número de buracos encontrados. 
+
+====
+.Exemplo de execução
+* Comando: ./rotulacao bolhas.png
+* Foto de entrada: 
+
+[[img-bolhas]] 
+.Figura bolhas.png original
+image::bolhas.png[Troca Regioes, 400, 400] 
+
+* Foto de saída: 
+
+[[img-gato-trocaregioes]] 
+.Figura bolhas.png após processamento
+image::bolhas-rotulacao.png[Regiões, 400, 400] 
+
+
+* Saída do programa: 
+
+"Há 7 bolhas nesa imagem."
+
+====
+
+== Manipulação de Histogramas
+
+=== Seção 5.2 - Exercício 1
+
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[exemplos/histogram.cpp, window="_blank"] como referência, implemente um programa equalize.cpp. Este deverá, para cada imagem capturada, realizar a equalização do histogram antes de exibir a imagem. Teste sua implementação apontando a câmera para ambientes com iluminações variadas e observando o efeito gerado. Assuma que as imagens processadas serão em tons de cinza.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
+
+.equalizador.cpp
+[[equalizador]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/equalizador/equalizador.cpp[]
+----
+
+A ideia por trás desse programa consiste em fazer a captura de uma imagem a partir da camera do computador e então fazer o processo de equalização da imagem, que consiste em uma distribuição mais uniforme dos valores da intensidade das cores, representado pelo o histograma.
+
+Inicialmente, são definidos vários parâmetros a respeito de como os histogramas serão criados, tais como a quantidade de níveis de matiz, de saturação e o tamanho do histograma em si (linha 14 à linha 26). Uma vez que a câmera inicia a captura (linha 45), é necessário converter a imagem para escala de cinza (linha 47), pois, por padrão, o objeto da classe _VideoCapture_ gera imagens coloridas.
+
+Com a imagem obtida, o passo seguinte é gerar a sua versão equalizada (linha 49) e gerar os histogramas de versão normal e equalizada da imagem original (linha 51 à linha 57). Em seguida, é realizada a normalização de ambos os histogramas para facilitar a geração das imagens com os histogramas (linha 68 à 78) a serem sobrepostas sobre a imagem original e equalizadas (linha 80 à 82). Finalmente, ambas as imagens são mostradas lado a lado com os seus respectivos histogramas.
+
+====
+.Exemplo de execução
+* Comando: ./equalizador 
+* Fotos de saída: 
+
+[[img-equalizador]] 
+.Figura equalizador.png
+image::equalizador.png[Equalizador] 
+====
+
+=== Seção 5.2 - Exercício 2
+
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[exemplos/histogram.cpp, window="_blank"] como referência, implemente um programa motiondetector.cpp. Este deverá continuamente calcular o histograma da imagem (apenas uma componente de cor é suficiente) e compará-lo com o último histograma calculado. Quando a diferença entre estes ultrapassar um limiar pré-estabelecido, ative um alarme. Utilize uma função de comparação que julgar conveniente.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/histogram.cpp[histogram.cpp], disponibilizado pelo professor, foi adaptado e o resultado final pode ser visto abaixo:
+
+.detectormovimento.cpp
+[[detectormovimento]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/detectormovimento/detectormovimento.cpp[]
+----
+
+A ideia básica do programa é fazer o uso de duas imagens, uma sendo uma imagem base, para servir como referência, e outra uma imagem atal, que fica sendo obtida constamente atualizada a partir da câmera do computador, com o objetivo de comparar seus histogramas para detectar presença de movimento na cena monitorada. Essa imagem base é capturada a cada intervalo de tempo específico e é feita uma comparação de seu histograma com o histograma da imagem recentemente capturada. Caso haja uma diferença significativa entre os histogramas, então é porque houve mudança na cena, o que sugere presença de movimento.
+
+Os parâmetros da frequência de captura da imagem que serve como base e do limiar de comparação dos histogramas são definidos logo no início (linha 6 à linha 9). Os parâmetros relacionados aos formatos do histograma seguem no início da função *main* (linha 38 à linha 54).
+
+A captura da imagem atual é feita constantemente no início do _loop_ principal (linha 84) e, logo em seguida, é verificado se já passou o tempo para a captura de uma nova imagem base (linha 86 à 93). Após isso, ambas as imagens são divididas em seus 3 canais de cores, para que seja possível calcular o histograma de cada canal, bem como ser feita a normalização de cada um deles (linha 96 à 124). Esses procedimentos são semelhantes no quesito que os seus códigos estão cumprindo a mesma função do que os códigos do exercício 1 desta seção, com a diferença que aqui trabalha-se com 3 planos  (RBG) em vez de 1 (escala de cinza).
+
+Com todos os histogramas prontos e normalizados, é feita uma comparação entre eles através da função *compareHist*, utilizando o método da correlação. Pelos testes feitos, quanto mais parecido um histograma é do outro, mais próximo de 1 o resultado desta função se aproxima. Por exemplo, estimando um limiar 0.99, estima-se que os histogramas são parecidos em 99% de seus componentes. Assim, tal teste é feito (linha 146 à linha 151) e, caso o histograma da imagem atual seja menos de 99% semelhante ao da imagem base, então considerou-se que ocorreu movimento na cena. Tal resultado é exibido na tela.
+
+====
+.Exemplo de execução
+* Comando: ./detectormovimento 
+* Fotos de saída: 
+
+[[video-detectormovimento]] 
+.Vídeo detectormovimento.mp4
+video::detectormovimento.mp4[Detector de Movimento, width=640, options="autoplay,loop"]
+====
+
+
+
+== Filtragem Espacial I
+
+=== Seção 6.2 Exercício 1
+
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[exemplos/filtroespacial.cpp] como referência, implemente um programa laplgauss.cpp. O programa deverá acrescentar mais uma funcionalidade ao exemplo fornecido, permitindo que seja calculado o laplaciano do gaussiano das imagens capturadas. Compare o resultado desse filtro com a simples aplicação do filtro laplaciano.
+****
+
+O programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], disponibilizado pelo professor, foi adaptado para que o novo filtro ficasse disponível quando o usuário digitasse a tecla 'p':
+
+.laplgauss.cpp
+[[laplgauss]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/laplgauss/laplgauss.cpp[]
+----
+
+A ideia básica do programa é verificar a utilização dos diversos filtros espaciais definidos pelo professor no  link para o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/filtroespacial.cpp[filtroespacial.cpp], através da operação de convolução discreta. A novidade foi a adição de um novo filtro: laplaciano do gaussiano. Esse filtro consiste em aplicar primeiro o filtro gaussiano a uma imagem e, em seguida, aplicar o filtro laplaciano no resultado anterior.
+
+Para facilitar a implementação, em vez de realizar duas aplicações de filtragem com as máscaras já disponibilizadas pelo professor, foi gerada uma única máscara capaz de aplicar ambos os filtros de uma vez só. Essa máscara única foi obtida através da operação de convolução discreta entre as máscaras de gauss e laplaciana e isso só foi possível porque a operação de convolução admite a propriedade de associatividade. Logo, é possível convolver os dois filtros antes e, em seguida, convolver tal resultado com a imagem a ser processada.
+
+As linhas 7 a 44 mostram os diferentes tipos de máscaras utilizadas, as quais são:
+
+* Media
+* Gauss
+* Horizontal
+* Vertical
+* Laplaciano
+* Laplaciano do gaussiano
+
+
+As linhas 59 à 69 mostram a função menu para permitir o usuário escolher qual máscara vai ser utilizada. Nas linhas 96 à 99, tem-se o procedimento padrão para construção da matriz que será usada como máscara de filtragem.  A variável mask recebe uma matriz de tamanho 3x3 em ponto flutuante (CV_32F) com valores iniciais iguais ao do array media que é repassado. O tipo da matriz precisa ser estabelecido em ponto flutuante, posto que as operações de cálculo contarão com a presença de números fracionários. 
+
+O uso da função scaleAdd() serve para dar o ganho de 1/9 nos coeficientes do filtro da média. A operação multiplica o primeiro argumento pelo segundo, soma com o terceiro argumento (neste caso, uma matriz de zeros) e armazena o resultado no terceiro argumento, mask1. Logo em seguida, a troca entre as matrizes mask e mask1 ocorre para que use apenas a matriz mask no cálculo da convolução digital.
+
+Por fim, na linha 101, ocorre a chamada da função menu() para pedir ao usuário que escolha o tipo de máscara a ser utilizada.
+
+Nas linhas 106 e 107, as imagens coloridas capturadas pela camera do computador são enviadas a matriz *cap* e depois tem os seus pixels convertidos em tons de cinza pela função *cvtColor*. Nas linhas 110 e 111 tem-se um giro horizontal da imagem, através da função *flip*, apenas para melhor representação da imagem capturada. Da linha 112 à 115 ocorre o cálculo da filtragem espacial. A imagem em tom de cinza na variável *frame* é convertida para outra equivalente com representação em ponto flutuante - *frame32f*. A conversão é necessária devido aos tipos de operação que serão realizados pela função *filter2D*, que geram resultados em ponto flutuante.
+
+A função0 *filter2d* recebe então a matriz da imagem em ponto flutuante - frame32f - e produz a matriz *frameFiltered*, de acordo com o tipo do elemento da matriz de entrada - neste caso, *CV_32F* (ou _float_). O objeto *Point(1,1)* que é repassado como próximo argumento identifica a origem do sistema de coordenadas atribuído para a máscara que, neste caso, é o ponto central da matriz.   
+
+Na linha 121 é feita uma conversão da matriz *frameFiltered* para CV_8U, que significa oito bits por pixel, ou seja, os pixels podem ir do valor 0 a 255, que é a forma que imagens e vídeos em escala de cinza são representados.
+
+O restante do código apenas tem a função de apresentar o menu para o usuário escolher qual máscara aplicar. Ao fim do programa, a imagem mostrada na tela, com qualquer um dos filtros aplicados, é salva em disco (linha 178).
+
+====
+.Exemplo de execução
+* Comando: ./laplgauss 
+* Fotos de saída: 
+
+[[img-filtro-vertical]] 
+.Figura filtro-vertical.png 
+image::filtro-vertical.png[Filtro Vertical] 
+
+[[img-filtro-horizontal]] 
+.Figura filtro-horizontal.png 
+image::filtro-horizontal.png[Filtro Horizontal] 
+
+[[img-filtro-media]] 
+.Figura filtro-media.png 
+image::filtro-media.png[Filtro da Média] 
+
+[[img-filtro-gaussiano]] 
+.Figura filtro-gaussiano.png 
+image::filtro-gaussiano.png[Filtro Gaussiano] 
+
+[[img-filtro-laplaciano]] 
+.Figura filtro-laplaciano.png 
+image::filtro-laplaciano.png[Filtro Laplaciano]
+
+[[img-filtro-laplacianodogaussiano]] 
+.Figura filtro-laplacianodogaussiano.png 
+image::filtro-laplacianodogaussiano.png[Filtro Laplaciano do Gaussiano]
+====
+
+
+
+== Filtragem Espacial II
+
+=== Seção 7.1 - Exercício 1
+
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"] como referência, implemente um programa tiltshift.cpp. Três ajustes deverão ser providos na tela da interface:
+
+* um ajuste para regular a altura da região central que entrará em foco;
+
+* um ajuste para regular a força de decaimento da região borrada;
+
+* um ajuste para regular a posição vertical do centro da região que entrará em foco. Finalizado o programa, a imagem produzida deverá ser salva em arquivo.
+****
+
+A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito de __tilt-shift__ foi desenvolvido:
+
+.tiltshift.cpp
+[[tiltshift]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/tiltshift/tiltshift.cpp[]
+----
+
+A ideia do efeito de __tilt-shift__, conforme descrito no link:http://agostinhobritojr.github.io/tutoriais/pdi/#_filtragem_no_domínio_espacial_ii[Capítulo 7, window="_blank"], consiste em "combinar a imagem original com sua versão filtrada com filtro passa-baixas, de sorte a produzir nas proximidades da borda o efeito do borramento enquanto se mantém na região central a imagem sem borramento".
+
+Para tornar isso possível, o primeiro objetivo do programa é, então, receber uma imagem do usuário e imediatamente gerar sua versão filtrada, isto é, com efeito de borramento para que elas duas possam ser combinadas depois. Isso é feito na linha 122, através da função *borrarImagem*. Esta função, basicamente, aplica o fitro da média de tamanho stem:[3 times 3]  seis vezes seguidas na imagem original, para provocar um borramento bem intenso. 
+
+Com a imagem original e a imagem borrada produzidas, o passo seguinte é aplicar a função stem:[g(x,y) = α(x)f(x,y) + (1−α(x))bf(x,y)], sendo stem:[g(x,y)] a imagem com efeito de tilt-shit aplicado, stem:[f(x,y)] a imagem original e stem:[bf(x,y)] a imagem original após o efeito de borramento. A forma sobre como ambas as imagens de entrada (a original e a versão borrada) serão combinadas depende da função stem:[α(x)], definida por stem:[α(x) = \frac{1}{2} (\frac{tanh(x)−l1}{d}−\frac{tanh(x)−l2}{d})], "onde stem:[l1] e stem:[l2] são as linhas cujo valor de stem:[α]  assume valor em torno de 0.5, caso os dois valores possuam uma distância adequada um do outro, e stem:[d]  indica a força do decaimento da região totalmente oriunda da imagem original para a região totalmente oriunda da imagem borrada".
+
+No programa acima, o cálculo do stem:[α(x)] é feito na através da função *calcularImagemFinal*, definida na linha 52. Ela usará os parâmetros da função escolhidos pelo usuário através da mudança das barras de rolagem, calculará seu valor e gerará a imagem final resultante stem:[g(x,y)]. Essa imagem gerada é sempre atualizada na janela do programa e, quando o usuário concluir sua configuração, ele pode pressionar qualquer teclada para encerrar o programa e salvar o resultado. 
+
+Por fim, vale ressaltar que, antes da imagem original ser processa, ocorre um aumento na sua saturação com o intuito de deixar as cores mais vivas. Isso é importante para tornar o efeito de _tilt-shift_ mais realista.
+
+====
+
+Exemplo da janela de configuração dos parâmetros
+
+[[img-janela-tiltshift]] 
+.Figura janela-tiltshift.png
+image::janela-tiltshift.png[Janela Tilt-shift] 
+
+
+.Exemplo de execução 1
+* Comando: ./tiltshift saopaulo.png
+* Foto de entrada: 
+
+[[img-saopaulo]] 
+.Figura saopaulo.png original
+image::saopaulo.png[São Paulo] 
+
+* Foto de saída: 
+
+[[img-saopaulo-tiltshift]] 
+.Figura saopaulo.png após processamento
+image::saopaulo-tiltshift.png[São Paulo - Tilt Shift] 
+
+.Exemplo de execução 2
+* Comando: ./tiltshift china.png
+* Foto de entrada: 
+
+[[img-china]] 
+.Figura china.png original
+image::china.png[China] 
+
+* Foto de saída: 
+
+[[img-china-tiltshift]] 
+.Figura china.png após processamento
+image::china-tiltshift.png[China - Tilt Shift] 
+====
+
+=== Seção 7.1 - Exercício 2
+
+****
+Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/addweighted.cpp[exemplos/addweighted.cpp, window="_blank"] como referência, implemente um programa tiltshiftvideo.cpp. Tal programa deverá ser capaz de processar um arquivo de vídeo, produzir o efeito de tilt-shift nos quadros presentes e escrever o resultado em outro arquivo de vídeo. A ideia é criar um efeito de miniaturização de cenas. Descarte quadros em uma taxa que julgar conveniente para evidenciar o efeito de stop motion, comum em vídeos desse tipo.
+****
+
+A solução deste exercício é apenas uma adaptação do programa anterior (<<tiltshift>>), conforme pode ser visto a seguir:
+
+.tiltshiftvideo.cpp
+[[tiltshiftvideo]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/tiltshiftvideo/tiltshiftvideo.cpp[]
+----
+
+A ideia deste programa foi abrir um arquivo de vídeo e sair aplicando o efeito de _tilt-shift_ do exemplo anterior a cada quadro do vídeo. Para isso, é apresentado usuário uma janela com o primeiro quadro do vídeo para ele definir como o filtro será aplicado (linha 164 à linha 179). Uma vez que isso é concluído, o usuário pressionar qualquer tecla para iniciar o processamento do vídeo (linha 189 a linha 222).
+
+Durante o processamento, foi adicionado um pequeno trecho para descartar alguns quadros do vídeo para produzir um efeito de _stop-motion_ (linha 194 à linha 199). Além disso, é exibido para o usuário o progresso atual do processamento em percentagem (linha 218), já que, dependendo do vídeo, isso pode demorar e é importante que o usuário consiga estimar o tempo total.
+
+Ao final do programa, o vídeo resultante é salvo e o usuário pode executá-lo em qualquer player de vídeo. Um detalhe importante é que o OpenCV não trabalha com áudio, logo o resultado gerado é apenas uma vídeo sem áudio. No exemplo mostrado abaixo, foi necessário mesclar o vídeo resultante com o áudio do vídeo original através de outro programa editor de vídeo.
+
+====
+
+Exemplo da janela de configuração dos parâmetros que aparece no primeiro quadro do vídeo.
+
+[[img-janela-tiltshiftvideo]] 
+.Figura janela-tiltshiftvideo.png
+image::janela-tiltshiftvideo.png[Janela Tilt-shift Vídeo] 
+
+
+.Exemplo de execução
+* Comando: ./tiltshiftvideo congestionamento.mp4
+* Vídeo de entrada: 
+
+[[video-congestionamento]] 
+.Vídeo congestionamento.mp4 original
+video::5tiWGREedi4[youtube, width=640, height=480, options="loop"]
+
+* Vídeo de saída: 
+
+[[video-congestionamento-tiltshift]] 
+.Vídeo congestionamento.mp4 processado
+video::1ziU0PYewVU[youtube, width=640, height=480, options="loop"]
+
+====
+
+== Filtragem no domínio da frequência
+
+=== Seção 8.2 - Exercício 1 
+
+****
+* Utilizando o programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/exemplos/dft.cpp[exemplos/dft.cpp, window="_blank"] como referência, implemente o filtro homomórfico para melhorar imagens com iluminação irregular. Crie uma cena mal iluminada e ajuste os parâmetros do filtro homomórfico para corrigir a iluminação da melhor forma possível. Assuma que a imagem fornecida é em tons de cinza.
+****
+
+A partir do programa link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/exemplos/dft.cpp[exemplos/dft.cpp, window="_blank"], disponibilizado pelo professor, e com base na teoria apresentada no capítulo em questão, o seguinte programa que aplica o efeito do filtro __homomórfico__ foi desenvolvido:
+
+.homomorfico.cpp
+[[homomorfico]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/homomorfico/homomorfico.cpp[]
+----
+
+A ideia desse programa é realizar o tratamento de uma figura mal iluminada, com o objetivo de prover uma melhor distribuição da iluminação. Essa melhora é obtida após a aplicação de um filtro chamado de "homomórfico". A filtragem homomórfica baseia-se na ideia de poder melhorar a aparência de uma imagem com base no modelo de reflectância e iluminação. No domínio da frequência, é possível obter um controle simultâneo da compressão da faixa de intensidade e do contraste. 
+
+Primeiramente, uma imagem pode ser descrita como uma função stem:[f(x,y) = i(x,y)r(x,y)], em que stem:[i(x,y)] é a iluminância e stem:[r(x,y)] a reflectância. Dessa forma, ao aplicar a transformada de Fourier, tem-se o seguinte problema: stem:[F{f(x,y)}\neF{i(x,y)}F{r(x,y)}]. A solução para este problema é considerar a seguinte função stem:[z(x,y)=ln{f(x,y)}], em que o valor de stem:[z(x,y)] vai ser igual a stem:[ln{i(x,y)} + ln{r(x,y)}].
+
+A aplicação da transformada de Fourier no logaritmo acima gera o seguinte resultado: stem:[F{z(x,y)} = F{ln{i(x,y)}} + F{ln{r(x,y)}}], que pode ser visto na forma stem:[Z(u,v) = F_{i}(u,v) + F_{r}(u,v)]. É neste resultado que se pode aplicar um filtro homomórfico do formato stem:[H(u,v)], o que gera a fórmula definitiva abaixo: stem:[S(u,v) = H(u,v)Z(u,v)], sendo stem:[H(u,v) = (\gamma_{H} - \gamma_{L})(1-e^{-c(\frac{(D^{2}(u,v))}{(D_{0})^2})}) + \gamma_{L}].  O termo c controla a inclinação da função à medida que existe a transição entre stem:[\gamma_{H}] e stem:[\gamma_{L}], o termo stem:[D_0] simboliza o raio do círculo do filtro passa alta, o termo stem:[D(u,v)] simboliza a distância entre um ponto stem:[(u,v)] no domínio da frequência e o centro do retângulo de frequência(nesse caso o ponto central da imagem) e por fim os termos stem:[\gamma_{H}] e stem:[\gamma_{L}] controlam a contribuição de de baixas frequências(iluminação) e de altas frequências(refletância).
+
+Por fim, quando se aplica a transformada inversa de Fourier a imagem resultante representada pela função stem:[s(x,y)] tem de ser submetida a operação exponencial na base e, pois na função original stem:[z(x,y)] aplicou-se a operação logaritmo natural. Dessa forma, a função que define a nova imagem vai ser do tipo: stem:[g(x,y) = e^{s(x,y)}].
+
+Após essa explicação introdutória sobre a filtragem homomórfica, o realiza todos os passos necessários: 
+
+. Aplica a função logaritmo neperiano em todos os pixels da imagem com a adição do número 1 em cada número para não haver erros ao aplicar a operação logaritmo no número 0 (linha 223).
+. Depois aplica-se a transformada de Fourier e faz o deslocamento das regiões, para facilitar a filtragem no domínio da frequência (linha 226 à 228).
+. Em seguida, a janela com o resultado é exibida com vários parâmetros para que o usuário possa realizar a configuração desejada (linha 230 à 253).
+. Finalmente, para cada parâmetro alterado, a função *aplicarFiltroHomomorfico* é chamada, de modo que o filtro é recriado com os novos parâmetros e um novo resultado final é gerado (linha 75 à 134).
+
+Um fato importante a ser mencionado é que após o processamento no domínio da frequência, a imagem resultante após a transformação inversa de Fourier pode conter valores com altissimo módulo em ponto flutuante. Conforme explicado acima, é necessário aplicar a operação de exponenciação na base _e_ em todos os píxels nesta etapa mas, dependendo do valor do píxeç, pode ser que o resultado não possa ser representado nem em float nem em double. Então, para evitar esse problema, é realizada uma normalização intermediária antes desses píxels passarem pela operação de exponenciação (linha 126 à linha 128). Ao fim de todo o processo, ainda é necessária uma última normalização para que o resultado possa ser exibido corretamente na tela.
+
+
+====
+
+.Exemplo de execução 1
+* Comando: ./homomorfico tunel.png
+* Foto de entrada: 
+
+[[img-tunel]] 
+.Figura tunel.png
+image::tunel.png[Túnel] 
+
+* Filtro passa altas homomórfico (como ficou o filtro para a configuração do resultado abaixo):
+
+[[img-homomorfico-filtro]] 
+.Figura homomorfico-filtro.png
+image::homomorfico-filtro.png[Filtro Homomórfico] 
+
+* Resultado:
+
+[[img-homomorfico-tunel]] 
+.Figura homomorfico-tunnel.png
+image::homomorfico-tunnel.png[Túnel homomórfico]
+
+
+.Exemplo de execução 2
+* Comando: ./homomorfico rua.jpg
+* Foto de entrada: 
+
+[[img-rua]] 
+.Figura rua.jpg
+image::rua.jpg[Rua] 
+
+* Filtro passa altas homomórfico (como ficou o filtro para a configuração do resultado abaixo):
+
+[[img-homomorfico-filtro2]] 
+.Figura homomorfico-filtro2.png
+image::homomorfico-filtro2.png[Filtro Homomórfico] 
+
+* Resultado:
+
+[[img-homomorfico-tunel]] 
+.Figura homomorfico-rua.png
+image::homomorfico-rua.png[Rua homomórfico]  
+
+====
+
+== Canny e a arte com pontilhismo
+
+=== Seção 11.1 - Exercício 1
+
+****
+Utilizando os programas link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/canny.cpp[exemplos/canny.cpp, window="_blank"] e link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pontilhismo.cpp[exemplos/pontilhismo.cpp, window="_blank"] como referência, implemente um programa cannypoints.cpp. A idéia é usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada. A forma como a informação de borda será usada é livre. Entretanto, são apresentadas algumas sugestões de técnicas que poderiam ser utilizadas:
+
+* Desenhar pontos grandes na imagem pontilhista básica;
+
+* Usar a posição dos pixels de borda encontrados pelo algoritmo de Canny para desenhar pontos nos respectivos locais na imagem gerada.
+
+* Experimente ir aumentando os limiares do algoritmo de Canny e, para cada novo par de limiares, desenhar círculos cada vez menores nas posições encontradas. A Figura Pontilhismo aplicado à imagem Lena foi desenvolvida usando essa técnica.
+
+* Escolha uma imagem de seu gosto e aplique a técnica que você desenvolveu.
+
+* Descreva no seu relatório detalhes do procedimento usado para criar sua técnica pontilhista.
+
+[[img-lenna-pontilhismo]] 
+.Figura lenna-pontilhismo.png
+image::lenna-pontilhismo.png[Lenna Pontilhismo] 
+
+****
+
+Combinando as funcionalidades fornecidas nos programas link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/canny.cpp[exemplos/canny.cpp, window="_blank"] e link:http://agostinhobritojr.github.io/tutoriais/pdi/exemplos/pontilhismo.cpp[exemplos/pontilhismo.cpp, window="_blank"], o seguinte programa abaixo foi desenvolvido:
+
+.cannypoints.cpp
+[[cannypoints]]
+[source,cpp,linenums]
+----
+include::{sourcedir}/pontilhismo/cannypoints.cpp[]
+----
+
+A ideia do programa acima é gerar o efeito de pontilhismo em uma imagem fornecida pelo usuário, com a opção de configurar vários parâmetros em tempo real para se obter o melhor resultado desejado. Para obter isso, é necessário realizar algumas etapas sugeridas pelo enunciado desta questão.
+
+Inicialmente, a imagem original é lida no formato colorido e, em seguida, é feita uma cópia dela, mas em escala de cinza (linha 177), para facilitar o algortimo de detecção de bordad de Canny a ser aplicado posteriormente. Após isso, são criadas 3 janelas: 
+
+* "canny" - Janela onde o usuário definirá o limiar inferior do algortimo de Canny.
+* "pontilhismo" - Janela onde o usuário definirá parâmetros do efeito de desenhar desenhar círculos (a forma como o pontilhismo é aplicado).
+* "resultado" - Janela onde o usuário vê o resultado final, a partir da combinação das configurações das duas outras janelas.
+
+Após isso, são configurados os _sliders_ nas janelas em questão (da linha 188 à 198), o que finaliza a inicialização do programa. O primeiro _slider_ é responsável pelo limiar do algoritmo de Canny, enquanto os outros 3 são responsáveis pelo efeito de desenho dos círculos.
+
+A função *alterarSliderCanny*, que é chamada toda vez que o limiar de Canny é alterado, faz a detecção de bordas da imagem original que foi convertida em escala de cinza. Após isso, o efeito do pontilhismo é aplicado na borda da imagem que já passara pelo efeito de pontilhismo definido na janela pontilhismo (essa imagem com efeito de pontilhismo está como colorida). É importante ressaltar que, seguindo a sugestão do enunciado, o tamanho do circulo a ser colocado na borda vai diminuindo conforme o limiar do algoritmo vai aumentando. Isso é feito pela função *mudar_raio_borda*, que sempre é chamada quando há alteração de limiar (linha 60). Ao fim, a imagem resultante é exibida novamente na janela "resultado".
+
+Por fim, a função *alterarSliderPointilhismo* é invocada quando há alteração em alguns dos parâmetros do efeito de pontilhismo. Com os valores de *step*, *jitter* e *raio* definidos, alguns píxels da imagem original são substituídos por círculos em uma ordem aleatória para melhorar o efeito. Com isso, a imagem resultante precisa ser recalculada e isso é feito através da função *alterarSliderCanny*, que é forçadamente chamada ao fim (linha 152).
+
+
+====
+
+.Exemplo de execução 1
+* Comando: ./cannypoints pontilhismo-lara.jpg
+* Foto de entrada: 
+
+[[img-pontilhismo-lara]] 
+.Figura pontilhismo-lara.jpg
+image::pontilhismo-lara.jpg[Lara] 
+
+* Janela de configuração do efeito de pontilhismo
+
+[[img-pontilhismo-parametros-lara]] 
+.Figura pontilhismo-parametros-lara.png
+image::pontilhismo-parametros-lara.png[Parâmetros Lara] 
+
+* Janela de configuração do limiar do algortimo de Canny
+
+[[img-pontilhismo-canny-lara]] 
+.Figura pontilhismo-canny-lara.png
+image::pontilhismo-canny-lara.png[Canny Lara] 
+
+* Janela com o resultado final
+
+[[img-pontilhismo-resultado-lara]] 
+.Figura pontilhismo-resultado-lara.png
+image::pontilhismo-resultado-lara.png[Resultado Lara] 
+
+
+.Exemplo de execução 2
+* Comando: ./cannypoints pontilhismo-gow.png
+* Foto de entrada: 
+
+[[img-pontilhismo-gow]] 
+.Figura pontilhismo-gow.jpg
+image::pontilhismo-gow.jpg[GOW] 
+
+* Janela de configuração do efeito de pontilhismo
+
+[[img-pontilhismo-parametros-gow]] 
+.Figura pontilhismo-parametros-gow.png
+image::pontilhismo-parametros-gow.png[Parâmetros GOW] 
+
+* Janela de configuração do limiar do algortimo de Canny
+
+[[img-pontilhismo-canny-gow]] 
+.Figura pontilhismo-canny-gow.png
+image::pontilhismo-canny-gow.png[Canny GOW] 
+
+* Janela com o resultado final
+
+[[img-pontilhismo-resultado-gow]] 
+.Figura pontilhismo-resultado-gow.png
+image::pontilhismo-resultado-gow.png[Resultado GOW] 
+
+====
+
+
+
+
+
+
