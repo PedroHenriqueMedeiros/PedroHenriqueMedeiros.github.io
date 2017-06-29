@@ -1,0 +1,31 @@
+\begin{thebibliography}{1}
+
+\bibitem{bremananth2005new}
+R.~Bremananth, B.~Balaji, M.~Sankari, and A.~Chitra, ``A new approach to coin
+  recognition using neural pattern analysis,'' in {\em INDICON, 2005 Annual
+  IEEE}, pp.~366--370, IEEE, 2005.
+
+\bibitem{chetan2013robust}
+B.~Chetan and P.~Vijaya, ``A robust method of image based coin recognition,''
+  in {\em Proceedings of International Conference on Advances in Computing},
+  pp.~911--918, Springer, 2013.
+
+\bibitem{bcb}
+``Banco central do brasil.''
+  \url{https://www.bcb.gov.br/htms/mecir/mcomum/mecomum.asp/https://www.bcb.gov.br/htms/mecir/mcomum/mecomum.asp}.
+\newblock Accessed: 2017-06-29.
+
+\bibitem{kaur2015coin}
+S.~Kaur and M.~Kaur, ``Coin recognition system with rotation invariant using
+  artificial neural network,'' 2015.
+
+\bibitem{modi2013automated}
+S.~Modi, D.~Bawa, {\em et~al.}, ``Automated coin recognition system using
+  ann,'' {\em arXiv preprint arXiv:1312.6615}, 2013.
+
+\bibitem{fukumi1992rotation}
+M.~Fukumi, S.~Omatu, F.~Takeda, and T.~Kosaka, ``Rotation-invariant neural
+  pattern recognition system with application to coin recognition,'' {\em IEEE
+  Transactions on Neural Networks}, vol.~3, no.~2, pp.~272--279, 1992.
+
+\end{thebibliography}
