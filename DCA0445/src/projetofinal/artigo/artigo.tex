@@ -1,39 +1,4 @@
-% IEEEtran V1.7 and later provides for these CLASSINPUT macros to allow the
-% user to reprogram some IEEEtran.cls defaults if needed. These settings
-% override the internal defaults of IEEEtran.cls regardless of which class
-% options are used. Do not use these unless you have good reason to do so as
-% they can result in nonIEEE compliant documents. User beware. ;)
-%
-%\newcommand{\CLASSINPUTbaselinestretch}{1.0} % baselinestretch
-%\newcommand{\CLASSINPUTinnersidemargin}{1in} % inner side margin
-%\newcommand{\CLASSINPUToutersidemargin}{1in} % outer side margin
-%\newcommand{\CLASSINPUTtoptextmargin}{1in}   % top text margin
-%\newcommand{\CLASSINPUTbottomtextmargin}{1in}% bottom text margin
-
-
-
 \documentclass[10pt,journal,compsoc]{IEEEtran}
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[10pt,journal,compsoc]{../sty/IEEEtran}
-
-
-% For Computer Society journals, IEEEtran defaults to the use of 
-% Palatino/Palladio as is done in IEEE Computer Society journals.
-% To go back to Times Roman, you can use this code:
-%\renewcommand{\rmdefault}{ptm}\selectfont
-
-
-% *** CITATION PACKAGES ***
-%
-\ifCLASSOPTIONcompsoc
-  % The IEEE Computer Society needs nocompress option
-  % requires cite.sty v4.0 or later (November 2003)
-  \usepackage[nocompress]{cite}
-\else
-  % normal IEEE
-  \usepackage{cite}
-\fi
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
@@ -71,9 +36,14 @@
 \usepackage{url}
 \usepackage{cite}
 \usepackage[nottoc]{tocbibind}
+\usepackage{lipsum}
+\usepackage{booktabs}
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\renewcommand\IEEEkeywordsname{Palavras-chave}
 
 \begin{document}
 
@@ -112,8 +82,7 @@ Processamento digital de imagem, moedas, classificação, contagem, redes neurai
 % For peerreview papers, this IEEEtran command inserts a page break and
 % creates the second title. It will be ignored for other modes.
 \section{Introdução}
-\label{sec:introduction}
-
+\label{sec:introducao}
 
 No dia a dia do consumidor, moedas são formas indispensáveis de se fazer pequenas compras, dar ou facilitar o troco em supermercados ou até mesmo para troca em cédulas. Dessa forma, devido ao comércio estar equipado com máquinas para o pagamento ser feito em cartão de crédito, no caso de grandes compras, ou contadores de cédulas em bancos para contagem de papel moeda, a contagem de moedas de forma automatizada para fins comerciais  muitas vezes acaba por ser negligenciado pelas pessoas.
 
@@ -129,57 +98,49 @@ Após essa contextualização, este trabalho propõe uma nova estratégia na ide
 
 A tecnologia da classificação e identificação das moedas utilizada também será redes neurais artificiais, mas, diferente de outros trabalhos, as características a serem extraídas das moedas brasileiras tentarão tirar proveito do tamanho, das cores e de suas texturas. Por fim, como este projeto é apenas um protótipo, o aplicativo inicial será configurado para contar apenas moedas de R\$ 0,25, R\$  0,50 e R\$ 1,00.
 
-\section{Conclusion}
-The conclusion goes here.
+\section{Metodologia}
+\label{sec:metologia}
 
-\appendices
-\section{Proof of the First Zonklar Equation}
-Appendix one text goes here.
-
-% you can choose not to have a title for an appendix
-% if you want by leaving the argument blank
-\section{}
-Appendix two text goes here.
-
-
-% use section* for acknowledgment
-\ifCLASSOPTIONcompsoc
-  % The Computer Society usually uses the plural form
-  \section*{Acknowledgments}
-\else
-  % regular IEEE prefers the singular form
-  \section*{Acknowledgment}
-\fi
+\begin{table*}[]
+\centering
+\caption{Detalhes das moedas de Real brasileiro}
+\label{tab:moedas}
+\begin{tabular}{@{}ccll@{}}
+\toprule
+\textbf{Valor Facial (R\$)} & \textbf{Diâmetro (mm)} & \multicolumn{1}{l}{\textbf{Bordo}} & \multicolumn{1}{l}{\textbf{Material}}                    \\ \midrule
+0,01                        & 17,00                  & liso                               & Aço revestidode cobre                                    \\
+0,05                        & 22,00                  & liso                               & Aço revestidode cobre                                    \\
+0,10                        & 20,00                  & serrilhado                         & Aço revestidode bronze                                   \\
+0,25                        & 25,00                  & serrilhado                         & Aço revestidode bronze                                   \\
+0,50                        & 23,00                  & legenda                            & Aço inoxidável                                           \\
+1,00                        & 27,00                  & serrilhaintermitente               & Aço inoxidável (núcleo) e aço revestido de bronze (anel) \\ \bottomrule
+\end{tabular}
+\end{table*}
 
 
-The authors would like to thank...
+A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}.
+
+A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. 
 
 
-% Can use something like this to put references on a page
-% by themselves when using endfloat and the captionsoff option.
-\ifCLASSOPTIONcaptionsoff
-  \newpage
-\fi
+
+
+
+\section{Resultados}
+\label{sec:resultados}
+
+Resultados
+
+\section{Conclusão}
+\label{sec:conclusao}
+
+Conclusão...
 
 \medskip
 
 \bibliographystyle{ieeetr}
 \bibliography{references}
 
-
-
-% <OR> manually copy in the resultant .bbl file
-% set second argument of \begin to the number of references
-% (used to reserve space for the reference number labels box)
-%\begin{thebibliography}{1}
-
-%\bibitem{IEEEhowto:kopka}
-%H.~Kopka and P.~W. Daly, \emph{A Guide to {\LaTeX}}, 3rd~ed.\hskip 1em plus
-% 0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
-
-%\end{thebibliography}
-
-% that's all folks
 \end{document}
 
 
