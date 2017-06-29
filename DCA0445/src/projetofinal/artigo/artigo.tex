@@ -39,9 +39,11 @@
 \usepackage{lipsum}
 \usepackage{booktabs}
 
+
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
 
+\graphicspath{{imagens/}}
 
 \renewcommand\IEEEkeywordsname{Palavras-chave}
 
@@ -92,14 +94,17 @@ Com base nesse cenário, uma possibilidade para realizar o processo de contagem 
 
 Em seu trabalho, \cite{bremananth2005new} utilizou como estratégia reconhecer os caracteres numéricos presentes nas moedas indianas como forma de identificá-las. Embora interessante, essa estratégia é falha paras as moedas de Real do Brasil, visto que um dos lados dela não possui número. Em outro trabalho, \cite{chetan2013robust} tentou realizar a identificação através de combinação de caracteríticas (\textit{feature matching}), tanto com as bordas quanto com o raio das moedas. Porém, pode não ser interessante para as moedas de Real, pois elas possuem tamanhos muito parecidos, variando o raio, em alguns casos, em somente 1 mm, como pode ser visto em \cite{bcb}.
 
-Muitos dos trabalhos publicados nessa área abordam diferentes estratégias a respeito de que características das moedas serão utilizadas em sua indentificação. Porém, em geral, a maioria deles utiliza como métedo de classificação técnicas de inteligência artificial, mais especificamente redes neurais artificiais, como podem ser visto em \cite{bremananth2005new}, \cite{kaur2015coin}, \cite{modi2013automated} e até em trabalhos mais antigo, como e \cite{fukumi1992rotation}.
+Muitos dos trabalhos publicados nessa área abordam diferentes estratégias a respeito de que características das moedas serão utilizadas em sua indentificação. Porém, em geral, a maioria deles utiliza como métedo de classificação técnicas de inteligência artificial, mais especificamente redes neurais artificiais (RNAs), como podem ser visto em \cite{bremananth2005new}, \cite{kaur2015coin}, \cite{modi2013automated} e até em trabalhos mais antigo, como e \cite{fukumi1992rotation}.
 
-Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, através de um aplicativo contador moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada, como com o fundo todo branco, por exemplo, e que ele informe ao usuário quantos reais estão presentes ali. Além do próprio aplicativo contador, também serão densenvolvidos módulos auxiliares para realizar a calibração do sistema, isto é, para treinar e validar a rede neural articial.
+Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, através de um aplicativo contador moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada, como com o fundo todo branco, por exemplo, e que ele informe ao usuário quantos reais estão presentes ali. Além do próprio aplicativo contador, também serão densenvolvidos módulos auxiliares para realizar a calibração e validação do sistema principal.
 
 A tecnologia da classificação e identificação das moedas utilizada também será redes neurais artificiais, mas, diferente de outros trabalhos, as características a serem extraídas das moedas brasileiras tentarão tirar proveito do tamanho, das cores e de suas texturas. Por fim, como este projeto é apenas um protótipo, o aplicativo inicial será configurado para contar apenas moedas de R\$ 0,25, R\$  0,50 e R\$ 1,00.
 
-\section{Metodologia}
-\label{sec:metologia}
+\section{Metodologia Utilizada}
+\label{sec:metologia-utilizada}
+
+\subsection{Análise das Características das Moedas}
+\label{sec:metologia:analise-moedas}
 
 \begin{table*}[]
 \centering
@@ -120,11 +125,70 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 
 A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}.
 
-A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. 
+A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. Nesse caso, elas seriam utilizadas como o critério de identificação das moedas classificação, ou seja, como entradas para a rede neural artificial. 
+
+Em se tratando de imagens digitais, as características acima seriam os descritores das imagens. Como as cores são importantes, as imagens não podem ser trabalhadas em escala de cinza, pois pederia-se muita informação. Portanto, para uma imagem contendo uma única moeda posicionada ao centro, resultado de um processo de busca em uma imagem com várias moedas, conforme será melhor explicado adiante, com fundo branco e com seu raio tocando a borda da imagem, os seguintes elementos foram escolhidos para representá-las:
+
+\begin{itemize}  
+\item Cores da moeda: histograma da matiz da imagem. 
+\item Diâmetro da moeda: lagura e altura da imagem.
+\item Material da moeda: 7 momentos invariantes da imagem.
+\end{itemize}
+
+Com isso definido, a etapa seguinte foi pensar sobre como realizar a aquisição das imagens contendo as moedas. Como uma das motivações deste projeto é a alta difusão de câmeras digitais em telefones celulares, então seria razoável que as imagens para este experimento fossem obtidas em um desses equipamentos, para manter uma compatibilidade de resolução e qualidade das fotos entre os experimentos em laboratório com o mundo real. 
+
+Estabelecido o tipo de câmera, foi decidido também que as moedas a serem fotografadas deveriam estar sob algum fundo branco, como uma folha de papel A4, por exemplo, além de não ficarem sobrepostas, nem nas bordas limite da imagem. Isso porque ficaria muito difícil encontrá-las durante a etapa da localização individual das moedas em uma imagem maior, que baseia-se na busca por círculos, e também na própria classificação delas, já que perderiam-se detalhes sobre toda sua cor, textura e tamanho. 
+
+Por fim, também fixou-se uma distância padrão entre a câmera do celular e o local onde estavam as imagens em 30 cm. Essa escolha é importante para garantir uma maior consistência na largura e altura das imagens das moedas individuais durante a classificação, pois, caso a distância de captura fosse variável, uma moeda maior poderia ser confundida com uma menor, por exemplo.
+
+Na figura \ref{fig:criterios}, segue um exemplo de uma imagem atendendo aos três limites impostos acima.
+
+\begin{figure}[ht]
+\centering
+\caption{Exemplo de imagem quem atendem às limitações impostas pelo projeto}
+\label{fig:criterios}
+\includegraphics[width=0.5\textwidth]{completa4.jpg}
+\end{figure}
+
+Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes. Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas.
+
+
+\subsection{Classificação com Redes Neurais Artificiais}
+\label{sec:metodologia:rna}
+
+Com os descritores das imagens das moedas escolhidos, foi possível, então planejar a rede neural artificial responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a moeda identificada. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
+
+Como entrada da rede neural, os descritores foram abstraídos da seguinte forma:
+
+\begin{itemize}  
+\item Histograma da matiz da imagem: histograma com 32 níveis da matiz da imagem.
+\item Lagura e altura da imagem: número de colunas e linhas da matriz da imagem.
+\item 7 momentos invariantes da imagem: momentos invariantes da imagem convertida para escala de cinza.
+\end{itemize}
+
+Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. 
+
+Os demais ajustes da rede neural dizendo respeito à sua estrutura interna e ao treinamento surpevisionado. Todos os que virão abaixo foram definidos empiricamente após alguns experimentos, tentando buscar sempre uma boa precisão dos resultados quanto um bom desempenho durante o treinamento, já que esta etapa faz parte da calibração do sistema.
+
+\begin{itemize}  
+\item Método de treinamento: \textit{Backpropagation}
+\item Número de camadas escondidas: 2, cada uma com 32 neurônios.
+\item Função de ativação: sigmoide simétrica, que varia de -1 a 1.
+\item Número máximo de iterações: 10000
+\item Erro mínimo de parada:  $10 ^ -8$.
+\item Taxa de aprendizado: 0.1
+\item Momentum: 0.1
+
+\end{itemize}
 
 
 
+\subsection{Tecnologias Envolvidas}
+\label{sec:metodologia:tecnologias-envolvidas}
 
+O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em lingaguem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. 
+
+Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits.
 
 \section{Resultados}
 \label{sec:resultados}
@@ -139,8 +203,10 @@ Conclusão...
 \medskip
 
 \bibliographystyle{ieeetr}
-\bibliography{references}
+\bibliography{referencias.bib}
+
 
 \end{document}
+
 
 

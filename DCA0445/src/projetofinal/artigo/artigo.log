@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.6.7)  29 JUN 2017 14:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.6.7)  29 JUN 2017 17:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -772,20 +772,20 @@ Package: booktabs 2005/04/14 v1.61803 publication quality tables
 ) (./artigo.aux)
 \openout1 = `artigo.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 48.
-LaTeX Font Info:    ... okay on input line 48.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
 
 -- Lines per column: 61 (exact).
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
@@ -816,7 +816,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box33
-Package hyperref Info: Link coloring OFF on input line 48.
+Package hyperref Info: Link coloring OFF on input line 50.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -826,9 +826,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count137
 )
-LaTeX Info: Redefining \ref on input line 48.
-LaTeX Info: Redefining \pageref on input line 48.
-LaTeX Info: Redefining \nameref on input line 48.
+LaTeX Info: Redefining \ref on input line 50.
+LaTeX Info: Redefining \pageref on input line 50.
+LaTeX Info: Redefining \nameref on input line 50.
 
 (./artigo.out) (./artigo.out)
 \@outlinefile=\write3
@@ -843,68 +843,98 @@ Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
 )
 Package pdflscape Info: Auto-detected driver: pdftex on input line 80.
 )
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 66.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 )
 ** WARNING: \and is valid only when in conference or peerreviewca
-modes (line 66).
-LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 66
+modes (line 68).
+LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 68
 .
-LaTeX Font Info:    Try loading font information for U+msa on input line 66.
+LaTeX Font Info:    Try loading font information for U+msa on input line 68.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 66.
+LaTeX Font Info:    Try loading font information for U+msb on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+pzd on input line 66.
+LaTeX Font Info:    Try loading font information for U+pzd on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/upzd.fd
 File: upzd.fd 2001/06/04 font definitions for U/pzd.
 )
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <8.03> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 67.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 69.
 
-Underfull \hbox (badness 10000) in paragraph at lines 71--73
+Underfull \hbox (badness 10000) in paragraph at lines 73--75
 \OT1/phv/b/n/8.03 Palavras-chave\OT1/phv/m/n/8.03 ---Processamento di-gi-tal de
  ima-gem, mo-e-das,
  []
 
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <11.04124> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 84.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 86.
 LaTeX Font Info:    Font shape `OT1/phv/bx/sc' in size <11.04124> not available
 
-(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 84.
+(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 86.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 84.
+(babel)             in language  on input line 86.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 101.
+(babel)             in language  on input line 103.
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9.53561> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 106.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 106.
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 104.
+               Default added (so using `tbp') on input line 109.
 
-LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 108.
+LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 113.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 122.
+(babel)             in language  on input line 127.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 122.
+(babel)             in language  on input line 127.
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
+LaTeX Font Info:    Calculating math sizes for size <9.53561> on input line 133
+.
+
+<imagens/completa4.jpg, id=62, 501.875pt x 376.40625pt>
+File: imagens/completa4.jpg Graphic file (type jpg)
+
+<use imagens/completa4.jpg>
+Package pdftex.def Info: imagens/completa4.jpg used on input line 150.
+(pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
+
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 150--151
+ [][] 
+ []
+
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 129.
+(babel)             in language  on input line 156.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 134.
- (./artigo.bbl
+(babel)             in language  on input line 166.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 166.
+[2 <./imagens/completa4.jpg>]
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 186.
+
+Underfull \hbox (badness 1436) in paragraph at lines 191--192
+[]\OT1/ppl/m/n/9.53561 Como pla-ta-forma de de-sen-vol-vi-mento, de tes-tes e
+ []
+
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 193.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 198.
+(./artigo.bbl
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
-LaTeX Font Info:    Calculating math sizes for size <9.53561> on input line 15.
-
 
 Underfull \hbox (badness 10000) in paragraph at lines 14--17
 \OT1/ppl/m/n/9.53561 htms / mecir / mcomum / mecomum . asp / https : / / www .
@@ -917,40 +947,40 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--17
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 144.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 209.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 144.
+(babel)             in language  on input line 209.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 144.
- [2
-
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 144.
+(babel)             in language  on input line 209.
+ [3]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 209.
  (./artigo.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 144.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 144.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 209.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 209.
 Package rerunfilecheck Info: File `artigo.out' has not changed.
-(rerunfilecheck)             Checksum: 85FE8FE576F70B4CFFB99AD12632AC0D;239.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 144.
+(rerunfilecheck)             Checksum: 0A6454310A043DAFC386AC5A27B48495;511.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 209.
  ) 
 Here is how much of TeX's memory you used:
- 9384 strings out of 493029
- 136447 string characters out of 6136235
- 345771 words of memory out of 5000000
- 12738 multiletter control sequences out of 15000+600000
- 45084 words of font info for 112 fonts, out of 8000000 for 9000
+ 9408 strings out of 493029
+ 136856 string characters out of 6136235
+ 347060 words of memory out of 5000000
+ 12753 multiletter control sequences out of 15000+600000
+ 46717 words of font info for 114 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 37i,12n,39p,718b,371s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,12n,39p,718b,418s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatin
-o/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pf
-b></usr/share/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on artigo.pdf (2 pages, 80499 bytes).
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
+rw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/
+uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
+Output written on artigo.pdf (3 pages, 205813 bytes).
 PDF statistics:
- 85 PDF objects out of 1000 (max. 8388607)
- 74 compressed objects within 1 object stream
- 15 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 113 PDF objects out of 1000 (max. 8388607)
+ 98 compressed objects within 1 object stream
+ 20 named destinations out of 1000 (max. 500000)
+ 70 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -2,11 +2,11 @@ This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: artigo.aux
 The style file: ieeetr.bst
-Database file #1: references.bib
+Database file #1: referencias.bib.bib
 Warning--empty journal in kaur2015coin
 You've used 6 entries,
             1876 wiz_defined-function locations,
-            509 strings with 4464 characters,
+            509 strings with 4469 characters,
 and the built_in function-call counts, 1527 in all, are:
 = -- 147
 > -- 56
