@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{bremananth2005new}
 R.~Bremananth, B.~Balaji, M.~Sankari, and A.~Chitra, ``A new approach to coin
@@ -27,5 +27,28 @@ S.~Modi, D.~Bawa, {\em et~al.}, ``Automated coin recognition system using
 M.~Fukumi, S.~Omatu, F.~Takeda, and T.~Kosaka, ``Rotation-invariant neural
   pattern recognition system with application to coin recognition,'' {\em IEEE
   Transactions on Neural Networks}, vol.~3, no.~2, pp.~272--279, 1992.
+
+\bibitem{ioannou1999circle}
+D.~Ioannou, W.~Huda, and A.~F. Laine, ``Circle recognition through a 2d hough
+  transform and radius histogramming,'' {\em Image and vision computing},
+  vol.~17, no.~1, pp.~15--26, 1999.
+
+\bibitem{kerbyson1995circle}
+D.~Kerbyson and T.~Atherton, ``Circle detection using hough transform
+  filters,'' 1995.
+
+\bibitem{yuen1990comparative}
+H.~Yuen, J.~Princen, J.~Illingworth, and J.~Kittler, ``Comparative study of
+  hough transform methods for circle finding,'' {\em Image and vision
+  computing}, vol.~8, no.~1, pp.~71--77, 1990.
+
+\bibitem{illingworth1987adaptive}
+J.~Illingworth and J.~Kittler, ``The adaptive hough transform,'' {\em IEEE
+  Transactions on Pattern Analysis and Machine Intelligence}, no.~5,
+  pp.~690--698, 1987.
+
+\bibitem{guil1997lower}
+N.~Guil and E.~L. Zapata, ``Lower order circle and ellipse hough transform,''
+  {\em Pattern Recognition}, vol.~30, no.~10, pp.~1729--1744, 1997.
 
 \end{thebibliography}

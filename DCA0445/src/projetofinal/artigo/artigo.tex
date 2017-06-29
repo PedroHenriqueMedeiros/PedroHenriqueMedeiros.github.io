@@ -137,7 +137,7 @@ Em se tratando de imagens digitais, as características acima seriam os descrito
 
 Com isso definido, a etapa seguinte foi pensar sobre como realizar a aquisição das imagens contendo as moedas. Como uma das motivações deste projeto é a alta difusão de câmeras digitais em telefones celulares, então seria razoável que as imagens para este experimento fossem obtidas em um desses equipamentos, para manter uma compatibilidade de resolução e qualidade das fotos entre os experimentos em laboratório com o mundo real. 
 
-Estabelecido o tipo de câmera, foi decidido também que as moedas a serem fotografadas deveriam estar sob algum fundo branco, como uma folha de papel A4, por exemplo, além de não ficarem sobrepostas, nem nas bordas limite da imagem. Isso porque ficaria muito difícil encontrá-las durante a etapa da localização individual das moedas em uma imagem maior, que baseia-se na busca por círculos, e também na própria classificação delas, já que perderiam-se detalhes sobre toda sua cor, textura e tamanho. 
+Estabelecido o tipo de câmera, foi decidido também que as moedas seriam fotografadas frontalmente e deveriam estar sob algum fundo branco, como uma folha de papel A4, por exemplo, além de não ficarem sobrepostas, nem nas bordas limite da imagem. Isso porque ficaria muito difícil encontrá-las durante a etapa da localização individual das moedas em uma imagem maior, que baseia-se na busca por círculos, e também na própria classificação delas, já que perderiam-se detalhes sobre toda sua cor, textura e tamanho. 
 
 Por fim, também fixou-se uma distância padrão entre a câmera do celular e o local onde estavam as imagens em 30 cm. Essa escolha é importante para garantir uma maior consistência na largura e altura das imagens das moedas individuais durante a classificação, pois, caso a distância de captura fosse variável, uma moeda maior poderia ser confundida com uma menor, por exemplo.
 
@@ -150,11 +150,24 @@ Na figura \ref{fig:criterios}, segue um exemplo de uma imagem atendendo aos trê
 \includegraphics[width=0.5\textwidth]{completa4.jpg}
 \end{figure}
 
-Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes. Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas.
+Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes. Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas. Logo, essas moedas foram escolhidas por serem bem diferentes entre si e por serem as de maior valor.
+
+
+\subsection{Segmentação e Busca por Moedas}
+\label{sec:metodologia:rna}
+
+Neste momento, já se sabe que o sistema será planejado para classificar os três tipos de moedas citados anteriormente. Esta etapa, no entanto, envolve apenas a busca por moedas nas imagens, sem se importar com sua identificação.
+
+A ideia pensada aqui foi realizar uma busca por círculos na imagem. A literatura aborda várias formas de se fazer isso, sendo a transformada de Hough, provavelmente, a mais comum, como pode ser vista em \cite{ioannou1999circle}, \cite{kerbyson1995circle} e \cite{yuen1990comparative}. Outros pesquisados desenvolveram variações dessa transformada para melhorar sua eficácia e eficiência, como a sua versão adaptativa \cite{illingworth1987adaptive}, ou sua versão mais rápida e otimizada para detectar elipses \cite{guil1997lower}.
+
+A estratégia criar para resolver a detecção das moedas, porém, não utilizará as técnicas tradicionais baseadas na transformada de Hough, que até chegou a ser testada na fase prelimiar do projeto, mas não se mostrou completamente satisfatória.
+
 
 
 \subsection{Classificação com Redes Neurais Artificiais}
 \label{sec:metodologia:rna}
+
+
 
 Com os descritores das imagens das moedas escolhidos, foi possível, então planejar a rede neural artificial responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a moeda identificada. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
 
@@ -198,7 +211,15 @@ Resultados
 \section{Conclusão}
 \label{sec:conclusao}
 
-Conclusão...
+O programa de contagem de moedas valeu-se primeiramente da aquisição da imagem de moedas por meio de uma câmera de celular sob um fundo branco. Essa estratégia acabou sendo escolhida para facilitar a detecção de moedas e posteriormente realizar a sua contagem. A princípio esta é a primeira limitação do programa, pois não se tem a certeza de um funcionamento perfeito do programa para a identificação e contagem de moedas para o caso de a foto delas ser tiradas em qualquer superfície. Além disso, a foto das moedas deve ser tirada da forma que a câmera fique a uma distância de 30cm ou o suficiente para pegar toda a folha de papel A4 e também que não exista nenhuma sobreposição entre as moedas.
+
+A utilização das técnicas de processamento digital de imagens apreendidas na disciplina de mesmo nome foram feitas na parte de segmentação das imagens. As técnicas utilizadas foram: suavização da imagem utilizando o filtro gaussiano, utilização do método de Otsu com o objetivo de encontrar todas as moedas presentes na superfície da folha A4, fechamento morfológico através das operações de dilatação e erosão com o intuito de fazer a conexão de possíveis falhas na borda e fechar buracos, e utilização da função floodfill para tiramos as moedas das bordas e também tirar qualquer tipo de resíduo dentro das moedas, pois só as bordas interessam.
+
+Nesse contexto, percebe-se a importância do uso de técnicas simples de processamento de imagens que serviram muito bem na resolução dos problemas desse programa e tem um custo computacional bem menor em relação aos métodos mais complexos utilizados nos artigos referenciados neste trabalho.
+
+Por fim, o uso de uma rede neural artificial foi necessária devido a falha de outros métodos utilizados que se baseavam em algoritmos para detecção de semelhança entre a fotografia da moeda tirada e uma moeda modelo em que tínhamos invariância entre a rotação e a escala utilizada e mediam a distância entre um determinado conjunto de pontos chaves das moedas, que eram determinados pelo algoritmo e por sua vez acabavam sendo comparados utilizando distância euclidiana, por exemplo. O uso de uma rede neural artificial revelou um grande sucesso na identificação e das moedas para contagem numa taxa de 100$\%$ de confiança.
+
+O programa no entanto é apenas um protótipo devido aos alunos terem estudado apenas uma parte introdutória de processamento digital de imagens e devido também a limitação de tempo da disciplina, não se pode ir muito além. Porém como objetivos futuros tem-se a melhoria do programa para identificar todos os tipos de moedas nacionais e possivelmente encontrar uma aplicação comercial local do programa desenvolvido, visto a facilitar a contagem de moedas por microempresários e dono de supermercados por um preço de aquisição baixo.  
 
 \medskip
 
