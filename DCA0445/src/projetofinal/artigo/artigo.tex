@@ -40,6 +40,7 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usepackage[justification=centering]{caption}
+\usepackage{hyperref}
 
 
 
@@ -107,7 +108,7 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 \label{sec:metologia-utilizada}
 
 \subsection{Análise das Características das Moedas}
-\label{sec:metologia:analise-moedas}
+\label{sec:metodologia-moedas}
 
 \begin{table*}[]
 \centering
@@ -126,7 +127,16 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 \end{table*}
 
 
-A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}.
+A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}. Na Figura \ref{fig:moedas-real}, é possível perceber algumas dessas características.
+
+
+\begin{figure}[ht]
+\centering
+\caption{Todas as moedas de Real Brasileiro}
+\label{fig:moedas-real}
+\includegraphics[width=0.5\textwidth]{moedas-real.jpg}
+\end{figure}
+
 
 A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. Nesse caso, elas seriam utilizadas como o critério de identificação das moedas classificação, ou seja, como entradas para a rede neural artificial. 
 
@@ -135,7 +145,7 @@ Em se tratando de imagens digitais, as características acima seriam os descrito
 \begin{itemize}  
 \item Cores da moeda: histograma da matiz da imagem. 
 \item Diâmetro da moeda: lagura e altura da imagem.
-\item Material da moeda: 7 momentos invariantes da imagem.
+\item Material da moeda: características da textura da imagem.
 \end{itemize}
 
 Com isso definido, a etapa seguinte foi pensar sobre como realizar a aquisição das imagens contendo as moedas. Como uma das motivações deste projeto é a alta difusão de câmeras digitais em telefones celulares, então seria razoável que as imagens para este experimento fossem obtidas em um desses equipamentos, para manter uma compatibilidade de resolução e qualidade das fotos entre os experimentos em laboratório com o mundo real. 
@@ -153,32 +163,54 @@ Na Figura \ref{fig:criterios}, segue um exemplo de uma imagem atendendo aos trê
 \includegraphics[width=0.5\textwidth]{completa4.jpg}
 \end{figure}
 
-Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes. Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas. Logo, essas moedas foram escolhidas por serem bem diferentes entre si e por serem as de maior valor.
+Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes (ver Figura \ref{fig:moedas-real}). Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas. Logo, essas moedas foram escolhidas por serem bem diferentes entre si e por serem as de maior valor.
 
 
 \subsection{Segmentação e Busca por Moedas}
-\label{sec:metodologia:rna}
+\label{sec:metodologia-segmentacao}
 
-Neste momento, já se sabe que o sistema será planejado para classificar os três tipos de moedas citados anteriormente. Esta etapa, no entanto, envolve apenas a busca por moedas nas imagens, sem se importar com sua identificação.
+Neste momento, já se sabe que o sistema será planejado para classificar os três tipos de moedas citados anteriormente. Esta etapa consiste em separar individualmente todas as moedas que estão presentes em uma imagem maior que contém várias moedas, para que elas possam ser identificadas individualmente.
 
-A ideia pensada aqui foi realizar uma busca por círculos na imagem. A literatura aborda várias formas de se fazer isso, sendo a transformada de Hough, provavelmente, a mais comum, como pode ser vista em \cite{ioannou1999circle}, \cite{kerbyson1995circle} e \cite{yuen1990comparative}. Outros pesquisados desenvolveram variações dessa transformada para melhorar sua eficácia e eficiência, como a sua versão adaptativa \cite{illingworth1987adaptive}, ou sua versão mais rápida e otimizada para detectar elipses \cite{guil1997lower}.
+A ideia pensada aqui foi realizar uma busca por círculos na imagem. A literatura aborda várias formas de se fazer isso, sendo a transformada de Hough, provavelmente, a mais comum, como pode ser vista em \cite{ioannou1999circle}, \cite{kerbyson1995circle} e \cite{yuen1990comparative}. Outros pesquisados desenvolveram variações dessa transformada para melhorar sua eficácia e eficiência, como a sua versão adaptativa \cite{illingworth1987adaptive}, ou sua versão mais rápida e otimizada para detectar até mesmo elipses \cite{guil1997lower}.
 
-A estratégia criar para resolver a detecção das moedas, porém, não utilizará as técnicas tradicionais baseadas na transformada de Hough, que até chegou a ser testada na fase prelimiar do projeto, mas não se mostrou completamente satisfatória.
+A estratégia criada para resolver a detecção das moedas, porém, não utilizará as técnicas tradicionais baseadas na transformada de Hough, que até chegou a ser testada na fase prelimiar do projeto, mas não se mostrou completamente satisfatória. Em vez dela, foi desenvolvida uma técnica intuitiva baseando no seguinte princípio:
 
+\begin{enumerate}
+\item Procurar por contornos em uma imagem pré-processada, sendo esses candidatos a moedas.
+\item Criar o menor círculo possível que consegue circundar esse contorno.
+\item Comparar a área do contorno e desse círculo e verificar se ambas são semelhantes, através da comparação com um limiar pré-estabelecido.
+\end{enumerate}
+
+Combinado com essa ideia, também foi estabelecida um limiar de tamanho mínimo do raio desse círculo, pois se fosse muito pequeno certamente poderia ser algum ponto de sujeira ou ruído na imagem.
+
+Embora essa estratégia criada pareça fácil, ela necessita de um pré-processamento bem robusto, que mantenha presente na imagem apenas contornos externos da borda externa moeda. Isso é importante até mesmo para evitar que se faça uma má detecção do contorno do círculo interno da moeda de R\$ 1,00, que poderia ser confundida com a de R\$ 0,50. Então, esse processamento prévio foi feito da seguinte forma:
+
+\begin{enumerate}
+
+\item Inicialmmente, a imagem passa por um filtro gaussiano com o objetivo de suavizá-la e remover ruídos.
+\item Após isso, ela é convertida para escala de cinza e passa por processo de limiarização, através do método de Otsu, com o objetivo de manter em preto o fundo da cena e em branco os objetos detectados.
+\item O passo seguinte é a remoção de possíveis moedas presentes na borda, buscando remover qualquer objeto na cor branca que esteja nesse local através do algoritmo de \textit{seed fill}.
+\item Adiante, aplicado o fechamento morforlógico, com o objetivo de aglutinar possíveis falhas no contorno da moeda , além de remover pequenos contornos de dentro da moeda. Este passo é feito em quatro etapas, variando o tamanho elemento estruturante de 1 até 8 em potências de 2, de modo que o resultado final seja o que consiga detectar mais moedas.
+\item Por fim, são removidos os demais resíduos presentes dentro das moedas, através de um processo de rotulação. 
+\end{enumerate}
+
+Com esse pré-processamento, finalmente é possível aplicar a estratégia de detectar círculos descrita anteriormente.
 
 \subsection{Classificação com Redes Neurais Artificiais}
-\label{sec:metodologia:rna}
+\label{sec:metodologia-rna}
 
 
-Com os descritores das imagens das moedas escolhidos, foi possível, então planejar a rede neural artificial de múltiplas camadas responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a moeda identificada. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
+Com os descritores das imagens das moedas bem definidos na Seção \ref{sec:metodologia-moedas}, foi possível, então, planejar a rede neural artificial de múltiplas camadas responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a moeda identificada. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
 
 Como entrada da rede neural, os descritores foram abstraídos da seguinte forma:
 
 \begin{itemize}  
-\item Histograma da matiz da imagem: histograma com 32 níveis da matiz da imagem.
-\item Lagura e altura da imagem: número de colunas e linhas da matriz da imagem.
-\item 7 momentos invariantes da imagem: momentos invariantes da imagem convertida para escala de cinza.
+\item Histograma com 32 níveis da matiz da imagem.
+\item Número de colunas e linhas da matriz da imagem, representando largura e altura.
+\item 7 momentos invariantes da imagem convertida para escala de cinza, representando a textura da moeda.
 \end{itemize}
+
+É importante ressaltar que, antes da obtenção desse histograma, a imagem original passa por uma equalização de histograma, para distribuir melhor a iluminação da imagem. Para isso, ela é convertida de RBG para YCrCb, cujo canal Y, que representa a iluminância e é equivalente à imagem em escala de cinza, é equalizado. Ao fim, a imagem é convertida novamente para RGB. 
 
 Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. 
 
@@ -195,8 +227,7 @@ Os demais ajustes da rede neural dizendo respeito à sua estrutura interna e ao 
 
 \end{itemize}
 
-O diagrama abaixo, Figura \ref{fig:rna}, mostra a estrutura final da rede neural artificial de múltiplas camadas.
-
+O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artificial de múltiplas camadas utilizada nesse projeto (a entrada de valor 1 está omitida).
 
 \tikzset{%
   every neuron/.style={
@@ -212,12 +243,11 @@ O diagrama abaixo, Figura \ref{fig:rna}, mostra a estrutura final da rede neural
   },
 }
 
-
 \begin{figure}
 \centering
 \caption{Diagrama da Rede Neural Artificial}
 \label{fig:rna}
-\begin{tikzpicture}[x=1cm, y=1cm, >=stealth,scale=1]
+\begin{tikzpicture}[x=1cm, y=1cm, >=stealth,scale=1.0]
 
 % Definição de neurônios
 
@@ -269,23 +299,22 @@ O diagrama abaixo, Figura \ref{fig:rna}, mostra a estrutura final da rede neural
 %  \node [align=center, above] at (\x*2,2) {\l \\ layer};
 
 \node [align=center, above] at (0*2,2) {\\Camada \\ de Entrada};
+\node [align=center, above] at (1*2,2) {\\Camada \\ Escondida};
 \node [align=center, above] at (2*2,2) {\\Camada \\ Escondida};
-\node [align=center, above] at (4*2,2) {\\Camada \\ Escondida};
-\node [align=center, above] at (6*2,2) {\\Camada \\ de Saída};
+\node [align=center, above] at (3*2,2) {\\Camada \\ de Saida};
 
 \end{tikzpicture}
 \end{figure}
 
 
-
-
-
 \subsection{Tecnologias Utilizadas}
 \label{sec:metodologia:tecnologias-envolvidas}
 
-O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em lingaguem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. 
+O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em lingaguem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits.
 
-Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits.
+%O código fonte do projeto pode ser encontrado no Github no seguinte \textit{link}:
+
+%\url{https://github.com/PedroHenriqueMedeiros/PedroHenriqueMedeiros.github.io/tree/master/%DCA0445/src/projetofinal}
 
 \section{Resultados}
 \label{sec:resultados}
