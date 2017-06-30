@@ -140,7 +140,7 @@ A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as m
 
 A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. Nesse caso, elas seriam utilizadas como o critério de identificação das moedas classificação, ou seja, como entradas para a rede neural artificial. 
 
-Em se tratando de imagens digitais, as características acima seriam os descritores das imagens. Como as cores são importantes, as imagens não podem ser trabalhadas em escala de cinza, pois pederia-se muita informação. Portanto, para uma imagem contendo uma única moeda posicionada ao centro, resultado de um processo de busca em uma imagem com várias moedas, conforme será melhor explicado adiante, com fundo branco e com seu raio tocando a borda da imagem, os seguintes elementos foram escolhidos para representá-las:
+Em se tratando de imagens digitais, as características acima seriam os descritores das imagens. Como as cores são importantes, as imagens não podem ser trabalhadas em escala de cinza, pois poderia-se muita informação. Portanto, para uma imagem contendo uma única moeda posicionada ao centro, resultado de um processo de busca em uma imagem com várias moedas, conforme será melhor explicado adiante, com fundo branco e com seu raio tocando a borda da imagem, os seguintes elementos foram escolhidos para representá-las:
 
 \begin{itemize}  
 \item Cores da moeda: histograma da matiz da imagem. 
@@ -311,7 +311,7 @@ Os resultados  abaixo mostram como é o passo-a-passo de utilização dos módul
 \subsection{Segmentador}
 \label{sec:segmentador}
 
-O segmentador é o módulo responsável por receber como entrada uma imagem contendo várias moedas e separá-las em imagens individuais, antendendo a estratégia e os requisitos citados na Seção \ref{sec:segmentacao}. Na Figura \ref{fig:resultado-segmentador}, segue um exemplo de execução deste módulo. Tanto para este teste de execução a quanto para os seguintes foi utilizada a Figura \ref{fig:imagem-exemplo}. Nele, os parâmetros utilizados foram os seguintes:
+O segmentador é o módulo responsável por receber como entrada uma imagem contendo várias moedas e separá-las em imagens individuais, atendendo a estratégia e os requisitos citados na Seção \ref{sec:segmentacao}. Na Figura \ref{fig:resultado-segmentador}, segue um exemplo de execução deste módulo. Tanto para este teste de execução a quanto para os seguintes foi utilizada a Figura \ref{fig:imagem-exemplo}. Nele, os parâmetros utilizados foram os seguintes:
 
 \begin{itemize}  
 \item Menor tamanho acaitável para o raio de uma moeda: 50 píxels
@@ -349,7 +349,7 @@ Os passos de pré-processamento descritos na Seção \ref{sec:segmentacao} podem
 \includegraphics[width=0.5\textwidth]{circulos.jpg}
 \end{figure}
 
-Apenas para facilitar o fim do processo, a Figura \ref{resultado-segmentador} mostra a localização exata das moedas encontradas sob a imagem original (Figura \ref{fig:imagem-exemplo}).
+Apenas para facilitar o fim do processo, a Figura \ref{fig:resultado-segmentador} mostra a localização exata das moedas encontradas sob a imagem original (Figura \ref{fig:imagem-exemplo}).
 
 \begin{figure}[h]
 \centering
@@ -358,7 +358,7 @@ Apenas para facilitar o fim do processo, a Figura \ref{resultado-segmentador} mo
 \includegraphics[width=0.5\textwidth]{resultado-segmentador.jpg}
 \end{figure}
 
-A partir dos retângulos em azul mostrado na Na Figura \ref{fig:resultado-segmentador}, são geradas imagens menores paraca cada um deles, de modo que todos os píxels fora do círculo em amerelo, que representa o contorno da moeda, são padronizados para cor branca em RGB. Um exemplo dessas imagens pode ser vista na Figura \ref{fig:moeda-individual}. Embora apareça uma pequena sombra em cinza ao redor da moeda, ela não foi suficiente para atrapalhar os resultados finais.
+A partir dos retângulos em azul mostrado na Figura \ref{fig:resultado-segmentador}, são geradas imagens menores para cada um deles, de modo que todos os píxels fora do contorno são padronizados para cor branca em RGB. Um exemplo dessas imagens pode ser vista na Figura \ref{fig:moeda-individual}. Embora apareça uma pequena sombra em cinza ao redor da moeda, ela não foi suficiente para atrapalhar os resultados finais.
 
 \begin{figure}[ht]
 \centering
@@ -401,23 +401,22 @@ Antes de usar o calibrador, o usuário do sistema precisa preparar três diretó
 \item Número de camadas escondidas: 2, cada uma com 32 neurônios.
 \item Função de ativação: sigmoide simétrica, que varia de -1 a 1.
 \item Número máximo de iterações: 10000
-\item Erro mínimo de parada:  $10 ^ -8$.
+\item Erro mínimo de parada:  $10 ^ {-8}$.
 \item Taxa de aprendizado: 0.1
 \item Momentum: 0.1
 \end{itemize}
 
-Para o treinamento, foram utilizadas várias imagens além da prória Figura \ref{fig:imagem-exemplo}, o que produziu  20 imagens de R\$ 0,25, 20 de R\$ 0,50 e 20 de R\$ 1,00, sendo 10 da face e 10 da parte com o número para cada tipo, o que dá um total de 60 moedas. As 20 imagens de cada classe foram separadas em diretórios separados apenas por questão de organização. Como o conjunto treinamento e o número de entradas e saídas são pequenos, o treinamento da RNA durou em torno de 1 segundo, com pouco mais de 1300 iterações, para vários testes realizados.
+Para o treinamento, foram utilizadas várias imagens além da própria Figura \ref{fig:imagem-exemplo}, o que produziu  20 imagens de R\$ 0,25, 20 de R\$ 0,50 e 20 de R\$ 1,00, sendo 10 da face e 10 da parte com o número para cada tipo, o que dá um total de 60 moedas. As 20 imagens de cada classe foram separadas em diretórios diferentes apenas por questão de organização. Como o conjunto treinamento e o número de entradas e saídas são pequenos, o treinamento da RNA durou em torno de 1 segundo, com pouco mais de 1300 iterações, para vários testes realizados.
 
 \subsection{Validador}
 \label{sec:validador}
 
-Após a etapa de anterior de calibração, utiliza-se o programa validador que utiliza outras imagens separadas após o processo de segmentação para validar o resultado do treinamento. Seguindo a sequência do teste, foi criado um conjunto de validação com 4 moedas de cada tipo, sendo 2 da face e duas da parte com número, totalizando 12 moedas. Na Tabela \ref{tab:resultado-validacao}, pode-se notar que a taxa de acerto foi de 100\%, isto é, todas as moedas do conjunto de validação foram classificadas corretamente.
+Após a etapa de anterior de calibração, utiliza-se o programa validador, que utiliza outras imagens diferentes das utilizadas anteriormente para validar o resultado do treinamento. Seguindo a sequência do teste, foi criado um conjunto de validação com 4 moedas de cada tipo, sendo 2 da face e duas da parte com número, totalizando 12 moedas. Na Tabela \ref{tab:resultado-validacao}, pode-se notar que a taxa de acerto foi de 100\%, isto é, todas as moedas do conjunto de validação foram classificadas corretamente.
 
 \subsection{Contador}
 \label{sec:contador}
 
-
-Com o processo de preparo do sistema concluído, finalmente o módulo contador, que é o produto final deste projeto, pode ser utilizado. Sua entrada consiste em uma imagem com várias moedas e sua saída é a soma do valor monetário de todas elas. Para realizar isso, este módulo utiliza tanto partes da técnica segmentação, para separar todas as moedas na imagem, quanto da calibração e validação, com o objetivo de classificar corretamente a moeda. Ao fim, o sistema soma todos os valores das moedas e informa ao usuário.
+Com o processo de calibração do sistema concluído, finalmente o módulo contador, que é o produto final deste projeto, pode ser utilizado. Sua entrada consiste em uma imagem com várias moedas e sua saída é a soma do valor monetário de todas elas. Para realizar isso, este módulo utiliza tanto partes da técnica segmentação, para separar todas as moedas na imagem, quanto da calibração e validação, com o objetivo de identificar corretamente cada moeda encontrada. Ao fim, o sistema soma todos os valores das moedas e informa ao usuário.
 
 Usando a mesma Figura \ref{fig:imagem-exemplo}, por fim, o programa conseguiu contar exatamente R\$ 7,00 na imagem, que é o valor exato da soma de 4 moedas de cada tipo. O tempo médio de execução do contador foi de 1,2 segundos. Na Figura  \ref{fig:resultado-contador}, é possível ver o resultado da contagem de moedas, bem como o tempo de execução do programa.
 
@@ -432,15 +431,14 @@ Usando a mesma Figura \ref{fig:imagem-exemplo}, por fim, o programa conseguiu co
 \section{Conclusão}
 \label{sec:conclusao}
 
-O programa de contagem de moedas valeu-se primeiramente da aquisição da imagem de moedas por meio de uma câmera de celular sob um fundo branco. Essa estratégia acabou sendo escolhida para facilitar a detecção de moedas e posteriormente realizar a sua contagem. A princípio, esta foi a primeira limitação do programa, pois não se tem a certeza de um funcionamento perfeito do programa para a identificação e contagem de moedas para o caso de a foto delas ser tiradas em qualquer superfície. Além disso, a foto das moedas deve ser tirada da forma que a câmera fique a uma distância de 30cm ou o suficiente para pegar toda a folha de papel A4 e também que não exista nenhuma sobreposição entre as moedas.
+O programa de contagem de moedas valeu-se, primeiramente, da aquisição da imagem de moedas por meio de uma câmera de celular sob um fundo de cor branca. Essa estratégia acabou sendo escolhida para facilitar a detecção de moedas e posteriormente realizar a sua contagem, assim como a restrição de distância de 30 cm. Contudo, isso acabou tornando-se uma limitação do programa, pois seriam necessários muitos mais testes e eventuais modificações nos módulos para que o sistema operasse de forma correta em qualquer outra cor de fundo. 
 
-A utilização das técnicas de processamento digital de imagens apreendidas na disciplina de mesmo nome foram feitas na parte de segmentação das imagens. As técnicas utilizadas foram: suavização da imagem utilizando o filtro gaussiano, utilização do método de Otsu com o objetivo de encontrar todas as moedas presentes na superfície da folha A4, fechamento morfológico através das operações de dilatação e erosão com o intuito de fazer a conexão de possíveis falhas na borda e fechar buracos, e utilização da função floodfill para tiramos as moedas das bordas e também tirar qualquer tipo de resíduo dentro das moedas, pois só as bordas interessam.
+A utilização dos conceitos de processamento digital de imagens apreendidas na disciplina de mesmo nome foram feitas na parte de segmentação das imagens. As técnicas utilizadas envolveram suavização da imagem utilizando o filtro gaussiano, utilização do método de Otsu na limiarização, fechamento morfológico através das operações de dilatação e erosão e também técnicas de rotulação. Nesse contexto, pôde-se perceber a importância do uso de técnicas simples de processamento de imagens que servem muito bem na resolução de problemas mais complexos, como os presentes neste projeto, e podem ser uma alternativa em relação aos métodos mais complexos utilizados nos artigos referenciados neste trabalho.
 
-Nesse contexto, percebe-se a importância do uso de técnicas simples de processamento de imagens que serviram muito bem na resolução dos problemas desse programa e tem um custo computacional bem menor em relação aos métodos mais complexos utilizados nos artigos referenciados neste trabalho.
+O uso de aprendizado de máquina, com rede neural artificial, foi necessária para realizar a classificação das moedas, devido a falhas de outros métodos que foram tentados, que se baseavam em algoritmos para detecção de semelhança entre a fotografia da moeda tirada e uma moeda modelo. Muitos deles não funcionavam bem quando a moeda estava rotacionada, movimento que é inerente a objetos circulares.
+Após muitos experimentos, o uso de uma rede neural artificial revelou um grande sucesso nessa tarefa, com uma taxa de certo de 100\% durante a validação.
 
-Por fim, o uso de uma rede neural artificial foi necessária devido a falha de outros métodos utilizados que se baseavam em algoritmos para detecção de semelhança entre a fotografia da moeda tirada e uma moeda modelo em que tínhamos invariância entre a rotação e a escala utilizada e mediam a distância entre um determinado conjunto de pontos chaves das moedas, que eram determinados pelo algoritmo e por sua vez acabavam sendo comparados utilizando distância euclidiana, por exemplo. O uso de uma rede neural artificial revelou um grande sucesso na identificação e das moedas para contagem numa taxa de 100$\%$ de confiança.
-
-O programa no entanto é apenas um protótipo devido aos alunos terem estudado apenas uma parte introdutória de processamento digital de imagens e devido também a limitação de tempo da disciplina, não se pode ir muito além. Porém como objetivos futuros tem-se a melhoria do programa para identificar todos os tipos de moedas nacionais e possivelmente encontrar uma aplicação comercial local do programa desenvolvido, visto a facilitar a contagem de moedas por microempresários e dono de supermercados por um preço de aquisição baixo.  
+Por fim, é importante ressaltar que o programa é apenas um protótipo devido aos alunos envolvidos terem estudado apenas uma parte introdutória do enorme ramo que é o de processamento digital de imagens, e também devido à limitação de tempo da disciplina. Portanto, ficam como objetivos futuros a melhoria do programa para identificar todos os tipos de moedas nacionais, para que ele possa ser mais rápido ao ponto de funcionar em tempo real através da captura de vídeo e possivelmente encontrar uma aplicação comercial local do programa desenvolvido, buscando facilitar a contagem de moedas por microempresários e dono de supermercados por um preço de aquisição baixo.  
 
 \medskip
 
