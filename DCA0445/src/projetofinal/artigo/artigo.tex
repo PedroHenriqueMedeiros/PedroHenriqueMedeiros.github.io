@@ -71,7 +71,7 @@
 \maketitle
 
 \begin{abstract}
-Resumo vai aqui...
+O programa contador de moedas usando opencv utiliza-se da premissa de aquisição de moedas por meio de câmera de celulares que são um meio de obtenção de imagens bastante difundido. Após a aquisição das imagens o sistema utilizará um processo de criação de um círculo no contorno da moeda para ter certeza que o objeto identificado seja uma moeda. Depois disso tem-se a utilização de uma rede neural artificial com o método de treinamento backpropagation que recebe como decritores o histograma da matiz da imagem com 32 níveis, o número de linhas e colunas da imagem e 7 momentos invariantes. Por fim o programa informará ao usuário a quantidade de dinheiro que foi identificado na foto tirada por ele.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -100,7 +100,7 @@ Em seu trabalho, \cite{bremananth2005new} utilizou como estratégia reconhecer o
 
 Muitos dos trabalhos publicados nessa área abordam diferentes estratégias a respeito de que características das moedas serão utilizadas em sua indentificação. Porém, em geral, a maioria deles utiliza como métedo de classificação técnicas de inteligência artificial, mais especificamente redes neurais artificiais (RNAs), como podem ser visto em \cite{bremananth2005new}, \cite{kaur2015coin}, \cite{modi2013automated} e até em trabalhos mais antigo, como e \cite{fukumi1992rotation}.
 
-Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, através de um aplicativo contador moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada, como com o fundo todo branco, por exemplo, e que ele informe ao usuário quantos reais estão presentes ali. Além do próprio aplicativo contador, também serão densenvolvidos módulos auxiliares para realizar a calibração e validação do sistema principal.
+Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, através de um aplicativo contador moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada, como com o fundo todo branco, por exemplo, e que ele informe ao usuário quantos reais estão presentes ali. Além do próprio aplicativo contador, também serão densenvolvidos módulos auxiliares para realizar a calibração e validação do sistema principal, sendo eles o segmentador, o calibrador e o validador.
 
 A tecnologia da classificação e identificação das moedas utilizada também será redes neurais artificiais, mas, diferente de outros trabalhos, as características a serem extraídas das moedas brasileiras tentarão tirar proveito do tamanho, das cores e de suas texturas. Por fim, como este projeto é apenas um protótipo, o aplicativo inicial será configurado para contar apenas moedas de R\$ 0,25, R\$  0,50 e R\$ 1,00.
 
@@ -154,12 +154,12 @@ Estabelecido o tipo de câmera, foi decidido também que as moedas seriam fotogr
 
 Por fim, também fixou-se uma distância padrão entre a câmera do celular e o local onde estavam as imagens em 30 cm. Essa escolha é importante para garantir uma maior consistência na largura e altura das imagens das moedas individuais durante a classificação, pois, caso a distância de captura fosse variável, uma moeda maior poderia ser confundida com uma menor, por exemplo.
 
-Na Figura \ref{fig:criterios}, segue um exemplo de uma imagem atendendo aos três limites impostos acima.
+Na Figura \ref{fig:imagem-exemplo}, segue um exemplo de uma imagem atendendo aos três limites impostos acima.
 
 \begin{figure}[ht]
 \centering
 \caption{Exemplo de imagem quem atendem às limitações impostas pelo projeto}
-\label{fig:criterios}
+\label{fig:imagem-exemplo}
 \includegraphics[width=0.5\textwidth]{completa4.jpg}
 \end{figure}
 
@@ -167,7 +167,7 @@ Na imagem acima, também nota-se outra restrição imposta por este projeto. Nel
 
 
 \subsection{Segmentação e Busca por Moedas}
-\label{sec:metodologia-segmentacao}
+\label{sec:segmentacao}
 
 Neste momento, já se sabe que o sistema será planejado para classificar os três tipos de moedas citados anteriormente. Esta etapa consiste em separar individualmente todas as moedas que estão presentes em uma imagem maior que contém várias moedas, para que elas possam ser identificadas individualmente.
 
@@ -194,7 +194,7 @@ Embora essa estratégia criada pareça fácil, ela necessita de um pré-processa
 \item Por fim, são removidos os demais resíduos presentes dentro das moedas, através de um processo de rotulação. 
 \end{enumerate}
 
-Com esse pré-processamento, finalmente é possível aplicar a estratégia de detectar círculos descrita anteriormente.
+Com esse pré-processamento, finalmente é possível aplicar a estratégia de detectar círculos descrita anteriormente. Ao fim do processo, são geradas imagens menores contendo apenas a moeda no centro, com seu raio tocando a borda da imagem.
 
 \subsection{Classificação com Redes Neurais Artificiais}
 \label{sec:metodologia-rna}
@@ -212,20 +212,7 @@ Como entrada da rede neural, os descritores foram abstraídos da seguinte forma:
 
 É importante ressaltar que, antes da obtenção desse histograma, a imagem original passa por uma equalização de histograma, para distribuir melhor a iluminação da imagem. Para isso, ela é convertida de RBG para YCrCb, cujo canal Y, que representa a iluminância e é equivalente à imagem em escala de cinza, é equalizado. Ao fim, a imagem é convertida novamente para RGB. 
 
-Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. 
-
-Os demais ajustes da rede neural dizendo respeito à sua estrutura interna e ao treinamento surpevisionado. Todos os que virão abaixo foram definidos empiricamente após alguns experimentos, tentando buscar sempre uma boa precisão dos resultados quanto um bom desempenho durante o treinamento, já que esta etapa faz parte da calibração do sistema.
-
-\begin{itemize}  
-\item Método de treinamento: \textit{Backpropagation}
-\item Número de camadas escondidas: 2, cada uma com 32 neurônios.
-\item Função de ativação: sigmoide simétrica, que varia de -1 a 1.
-\item Número máximo de iterações: 10000
-\item Erro mínimo de parada:  $10 ^ -8$.
-\item Taxa de aprendizado: 0.1
-\item Momentum: 0.1
-
-\end{itemize}
+Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. Os demais ajustes da rede neural dizem respeito à sua estrutura interna e ao treinamento surpevisionado. Todos os que foram aplicados no experimento foram obtidos e testados empiricamente após alguns experimentos, tentando buscar sempre uma boa precisão dos resultados quanto um bom desempenho durante o treinamento, já que esta etapa faz parte da calibração do sistema.
 
 O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artificial de múltiplas camadas utilizada nesse projeto (a entrada de valor 1 está omitida).
 
@@ -308,18 +295,139 @@ O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artif
 
 
 \subsection{Tecnologias Utilizadas}
-\label{sec:metodologia:tecnologias-envolvidas}
+\label{sec:tecnologias-envolvidas}
 
 O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em lingaguem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits.
 
-%O código fonte do projeto pode ser encontrado no Github no seguinte \textit{link}:
+O código fonte do projeto pode ser encontrado no Github no seguinte \textit{link}:
 
-%\url{https://github.com/PedroHenriqueMedeiros/PedroHenriqueMedeiros.github.io/tree/master/%DCA0445/src/projetofinal}
+\url{https://github.com/PedroHenriqueMedeiros/PedroHenriqueMedeiros.github.io/tree/master/%DCA0445/src/projetofinal}
 
 \section{Resultados}
 \label{sec:resultados}
 
-Resultados
+Os resultados  abaixo mostram como é o passo-a-passo de utilização dos módulos desenvolvidos neste projeto, sendo o último o principal, que realiza a contagem das moedas em si. 
+
+\subsection{Segmentador}
+\label{sec:segmentador}
+
+O segmentador é o módulo responsável por receber como entrada uma imagem contendo várias moedas e separá-las em imagens individuais, antendendo a estratégia e os requisitos citados na Seção \ref{sec:segmentacao}. Na Figura \ref{fig:resultado-segmentador}, segue um exemplo de execução deste módulo. Tanto para este teste de execução a quanto para os seguintes foi utilizada a Figura \ref{fig:imagem-exemplo}. Nele, os parâmetros utilizados foram os seguintes:
+
+\begin{itemize}  
+\item Menor tamanho acaitável para o raio de uma moeda: 50 píxels
+\item Menor relação entre a área do contorno e a do o círculo que circunda este contorno: 70\%
+\end{itemize}
+
+Os passos de pré-processamento descritos na Seção \ref{sec:segmentacao} podem ser ser resumidos nas Figuras \ref{fig:gaussiano}, \ref{fig:binaria-otsu} e \ref{fig:fechamento-buracos}. Já a estratégia de detecção de círculos pode ser percebida na Figura \ref{fig:circulos}. Todas essas etapas também ocorrem durante a execução do módulo contador, explicado mais a seguir na Seção \ref{sec:contador}.
+
+
+\begin{figure}[h]
+\centering
+\caption{Imagem após filtragem para remoção de ruídos}
+\label{fig:gaussiano}
+\includegraphics[width=0.5\textwidth]{gaussiano.jpg}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\caption{Limiarização da imagem através do método de Otsu}
+\label{fig:binaria-otsu}
+\includegraphics[width=0.5\textwidth]{binaria-otsu.jpg}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\caption{Fechamento morfológico e remoção de buracos}
+\label{fig:fechamento-buracos}
+\includegraphics[width=0.5\textwidth]{fechamento-buracos.jpg}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\caption{Detecção de círculos (contornos em azul e menor círculo em amarelo}
+\label{fig:circulos}
+\includegraphics[width=0.5\textwidth]{circulos.jpg}
+\end{figure}
+
+Apenas para facilitar o fim do processo, a Figura \ref{resultado-segmentador} mostra a localização exata das moedas encontradas sob a imagem original (Figura \ref{fig:imagem-exemplo}).
+
+\begin{figure}[h]
+\centering
+\caption{Resultado do processo de segmentação}
+\label{fig:resultado-segmentador}
+\includegraphics[width=0.5\textwidth]{resultado-segmentador.jpg}
+\end{figure}
+
+A partir dos retângulos em azul mostrado na Na Figura \ref{fig:resultado-segmentador}, são geradas imagens menores paraca cada um deles, de modo que todos os píxels fora do círculo em amerelo, que representa o contorno da moeda, são padronizados para cor branca em RGB. Um exemplo dessas imagens pode ser vista na Figura \ref{fig:moeda-individual}. Embora apareça uma pequena sombra em cinza ao redor da moeda, ela não foi suficiente para atrapalhar os resultados finais.
+
+\begin{figure}[ht]
+\centering
+\caption{Exemplo de moeda individual após segmentação}
+\label{fig:moeda-individual}
+\includegraphics[width=0.5\textwidth]{moeda-individual.jpg}
+\end{figure}
+
+
+\begin{table*}[]
+\centering
+\caption{Resultado da validação}
+\label{tab:resultado-validacao}
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Moeda} & \textbf{Tipo}     & \textbf{Saída}                   & \textbf{Classificação} \\ \midrule
+1              & R\$ 0,25 (número) & (1.00226, -0.997003, -1.0058)    & R\$ 0,25               \\
+2              & R\$ 0,25 (número) & (0.992012, -0.997708, -1.00573)  & R\$ 0,25               \\
+3              & R\$ 0,25 (face)   & (0.498484, -1.13654, -0.386701)  & R\$ 0,25               \\
+4              & R\$ 0,25 (face)   & (1.00382, -1.00784, -0.990536)   & R\$ 0,25               \\
+5              & R\$ 0,50 (número) & (-1.01978, 0.981279, -0.962827)  & R\$ 0,50               \\
+6              & R\$ 0,50 (número) & (-1.00145, 1.02011, -1.00438)    & R\$ 0,50               \\
+7              & R\$ 0,50 (face)   & (-0.981349, 0.976257, -0.997547) & R\$ 0,50               \\
+8              & R\$ 0,50 (face)   & (-0.993451, 0.979165, -0.997587) & R\$ 0,50               \\
+9              & R\$ 1,00 (número) & (-0.980049, -0.932487, 0.899731) & R\$ 1,00               \\
+10             & R\$ 1,00 (número) & (-1.02751, -0.966398, 0.984723)  & R\$ 1,00               \\
+11             & R\$ 1,00 (face)   & (-1.07407, -0.97125, 1.02219)    & R\$ 1,00               \\
+12             & R\$ 1,00 (face)   & (-1.01076, -0.992155, 1.00249)   & R\$ 1,00               \\ \bottomrule
+\end{tabular}
+\end{table*}
+
+
+\subsection{Calibrador}
+\label{sec:calibrador}
+
+Antes de usar o calibrador, o usuário do sistema precisa preparar três diretórios com exemplos dos três tipos de moeda já processadas pelo segmentador, para serem utilizadas como conjunto treinamento. É neste módulo onde o treinamento da rede neural artificial é feito e o resultado do treinamento é salvo em um arquivo de formato \textit{yml}, que será carregado durante a execução do validador e do contador. Os parâmetros da RNA foram:
+
+\begin{itemize}  
+\item Método de treinamento: \textit{Backpropagation}
+\item Número de camadas escondidas: 2, cada uma com 32 neurônios.
+\item Função de ativação: sigmoide simétrica, que varia de -1 a 1.
+\item Número máximo de iterações: 10000
+\item Erro mínimo de parada:  $10 ^ -8$.
+\item Taxa de aprendizado: 0.1
+\item Momentum: 0.1
+\end{itemize}
+
+Para o treinamento, foram utilizadas várias imagens além da prória Figura \ref{fig:imagem-exemplo}, o que produziu  20 imagens de R\$ 0,25, 20 de R\$ 0,50 e 20 de R\$ 1,00, sendo 10 da face e 10 da parte com o número para cada tipo, o que dá um total de 60 moedas. As 20 imagens de cada classe foram separadas em diretórios separados apenas por questão de organização. Como o conjunto treinamento e o número de entradas e saídas são pequenos, o treinamento da RNA durou em torno de 1 segundo, com pouco mais de 1300 iterações, para vários testes realizados.
+
+\subsection{Validador}
+\label{sec:validador}
+
+Após a etapa de anterior de calibração, utiliza-se o programa validador que utiliza outras imagens separadas após o processo de segmentação para validar o resultado do treinamento. Seguindo a sequência do teste, foi criado um conjunto de validação com 4 moedas de cada tipo, sendo 2 da face e duas da parte com número, totalizando 12 moedas. Na Tabela \ref{tab:resultado-validacao}, pode-se notar que a taxa de acerto foi de 100\%, isto é, todas as moedas do conjunto de validação foram classificadas corretamente.
+
+\subsection{Contador}
+\label{sec:contador}
+
+
+Com o processo de preparo do sistema concluído, finalmente o módulo contador, que é o produto final deste projeto, pode ser utilizado. Sua entrada consiste em uma imagem com várias moedas e sua saída é a soma do valor monetário de todas elas. Para realizar isso, este módulo utiliza tanto partes da técnica segmentação, para separar todas as moedas na imagem, quanto da calibração e validação, com o objetivo de classificar corretamente a moeda. Ao fim, o sistema soma todos os valores das moedas e informa ao usuário.
+
+Usando a mesma Figura \ref{fig:imagem-exemplo}, por fim, o programa conseguiu contar exatamente R\$ 7,00 na imagem, que é o valor exato da soma de 4 moedas de cada tipo. O tempo médio de execução do contador foi de 1,2 segundos. Na Figura  \ref{fig:resultado-contador}, é possível ver o resultado da contagem de moedas, bem como o tempo de execução do programa.
+
+\begin{figure}[ht]
+\centering
+\caption{Exemplo de moeda individual após segmentação}
+\label{fig:resultado-contador}
+\includegraphics[width=0.5\textwidth]{resultado-contador.jpg}
+\end{figure}
+
 
 \section{Conclusão}
 \label{sec:conclusao}
