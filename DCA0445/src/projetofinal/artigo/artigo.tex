@@ -71,7 +71,7 @@
 \maketitle
 
 \begin{abstract}
-O programa contador de moedas usando opencv utiliza-se da premissa de aquisição de moedas por meio de câmera de celulares que são um meio de obtenção de imagens bastante difundido. Após a aquisição das imagens o sistema utilizará um processo de criação de um círculo no contorno da moeda para ter certeza que o objeto identificado seja uma moeda. Depois disso tem-se a utilização de uma rede neural artificial com o método de treinamento backpropagation que recebe como decritores o histograma da matiz da imagem com 32 níveis, o número de linhas e colunas da imagem e 7 momentos invariantes. Por fim o programa informará ao usuário a quantidade de dinheiro que foi identificado na foto tirada por ele.
+O objetivo deste trabalho é propor uma nova estratégia de detecção e classificação de moedas em imagens digitais, através do desenvolvimento de um aplicativo que seja capaz de contar dinheiro utilizando uma câmera digital, como a de um telefone celular, por exemplo. Para conseguir isso, são aplicadas várias técnicas de processamento digital de imagens durante a busca por moedas e também de inteligência artificial para sua classificação, mais precisamente com redes neurais artificiais (RNAs). Durantes os experimentos, o aplicativo final foi calibrado com 60 e validado com 20 moedas, conseguindo atingir 100\% de acerto. Por fim, o aplicativo contador conseguiu realizar com sucesso a contagem de dinheiro de um conjunto de moedas, atingindo o objetivo para o qual ele foi proposto. 
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -92,15 +92,15 @@ Processamento digital de imagem, moedas, classificação, contagem, redes neurai
 
 No dia a dia do consumidor, moedas são formas indispensáveis de se fazer pequenas compras, dar ou facilitar o troco em supermercados ou até mesmo para troca em cédulas. Dessa forma, devido ao comércio estar equipado com máquinas para o pagamento ser feito em cartão de crédito, no caso de grandes compras, ou contadores de cédulas em bancos para contagem de papel moeda, a contagem de moedas de forma automatizada para fins comerciais  muitas vezes acaba por ser negligenciado pelas pessoas.
 
-Nesse contexto, a automatização desse processo poderia propocionar economia de tempo e consequentemente de dinheiro para as empresas, já que contar muitas moedas pode ser um trabalho árduo e demorado. Atualmente, já existem algumas tecnologias capazes de realizar tal tarefa, em geral atuando na comparação do peso das moedas. Entretanto, tais equipamentos ainda são bastante caros e inacessíveis para pequenos e microempresários.
+Nesse contexto, a automatização desse processo poderia proporcionar economia de tempo e consequentemente de dinheiro para as empresas, já que contar muitas moedas pode ser um trabalho árduo e demorado. Atualmente, já existem algumas tecnologias capazes de realizar tal tarefa, em geral atuando na comparação do peso das moedas. Entretanto, tais equipamentos ainda são bastante caros e inacessíveis para pequenos e microempresários.
 
-Com base nesse cenário, uma possibilidade para realizar o processo de contagem de moedas de uma forma simples e barata que través de imagens capturadas por câmeras digitais, dispositivos amplamente acessíveis e presentes em telefones celulares, computadores, televisores, dentre outros. Contudo, o processamento digital de imagens contendo moedas não é simples e tem sido objeto de estudo de vários pesquisadores.
+Com base nesse cenário, uma possibilidade para realizar o processo de contagem de moedas de uma forma simples e barata seria através de imagens capturadas por câmeras digitais, dispositivos amplamente acessíveis e presentes em telefones celulares, computadores, televisores, dentre outros. Contudo, o processamento digital de imagens contendo moedas não é simples e tem sido objeto de estudo de vários pesquisadores.
 
-Em seu trabalho, \cite{bremananth2005new} utilizou como estratégia reconhecer os caracteres numéricos presentes nas moedas indianas como forma de identificá-las. Embora interessante, essa estratégia é falha paras as moedas de Real do Brasil, visto que um dos lados dela não possui número. Em outro trabalho, \cite{chetan2013robust} tentou realizar a identificação através de combinação de caracteríticas (\textit{feature matching}), tanto com as bordas quanto com o raio das moedas. Porém, pode não ser interessante para as moedas de Real, pois elas possuem tamanhos muito parecidos, variando o raio, em alguns casos, em somente 1 mm, como pode ser visto em \cite{bcb}.
+Em seu trabalho, \cite{bremananth2005new} utilizou como estratégia reconhecer os caracteres numéricos presentes nas moedas indianas como forma de identificá-las. Embora interessante, essa estratégia é falha paras as moedas de Real do Brasil, visto que um dos lados dela não possui número. Em outro trabalho, \cite{chetan2013robust} tentou realizar a identificação através de casamento de características (\textit{feature matching}), tanto das bordas quanto com do raio das moedas. Porém, pode não ser interessante para as moedas de Real, pois elas possuem tamanhos muito parecidos, variando o raio, em alguns casos, em somente 1 mm, como pode ser visto em \cite{bcb}.
 
-Muitos dos trabalhos publicados nessa área abordam diferentes estratégias a respeito de que características das moedas serão utilizadas em sua indentificação. Porém, em geral, a maioria deles utiliza como métedo de classificação técnicas de inteligência artificial, mais especificamente redes neurais artificiais (RNAs), como podem ser visto em \cite{bremananth2005new}, \cite{kaur2015coin}, \cite{modi2013automated} e até em trabalhos mais antigo, como e \cite{fukumi1992rotation}.
+Muitos dos trabalhos publicados nessa área abordam diferentes estratégias a respeito de que características das moedas serão utilizadas em sua identificação. Porém, em geral, a maioria deles utiliza como método de classificação técnicas de inteligência artificial, mais especificamente redes neurais artificiais (RNAs), em sua maioria do tipo \textit{multilayer perceptron}, como podem ser visto em \cite{bremananth2005new}, \cite{kaur2015coin}, \cite{modi2013automated} e até em trabalhos mais antigos, como em \cite{fukumi1992rotation}.
 
-Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, através de um aplicativo contador moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada, como com o fundo todo branco, por exemplo, e que ele informe ao usuário quantos reais estão presentes ali. Além do próprio aplicativo contador, também serão densenvolvidos módulos auxiliares para realizar a calibração e validação do sistema principal, sendo eles o segmentador, o calibrador e o validador.
+Após essa contextualização, este trabalho propõe uma nova estratégia na identificação e classificação de moedas, com o propósito de se criar um aplicativo contador de moedas de Real presentes em uma imagens obtidas por câmera digital. A ideia é que o usuário do aplicativo tire uma foto de um conjunto de moedas em uma cena padronizada e ele informe ao usuário quanto de dinheiro está presente ali. Além do próprio aplicativo contador, também serão desenvolvidos módulos auxiliares para realizar a calibração e validação do sistema principal, sendo eles o segmentador, o calibrador e o validador.
 
 A tecnologia da classificação e identificação das moedas utilizada também será redes neurais artificiais, mas, diferente de outros trabalhos, as características a serem extraídas das moedas brasileiras tentarão tirar proveito do tamanho, das cores e de suas texturas. Por fim, como este projeto é apenas um protótipo, o aplicativo inicial será configurado para contar apenas moedas de R\$ 0,25, R\$  0,50 e R\$ 1,00.
 
@@ -127,8 +127,7 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 \end{table*}
 
 
-A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}. Na Figura \ref{fig:moedas-real}, é possível perceber algumas dessas características.
-
+A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as moedas de Real do Brasil para decidir a melhor estratégia para identificá-las. Notou-se que elas possuem tamanhos diferentes, mas muito próximos, o que torna essa informação isolada muito sensível a erros. Por exemplo, a diferença  de raio da moeda R\$ 0,05 para a de R\$ 0,10 é de apenas 1 mm, conforme pode ser visto na Tabela \ref{tab:moedas}, com dados do Banco Central do Brasil \cite{bcb}. Notou-se, também, que elas possuem cores e texturas diferentes, dependendo da combinação de materiais com que elas são feitas. Na Figura \ref{fig:moedas-real}, é possível perceber algumas dessas características.
 
 \begin{figure}[ht]
 \centering
@@ -138,13 +137,13 @@ A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as m
 \end{figure}
 
 
-A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. Nesse caso, elas seriam utilizadas como o critério de identificação das moedas classificação, ou seja, como entradas para a rede neural artificial. 
+A partir dessas informações, decidiu-se que seriam utilizadas informações sobre o tamanho da imagem, para tirar proveito da diferença do diâmetro, e do material de construção, que influencia tanto na cor e na textura das moedas presentes nas imagens. Nesse caso, elas seriam utilizadas como descritores das moedas classificação, ou seja, como entradas para a rede neural artificial. 
 
-Em se tratando de imagens digitais, as características acima seriam os descritores das imagens. Como as cores são importantes, as imagens não podem ser trabalhadas em escala de cinza, pois poderia-se muita informação. Portanto, para uma imagem contendo uma única moeda posicionada ao centro, resultado de um processo de busca em uma imagem com várias moedas, conforme será melhor explicado adiante, com fundo branco e com seu raio tocando a borda da imagem, os seguintes elementos foram escolhidos para representá-las:
+Nessa situação, as cores são muito na diferenciação das moedas e portanto as moedas não podem ser trabalhadas em escala de cinza, pois poderia-se bastante informação útil. Assim, para uma imagem contendo uma única moeda posicionada ao centro, resultado de um processo de busca em uma imagem com várias moedas, conforme será melhor explicado adiante, com fundo branco e com seu raio tocando a borda da imagem, os seguintes elementos foram escolhidos para representá-la:
 
 \begin{itemize}  
 \item Cores da moeda: histograma da matiz da imagem. 
-\item Diâmetro da moeda: lagura e altura da imagem.
+\item Diâmetro da moeda: largura e altura da imagem.
 \item Material da moeda: características da textura da imagem.
 \end{itemize}
 
@@ -173,7 +172,7 @@ Neste momento, já se sabe que o sistema será planejado para classificar os tr�
 
 A ideia pensada aqui foi realizar uma busca por círculos na imagem. A literatura aborda várias formas de se fazer isso, sendo a transformada de Hough, provavelmente, a mais comum, como pode ser vista em \cite{ioannou1999circle}, \cite{kerbyson1995circle} e \cite{yuen1990comparative}. Outros pesquisados desenvolveram variações dessa transformada para melhorar sua eficácia e eficiência, como a sua versão adaptativa \cite{illingworth1987adaptive}, ou sua versão mais rápida e otimizada para detectar até mesmo elipses \cite{guil1997lower}.
 
-A estratégia criada para resolver a detecção das moedas, porém, não utilizará as técnicas tradicionais baseadas na transformada de Hough, que até chegou a ser testada na fase prelimiar do projeto, mas não se mostrou completamente satisfatória. Em vez dela, foi desenvolvida uma técnica intuitiva baseando no seguinte princípio:
+A estratégia criada para resolver a detecção das moedas, porém, não utilizará as técnicas tradicionais baseadas na transformada de Hough, que até chegou a ser testada na fase preliminar deste projeto, mas não se mostrou completamente satisfatória. Em vez dela, foi desenvolvida uma técnica intuitiva baseando no seguinte princípio:
 
 \begin{enumerate}
 \item Procurar por contornos em uma imagem pré-processada, sendo esses candidatos a moedas.
@@ -181,17 +180,17 @@ A estratégia criada para resolver a detecção das moedas, porém, não utiliza
 \item Comparar a área do contorno e desse círculo e verificar se ambas são semelhantes, através da comparação com um limiar pré-estabelecido.
 \end{enumerate}
 
-Combinado com essa ideia, também foi estabelecida um limiar de tamanho mínimo do raio desse círculo, pois se fosse muito pequeno certamente poderia ser algum ponto de sujeira ou ruído na imagem.
+Combinado com essa ideia, também foi estabelecido um limiar de tamanho mínimo do raio desse círculo, pois se fosse muito pequeno certamente poderia ser algum ponto de sujeira ou ruído na imagem.
 
-Embora essa estratégia criada pareça fácil, ela necessita de um pré-processamento bem robusto, que mantenha presente na imagem apenas contornos externos da borda externa moeda. Isso é importante até mesmo para evitar que se faça uma má detecção do contorno do círculo interno da moeda de R\$ 1,00, que poderia ser confundida com a de R\$ 0,50. Então, esse processamento prévio foi feito da seguinte forma:
+Embora essa estratégia criada pareça fácil, ela necessita de um pré-processamento bem robusto, que mantenha presente na imagem apenas contornos externos da borda externa moeda. Isso é importante até mesmo para evitar que se faça uma má detecção do contorno do círculo interno da moeda de R\$ 1,00, que poderia ser confundida com a de R\$ 0,50, por exemplo. Então, esse processamento prévio foi feito da seguinte forma:
 
 \begin{enumerate}
 
-\item Inicialmmente, a imagem passa por um filtro gaussiano com o objetivo de suavizá-la e remover ruídos.
+\item Inicialmente, a imagem passa por um filtro gaussiano com o objetivo de suavizá-la e remover ruídos.
 \item Após isso, ela é convertida para escala de cinza e passa por processo de limiarização, através do método de Otsu, com o objetivo de manter em preto o fundo da cena e em branco os objetos detectados.
-\item O passo seguinte é a remoção de possíveis moedas presentes na borda, buscando remover qualquer objeto na cor branca que esteja nesse local através do algoritmo de \textit{seed fill}.
-\item Adiante, aplicado o fechamento morforlógico, com o objetivo de aglutinar possíveis falhas no contorno da moeda , além de remover pequenos contornos de dentro da moeda. Este passo é feito em quatro etapas, variando o tamanho elemento estruturante de 1 até 8 em potências de 2, de modo que o resultado final seja o que consiga detectar mais moedas.
-\item Por fim, são removidos os demais resíduos presentes dentro das moedas, através de um processo de rotulação. 
+\item O passo seguinte é a remoção de possíveis moedas presentes na borda, buscando remover qualquer objeto na cor branca que esteja nesse local através do algoritmo de \textit{flood fill}.
+\item Adiante, é aplicado o fechamento morfológico, com o objetivo de aglutinar possíveis falhas no contorno da moeda, além de remover pequenos ruídos e contornos de dentro da moeda. Este passo é feito em quatro etapas, variando o tamanho elemento estruturante de 1 até 8 em potências de 2, de modo que o resultado final seja o que consiga detectar mais moedas.
+\item Por fim, são removidos os demais resíduos remanescentes presentes dentro das moedas, através de um processo de rotulação. 
 \end{enumerate}
 
 Com esse pré-processamento, finalmente é possível aplicar a estratégia de detectar círculos descrita anteriormente. Ao fim do processo, são geradas imagens menores contendo apenas a moeda no centro, com seu raio tocando a borda da imagem.
@@ -200,7 +199,7 @@ Com esse pré-processamento, finalmente é possível aplicar a estratégia de de
 \label{sec:metodologia-rna}
 
 
-Com os descritores das imagens das moedas bem definidos na Seção \ref{sec:metodologia-moedas}, foi possível, então, planejar a rede neural artificial de múltiplas camadas responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a moeda identificada. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
+Com os descritores das imagens das moedas bem definidos na Seção \ref{sec:metodologia-moedas}, foi possível, então, planejar a rede neural artificial responsável por realizar a identificação e classificação dos três tipos de moedas: R\$ 0,25, R\$ 0,50 e R\$ 1,00. De antemão, já foi escolhido que a RNA possuiria três saídas com variação de -1 a 1, uma para cada tipo de moeda, de modo que a saída de maior valor indicasse qual a qual classe a moeda pertenceria. Por exemplo, se a primeira saída representasse a moeda de R\$ 0,25 e durante a classificação ela fosse 0.7 e as outras duas -0.5 e -0.4, então o sistema classificaria aquela moeda presente na imagem como uma moeda de R\$ 0,25.
 
 Como entrada da rede neural, os descritores foram abstraídos da seguinte forma:
 
@@ -210,9 +209,9 @@ Como entrada da rede neural, os descritores foram abstraídos da seguinte forma:
 \item 7 momentos invariantes da imagem convertida para escala de cinza, representando a textura da moeda.
 \end{itemize}
 
-É importante ressaltar que, antes da obtenção desse histograma, a imagem original passa por uma equalização de histograma, para distribuir melhor a iluminação da imagem. Para isso, ela é convertida de RBG para YCrCb, cujo canal Y, que representa a iluminância e é equivalente à imagem em escala de cinza, é equalizado. Ao fim, a imagem é convertida novamente para RGB. 
+É importante enfatizar que, antes da obtenção desse histograma, a imagem original passa por uma equalização de histograma, para distribuir melhor a iluminação da imagem. Para isso, ela é convertida de RBG para YCrCb, cujo canal Y, que representa a iluminância e é equivalente à imagem em escala de cinza, é equalizado. Ao fim, a imagem é convertida novamente para RGB. 
 
-Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. Os demais ajustes da rede neural dizem respeito à sua estrutura interna e ao treinamento surpevisionado. Todos os que foram aplicados no experimento foram obtidos e testados empiricamente após alguns experimentos, tentando buscar sempre uma boa precisão dos resultados quanto um bom desempenho durante o treinamento, já que esta etapa faz parte da calibração do sistema.
+Com esses parâmetros, é possível montar um vetor de entrada para a RNA  de 41 elementos, sendo os 32 primeiros os níveis do histograma, os 2 próximos a altura e largura, respectivamente, e, por último, os 7 momentos invariantes da imagem contendo a moeda. Os demais ajustes da rede neural dizem respeito à sua estrutura interna e ao treinamento supervisionado. Todos os que foram aplicados no experimento foram obtidos e testados empiricamente, tentando buscar sempre uma boa precisão dos resultados quanto um bom desempenho durante o treinamento, já que esta etapa faz parte da calibração do sistema.
 
 O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artificial de múltiplas camadas utilizada nesse projeto (a entrada de valor 1 está omitida).
 
@@ -297,7 +296,7 @@ O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artif
 \subsection{Tecnologias Utilizadas}
 \label{sec:tecnologias-envolvidas}
 
-O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em lingaguem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits.
+O aplicativo proposto nesse projeto foi desenvolvido completamente com tecnologias livres e gratuitas, assim como também será o resultado final aqui produzido. Ele foi desenvolvido em linguagem de programação C++, com compilador GNU C++ 5.4.0, e com o apoio da biblioteca Open Source Computer Vision Library (OpenCV), versão 2.4.9. Como plataforma de desenvolvimento, de testes e execução do software final, foi utilizado o Ubuntu 16.04 LTS, em sua versão de 60 bits. Por fim, a câmera utilizada foi a de um \textit{smartphone} convencional, com resolução de 12 megapíxels.
 
 O código fonte do projeto pode ser encontrado no Github no seguinte \textit{link}:
 
@@ -433,10 +432,10 @@ Usando a mesma Figura \ref{fig:imagem-exemplo}, por fim, o programa conseguiu co
 
 O programa de contagem de moedas valeu-se, primeiramente, da aquisição da imagem de moedas por meio de uma câmera de celular sob um fundo de cor branca. Essa estratégia acabou sendo escolhida para facilitar a detecção de moedas e posteriormente realizar a sua contagem, assim como a restrição de distância de 30 cm. Contudo, isso acabou tornando-se uma limitação do programa, pois seriam necessários muitos mais testes e eventuais modificações nos módulos para que o sistema operasse de forma correta em qualquer outra cor de fundo. 
 
-A utilização dos conceitos de processamento digital de imagens apreendidas na disciplina de mesmo nome foram feitas na parte de segmentação das imagens. As técnicas utilizadas envolveram suavização da imagem utilizando o filtro gaussiano, utilização do método de Otsu na limiarização, fechamento morfológico através das operações de dilatação e erosão e também técnicas de rotulação. Nesse contexto, pôde-se perceber a importância do uso de técnicas simples de processamento de imagens que servem muito bem na resolução de problemas mais complexos, como os presentes neste projeto, e podem ser uma alternativa em relação aos métodos mais complexos utilizados nos artigos referenciados neste trabalho.
+A utilização dos conceitos de processamento digital de imagens aprendidas na disciplina de mesmo nome foram feitas na parte de segmentação das imagens. As técnicas utilizadas envolveram suavização da imagem utilizando o filtro gaussiano, utilização do método de Otsu na limiarização, fechamento morfológico através das operações de dilatação e erosão e também técnicas de rotulação. Nesse contexto, pôde-se perceber a importância do uso de técnicas simples de processamento de imagens que servem muito bem na resolução de problemas mais complexos, como os presentes neste projeto, e podem ser uma alternativa em relação aos métodos mais complexos utilizados nos artigos referenciados neste trabalho.
 
 O uso de aprendizado de máquina, com rede neural artificial, foi necessária para realizar a classificação das moedas, devido a falhas de outros métodos que foram tentados, que se baseavam em algoritmos para detecção de semelhança entre a fotografia da moeda tirada e uma moeda modelo. Muitos deles não funcionavam bem quando a moeda estava rotacionada, movimento que é inerente a objetos circulares.
-Após muitos experimentos, o uso de uma rede neural artificial revelou um grande sucesso nessa tarefa, com uma taxa de certo de 100\% durante a validação.
+Após muitos experimentos, o uso de uma rede neural artificial revelou um grande sucesso nessa tarefa, com uma taxa de acerto de 100\% durante a validação.
 
 Por fim, é importante ressaltar que o programa é apenas um protótipo devido aos alunos envolvidos terem estudado apenas uma parte introdutória do enorme ramo que é o de processamento digital de imagens, e também devido à limitação de tempo da disciplina. Portanto, ficam como objetivos futuros a melhoria do programa para identificar todos os tipos de moedas nacionais, para que ele possa ser mais rápido ao ponto de funcionar em tempo real através da captura de vídeo e possivelmente encontrar uma aplicação comercial local do programa desenvolvido, buscando facilitar a contagem de moedas por microempresários e dono de supermercados por um preço de aquisição baixo.  
 
