@@ -43,10 +43,6 @@
 \usepackage{hyperref}
 
 
-
-% correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor}
-
 \graphicspath{{imagens/}}
 
 \renewcommand\IEEEkeywordsname{Palavras-chave}
@@ -112,7 +108,6 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 
 \begin{table*}[]
 \centering
-\caption{Detalhes das moedas de Real brasileiro}
 \label{tab:moedas}
 \begin{tabular}{@{}ccll@{}}
 \toprule
@@ -124,6 +119,7 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 0,50                        & 23,00                  & legenda                            & Aço inoxidável                                           \\
 1,00                        & 27,00                  & serrilhaintermitente               & Aço inoxidável (núcleo) e aço revestido de bronze (anel) \\ \bottomrule
 \end{tabular}
+\caption{Detalhes das moedas de Real brasileiro}
 \end{table*}
 
 
@@ -131,9 +127,9 @@ A primeira etapa deste trabalho foi analisar os objetos de estudo, isto é, as m
 
 \begin{figure}[ht]
 \centering
+\includegraphics[width=0.5\textwidth]{moedas-real.jpg}
 \caption{Todas as moedas de Real Brasileiro}
 \label{fig:moedas-real}
-\includegraphics[width=0.5\textwidth]{moedas-real.jpg}
 \end{figure}
 
 
@@ -157,9 +153,9 @@ Na Figura \ref{fig:imagem-exemplo}, segue um exemplo de uma imagem atendendo aos
 
 \begin{figure}[ht]
 \centering
+\includegraphics[width=0.5\textwidth]{completa4.jpg}
 \caption{Exemplo de imagem quem atendem às limitações impostas pelo projeto}
 \label{fig:imagem-exemplo}
-\includegraphics[width=0.5\textwidth]{completa4.jpg}
 \end{figure}
 
 Na imagem acima, também nota-se outra restrição imposta por este projeto. Nela, há apenas moedas de R\$ 0,25, R\$ 0,50 e R\$ 1,00. Isso foi necessário porque na fase de testes do aplicativo, detectou-se alguns falsos positivos entre as moedas de R\$ 0,05 R\$ 0,25, já que ambas possuem tamanho e cor semelhantes (ver Figura \ref{fig:moedas-real}). Essas falhas ocorrem, principalmente, devido às imagens obtidas através da câmera do celular serem de baixa qualidade e não conseguiam capturar pequenos detalhes cruciais na diferenciação das moedas. Logo, essas moedas foram escolhidas por serem bem diferentes entre si e por serem as de maior valor.
@@ -322,54 +318,53 @@ Os passos de pré-processamento descritos na Seção \ref{sec:segmentacao} podem
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=0.5\textwidth]{gaussiano.jpg}
 \caption{Imagem após filtragem para remoção de ruídos}
 \label{fig:gaussiano}
-\includegraphics[width=0.5\textwidth]{gaussiano.jpg}
 \end{figure}
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=0.5\textwidth]{binaria-otsu.jpg}
 \caption{Limiarização da imagem através do método de Otsu}
 \label{fig:binaria-otsu}
-\includegraphics[width=0.5\textwidth]{binaria-otsu.jpg}
 \end{figure}
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=0.5\textwidth]{fechamento-buracos.jpg}
 \caption{Fechamento morfológico e remoção de buracos}
 \label{fig:fechamento-buracos}
-\includegraphics[width=0.5\textwidth]{fechamento-buracos.jpg}
 \end{figure}
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=0.5\textwidth]{circulos.jpg}
 \caption{Detecção de círculos (contornos em azul e menor círculo em amarelo}
 \label{fig:circulos}
-\includegraphics[width=0.5\textwidth]{circulos.jpg}
 \end{figure}
 
 Apenas para facilitar o fim do processo, a Figura \ref{fig:resultado-segmentador} mostra a localização exata das moedas encontradas sob a imagem original (Figura \ref{fig:imagem-exemplo}).
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=0.5\textwidth]{resultado-segmentador.jpg}
 \caption{Resultado do processo de segmentação}
 \label{fig:resultado-segmentador}
-\includegraphics[width=0.5\textwidth]{resultado-segmentador.jpg}
 \end{figure}
 
 A partir dos retângulos em azul mostrado na Figura \ref{fig:resultado-segmentador}, são geradas imagens menores para cada um deles, de modo que todos os píxels fora do contorno são padronizados para cor branca em RGB. Um exemplo dessas imagens pode ser vista na Figura \ref{fig:moeda-individual}. Embora apareça uma pequena sombra em cinza ao redor da moeda, ela não foi suficiente para atrapalhar os resultados finais.
 
 \begin{figure}[ht]
 \centering
+\includegraphics[width=0.5\textwidth]{moeda-individual.jpg}
 \caption{Exemplo de moeda individual após segmentação}
 \label{fig:moeda-individual}
-\includegraphics[width=0.5\textwidth]{moeda-individual.jpg}
 \end{figure}
 
 
 \begin{table*}[]
 \centering
-\caption{Resultado da validação}
 \label{tab:resultado-validacao}
 \begin{tabular}{@{}clcc@{}}
 \toprule
@@ -387,6 +382,7 @@ A partir dos retângulos em azul mostrado na Figura \ref{fig:resultado-segmentad
 11             & R\$ 1,00 (face)   & (-1.07407, -0.97125, 1.02219)    & R\$ 1,00               \\
 12             & R\$ 1,00 (face)   & (-1.01076, -0.992155, 1.00249)   & R\$ 1,00               \\ \bottomrule
 \end{tabular}
+\caption{Resultado da validação}
 \end{table*}
 
 
@@ -421,9 +417,9 @@ Usando a mesma Figura \ref{fig:imagem-exemplo}, por fim, o programa conseguiu co
 
 \begin{figure}[ht]
 \centering
+\includegraphics[width=0.5\textwidth]{resultado-contador.jpg}
 \caption{Exemplo de moeda individual após segmentação}
 \label{fig:resultado-contador}
-\includegraphics[width=0.5\textwidth]{resultado-contador.jpg}
 \end{figure}
 
 

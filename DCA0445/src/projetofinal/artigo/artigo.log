@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.6.7)  30 JUN 2017 20:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.6.7)  30 JUN 2017 20:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1067,20 +1067,20 @@ Package caption Info: hyperref package is loaded.
 ) (./artigo.aux)
 \openout1 = `artigo.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
 
 -- Lines per column: 61 (exact).
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
@@ -1111,7 +1111,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box44
-Package hyperref Info: Link coloring OFF on input line 54.
+Package hyperref Info: Link coloring OFF on input line 50.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -1121,9 +1121,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count157
 )
-LaTeX Info: Redefining \ref on input line 54.
-LaTeX Info: Redefining \pageref on input line 54.
-LaTeX Info: Redefining \nameref on input line 54.
+LaTeX Info: Redefining \ref on input line 50.
+LaTeX Info: Redefining \pageref on input line 50.
+LaTeX Info: Redefining \nameref on input line 50.
 
 (./artigo.out) (./artigo.out)
 \@outlinefile=\write4
@@ -1141,128 +1141,135 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 80.
 ABD: EveryShipout initializing macros
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 72.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 )
 ** WARNING: \and is valid only when in conference or peerreviewca
-modes (line 72).
-LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 72
+modes (line 68).
+LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 68
 .
-LaTeX Font Info:    Try loading font information for U+msa on input line 72.
+LaTeX Font Info:    Try loading font information for U+msa on input line 68.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 72.
+LaTeX Font Info:    Try loading font information for U+msb on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+pzd on input line 72.
+LaTeX Font Info:    Try loading font information for U+pzd on input line 68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/upzd.fd
 File: upzd.fd 2001/06/04 font definitions for U/pzd.
 )
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <8.03> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 73.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 69.
 
-Underfull \hbox (badness 10000) in paragraph at lines 77--79
+Underfull \hbox (badness 10000) in paragraph at lines 73--75
 \OT1/phv/b/n/8.03 Palavras-chave\OT1/phv/m/n/8.03 ---Processamento di-gi-tal de
  ima-gem, mo-e-das,
  []
 
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <11.04124> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 90.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 86.
 LaTeX Font Info:    Font shape `OT1/phv/bx/sc' in size <11.04124> not available
 
-(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 90.
+(Font)              Font shape `OT1/phv/b/sc' tried instead on input line 86.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 90.
+(babel)             in language  on input line 86.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 107.
+(babel)             in language  on input line 103.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9.53561> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 110.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 106.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 110.
+(babel)             in language  on input line 106.
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 113.
+               Default added (so using `tbp') on input line 109.
 
-LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 117.
+LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 112.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 127.
+(babel)             in language  on input line 123.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 127.
+(babel)             in language  on input line 123.
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
+
+Package caption Warning: \label without proper reference on input line 111.
+See the caption package documentation for explanation.
+
+
+LaTeX Warning: Reference `tab:moedas' on page 2 undefined on input line 126.
+
 <imagens/moedas-real.jpg, id=85, 552.0625pt x 286.06876pt>
 File: imagens/moedas-real.jpg Graphic file (type jpg)
 
 <use imagens/moedas-real.jpg>
-Package pdftex.def Info: imagens/moedas-real.jpg used on input line 136.
+Package pdftex.def Info: imagens/moedas-real.jpg used on input line 130.
 (pdftex.def)             Requested size: 258.9675pt x 134.19916pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 136--137
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 130--131
  [][] 
  []
 
-LaTeX Font Info:    Calculating math sizes for size <9.53561> on input line 145
+LaTeX Font Info:    Calculating math sizes for size <9.53561> on input line 141
 .
 <imagens/completa4.jpg, id=87, 501.875pt x 376.40625pt>
 File: imagens/completa4.jpg Graphic file (type jpg)
 
 <use imagens/completa4.jpg>
-Package pdftex.def Info: imagens/completa4.jpg used on input line 162.
+Package pdftex.def Info: imagens/completa4.jpg used on input line 156.
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 162--163
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 156--157
  [][] 
  []
 
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 168.
+(babel)             in language  on input line 164.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 174.
+(babel)             in language  on input line 170.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 174.
+(babel)             in language  on input line 170.
 [2 <./imagens/moedas-real.jpg> <./imagens/completa4.jpg>]
-Underfull \hbox (badness 5359) in paragraph at lines 178--179
+Underfull \hbox (badness 5359) in paragraph at lines 174--175
 []\OT1/ppl/m/n/9.53561 Procurar por con-tor-nos em uma ima-gem pr[]e-
  []
 
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 198.
+(babel)             in language  on input line 194.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 292.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 296.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 300.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 300.
+(babel)             in language  on input line 296.
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 303--304
+Underfull \hbox (badness 10000) in paragraph at lines 299--300
 [][]$\OT1/ppl/m/n/9.53561 https : / / github . com / PedroHenriqueMedeiros /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 303--304
+Underfull \hbox (badness 10000) in paragraph at lines 299--300
 \OT1/ppl/m/n/9.53561 PedroHenriqueMedeiros . github . io / tree / master /
  []
 
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 305.
+(babel)             in language  on input line 301.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 310.
+(babel)             in language  on input line 306.
 <imagens/gaussiano.jpg, id=133, 501.875pt x 376.40625pt>
 File: imagens/gaussiano.jpg Graphic file (type jpg)
 
 <use imagens/gaussiano.jpg>
-Package pdftex.def Info: imagens/gaussiano.jpg used on input line 327.
+Package pdftex.def Info: imagens/gaussiano.jpg used on input line 321.
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 327--328
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 321--322
  [][] 
  []
 
@@ -1273,10 +1280,10 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: imagens/binaria-otsu.jpg Graphic file (type jpg)
 
 <use imagens/binaria-otsu.jpg>
-Package pdftex.def Info: imagens/binaria-otsu.jpg used on input line 334.
+Package pdftex.def Info: imagens/binaria-otsu.jpg used on input line 328.
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 334--335
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 328--329
  [][] 
  []
 
@@ -1287,11 +1294,11 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: imagens/fechamento-buracos.jpg Graphic file (type jpg)
 
 <use imagens/fechamento-buracos.jpg>
-Package pdftex.def Info: imagens/fechamento-buracos.jpg used on input line 341.
+Package pdftex.def Info: imagens/fechamento-buracos.jpg used on input line 335.
 
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 341--342
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 335--336
  [][] 
  []
 
@@ -1302,10 +1309,10 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: imagens/circulos.jpg Graphic file (type jpg)
 
 <use imagens/circulos.jpg>
-Package pdftex.def Info: imagens/circulos.jpg used on input line 348.
+Package pdftex.def Info: imagens/circulos.jpg used on input line 342.
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 348--349
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 342--343
  [][] 
  []
 
@@ -1317,10 +1324,10 @@ File: imagens/resultado-segmentador.jpg Graphic file (type jpg)
 
 <use imagens/resultado-segmentador.jpg>
 Package pdftex.def Info: imagens/resultado-segmentador.jpg used on input line 3
-57.
+51.
 (pdftex.def)             Requested size: 258.9675pt x 194.23332pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 357--358
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 351--352
  [][] 
  []
 
@@ -1331,48 +1338,57 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 File: imagens/moeda-individual.jpg Graphic file (type jpg)
 
 <use imagens/moeda-individual.jpg>
-Package pdftex.def Info: imagens/moeda-individual.jpg used on input line 366.
+Package pdftex.def Info: imagens/moeda-individual.jpg used on input line 360.
 (pdftex.def)             Requested size: 258.9675pt x 260.33987pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 366--367
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 360--361
  [][] 
  []
 
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 370.
+               Default added (so using `tbp') on input line 366.
 
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 393.
+(babel)             in language  on input line 389.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 400.
+(babel)             in language  on input line 396.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 400.
+(babel)             in language  on input line 396.
 [4 <./imagens/gaussiano.jpg> <./imagens/binaria-otsu.jpg>]
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 410.
+(babel)             in language  on input line 406.
+
+
+Package caption Warning: \label without proper reference on input line 368.
+See the caption package documentation for explanation.
+
+
+LaTeX Warning: Reference `tab:resultado-validacao' on page 5 undefined on input
+ line 409.
+
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 411.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 415.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 419.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 419.
- [5 <./imagens/fechamento-buracos.jpg> <./imagens/circulos.jpg> <./imagens/resu
-ltado-segmentador.jpg>] <imagens/resultado-contador.jpg, id=168, 624.3325pt x 3
-32.24126pt>
+(babel)             in language  on input line 415.
+[5 <./imagens/fechamento-buracos.jpg> <./imagens/circulos.jpg> <./imagens/resul
+tado-segmentador.jpg>]
+<imagens/resultado-contador.jpg, id=168, 624.3325pt x 332.24126pt>
 File: imagens/resultado-contador.jpg Graphic file (type jpg)
 
 <use imagens/resultado-contador.jpg>
-Package pdftex.def Info: imagens/resultado-contador.jpg used on input line 426.
+Package pdftex.def Info: imagens/resultado-contador.jpg used on input line 420.
 
 (pdftex.def)             Requested size: 258.9675pt x 137.81163pt.
 
-Overfull \hbox (6.0225pt too wide) in paragraph at lines 426--427
+Overfull \hbox (6.0225pt too wide) in paragraph at lines 420--421
  [][] 
  []
 
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 430.
+(babel)             in language  on input line 426.
 (./artigo.bbl
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
@@ -1392,30 +1408,34 @@ Package babel Info: Redefining portuges shorthand "|
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 21.
 [6 <./imagens/moeda-individual.jpg> <./imagens/resultado-contador.jpg>])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 448.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 444.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 448.
+(babel)             in language  on input line 444.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 448.
+(babel)             in language  on input line 444.
 
 [7
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 448.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 444.
  (./artigo.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 448.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 448.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 444.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 444.
 Package rerunfilecheck Info: File `artigo.out' has not changed.
 (rerunfilecheck)             Checksum: 5680196042A34379EC618365AA2C3073;835.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 448.
+
+
+LaTeX Warning: There were undefined references.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 444.
  ) 
 Here is how much of TeX's memory you used:
- 20152 strings out of 493029
- 367912 string characters out of 6136235
- 555573 words of memory out of 5000000
+ 20150 strings out of 493029
+ 367887 string characters out of 6136235
+ 555633 words of memory out of 5000000
  23249 multiletter control sequences out of 15000+600000
- 46717 words of font info for 114 fonts, out of 8000000 for 9000
- 1144 hyphenation exceptions out of 8191
+ 47326 words of font info for 115 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
  55i,12n,69p,824b,823s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
@@ -1427,7 +1447,7 @@ vr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/texlive/texmf-
 dist/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on artigo.pdf (7 pages, 852345 bytes).
+Output written on artigo.pdf (7 pages, 853168 bytes).
 PDF statistics:
  230 PDF objects out of 1000 (max. 8388607)
  200 compressed objects within 2 object streams
