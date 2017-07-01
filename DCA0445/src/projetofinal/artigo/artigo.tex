@@ -1,4 +1,4 @@
-\documentclass[10pt,journal,compsoc]{IEEEtran}
+\documentclass[10pt,journal]{IEEEtran}
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
@@ -41,7 +41,7 @@
 \usepackage{tikz}
 \usepackage[justification=centering]{caption}
 \usepackage{hyperref}
-
+\usepackage{mathptmx} 
 
 \graphicspath{{imagens/}}
 
@@ -108,7 +108,6 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 
 \begin{table*}[]
 \centering
-\label{tab:moedas}
 \begin{tabular}{@{}ccll@{}}
 \toprule
 \textbf{Valor Facial (R\$)} & \textbf{Diâmetro (mm)} & \multicolumn{1}{l}{\textbf{Bordo}} & \multicolumn{1}{l}{\textbf{Material}}                    \\ \midrule
@@ -120,6 +119,7 @@ A tecnologia da classificação e identificação das moedas utilizada também s
 1,00                        & 27,00                  & serrilhaintermitente               & Aço inoxidável (núcleo) e aço revestido de bronze (anel) \\ \bottomrule
 \end{tabular}
 \caption{Detalhes das moedas de Real brasileiro}
+\label{tab:moedas}
 \end{table*}
 
 
@@ -154,7 +154,7 @@ Na Figura \ref{fig:imagem-exemplo}, segue um exemplo de uma imagem atendendo aos
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.5\textwidth]{completa4.jpg}
-\caption{Exemplo de imagem quem atendem às limitações impostas pelo projeto}
+\caption{Exemplo de imagem que atendem às limitações impostas pelo projeto}
 \label{fig:imagem-exemplo}
 \end{figure}
 
@@ -227,8 +227,6 @@ O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artif
 
 \begin{figure}
 \centering
-\caption{Diagrama da Rede Neural Artificial}
-\label{fig:rna}
 \begin{tikzpicture}[x=1cm, y=1cm, >=stealth,scale=1.0]
 
 % Definição de neurônios
@@ -286,6 +284,8 @@ O diagrama da Figura \ref{fig:rna} mostra a estrutura final da rede neural artif
 \node [align=center, above] at (3*2,2) {\\Camada \\ de Saida};
 
 \end{tikzpicture}
+\caption{Diagrama da Rede Neural Artificial}
+\label{fig:rna}
 \end{figure}
 
 
@@ -365,7 +365,6 @@ A partir dos retângulos em azul mostrado na Figura \ref{fig:resultado-segmentad
 
 \begin{table*}[]
 \centering
-\label{tab:resultado-validacao}
 \begin{tabular}{@{}clcc@{}}
 \toprule
 \textbf{Moeda} & \textbf{Tipo}     & \textbf{Saída}                   & \textbf{Classificação} \\ \midrule
@@ -383,6 +382,7 @@ A partir dos retângulos em azul mostrado na Figura \ref{fig:resultado-segmentad
 12             & R\$ 1,00 (face)   & (-1.01076, -0.992155, 1.00249)   & R\$ 1,00               \\ \bottomrule
 \end{tabular}
 \caption{Resultado da validação}
+\label{tab:resultado-validacao}
 \end{table*}
 
 
